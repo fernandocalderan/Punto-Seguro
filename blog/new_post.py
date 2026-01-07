@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+from datetime import date
+from pathlib import Path
+import re
+import sys
+import unicodedata
+
+
+ROOT = Path(__file__).resolve().parent.parent
+CONTENT_DIR = ROOT / "blog" / "content" / "posts"
+
+
+def slugify(text: str) -> str:
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = text.lower().strip()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s_-]+", "-", text)
+    text = re.sub(r"^-+|-+$", "", text)
+    return text or "articulo"
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        raise SystemExit('Uso: python3 blog/new_post.py "Título del artículo" [imagen.png]')
+
+    title = sys.argv[1].strip()
+    image = sys.argv[2].strip() if len(sys.argv) >= 3 else "portada_facebook.png"
+
+    CONTENT_DIR.mkdir(parents=True, exist_ok=True)
+    slug = slugify(title)
+
+    existing = sorted(CONTENT_DIR.glob(f"*{slug}.md"))
+    prefix = f"{len(list(CONTENT_DIR.glob('*.md'))) + 1:02d}"
+    filename = f"{prefix}-{slug}.md"
+    if existing:
+        filename = f"{prefix}-{slug}-v2.md"
+
+    path = CONTENT_DIR / filename
+    today = date.today().isoformat()
+
+    path.write_text(
+        "\n".join(
+            [
+                "---",
+                f"title: {title}",
+                f"date: {today}",
+                "tag: Blog",
+                f"image: {image}",
+                f"image_alt: {title}",
+                "popular_rank: ",
+                "---",
+                "",
+                "Pega aquí tu texto.",
+                "",
+                "👉 (Opcional) Cierra con una frase de conclusión.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    print("OK")
+    print(f"- Creado: {path}")
+    print("- Siguiente: python3 blog/build.py")
+
+
+if __name__ == "__main__":
+    main()

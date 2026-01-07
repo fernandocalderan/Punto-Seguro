@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punto Seguro | Evaluación profesional de riesgo en seguridad</title>
+
+  <meta name="description" content="Punto Seguro: evaluación profesional de riesgo en seguridad para negocios con local físico. Servicio informativo realizado por asesor colaborador de Securitas Direct España. Sin compromiso ni obligación de contratación." />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #f7f8fa;
+      --bg-card: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --brand-primary: #2b5cff;
+      --brand-secondary: #0f172a;
+      --border-soft: #e5e7eb;
+
+      --shadow-sm: 0 8px 30px rgba(0,0,0,0.05);
+      --shadow-md: 0 14px 45px rgba(0,0,0,0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 140px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    .skip-link {
+      position: absolute; left: -999px; top: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      padding: .6rem .9rem; border-radius: 12px;
+      z-index: 9999; box-shadow: var(--shadow-sm);
+    }
+    .skip-link:focus { left: 14px; }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.2rem; padding: 1rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: 1rem; min-width: 260px; }
+    .logo img { height: 150px; width: auto; display: block; }
+    .brand-text { display: flex; flex-direction: column; gap: .15rem; }
+    .brand-text strong { color: var(--brand-secondary); font-size: .98rem; }
+    .brand-text span { color: var(--text-muted); font-size: .88rem; }
+
+    nav { display: flex; gap: 1.2rem; }
+    nav a { text-decoration: none; color: var(--text-muted); font-weight: 600; }
+
+    .btn {
+      background: var(--brand-primary); color: #fff;
+      padding: 0.92rem 1.55rem; border-radius: 999px;
+      font-weight: 700; border: none; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: .6rem;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--brand-secondary);
+      border: 1px solid var(--border-soft);
+    }
+
+    section { padding: 4.75rem 0; }
+
+    .hero { padding: 4.8rem 0 4.2rem; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2.5rem; }
+    .hero h1 { font-size: 2.85rem; color: var(--brand-secondary); margin-bottom: 1.2rem; }
+    .hero-lead { font-size: 1.12rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+    .hero-disclaimer {
+      font-size: .85rem; color: var(--text-muted); max-width: 760px;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-panel {
+      background: var(--bg-card); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); border: 1px solid var(--border-soft);
+      padding: 2rem;
+    }
+
+    footer {
+      text-align: center; padding: 2rem 0 2.4rem;
+      font-size: 0.88rem; color: var(--text-muted);
+      border-top: 1px solid var(--border-soft);
+      background: rgba(255,255,255,0.55);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      nav { display: none; }
+    }
+    @media (max-width: 860px) {
+      .logo img { height: 78px; }
+      .hero h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header>
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="logo">
+        <img src="logo-punto-seguro.png" alt="Punto Seguro">
+      </div>
+      <div class="brand-text">
+        <strong>Evaluación profesional de riesgo en seguridad</strong>
+        <span>Criterio técnico aplicado por asesor autorizado</span>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#proceso">Proceso</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+
+    <a class="btn" href="#formulario">Solicitar evaluación →</a>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1>La seguridad no se decide por intuición.<br>Se evalúa con criterio.</h1>
+
+      <p class="hero-lead">
+        Punto Seguro es una evaluación profesional de riesgo en seguridad para negocios con local físico.
+        Detectamos vulnerabilidades reales antes de que se conviertan en un incidente.
+      </p>
+
+      <p class="hero-disclaimer">
+        Evaluación realizada por profesional del sector de la seguridad, colaborador de Securitas Direct España.
+        Servicio informativo sin obligación de contratación.
+      </p>
+
+      <div style="margin-top:1.2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <a class="btn" href="#formulario">Quiero mi evaluación</a>
+        <a class="btn btn-ghost" href="#proceso">Ver cómo funciona</a>
+      </div>
+    </div>
+
+    <aside class="hero-panel">
+      <h3>Qué obtienes exactamente</h3>
+      <p>
+        Una evaluación clara y rápida, orientada a decisión.
+        Sin presión comercial. Con información objetiva.
+      </p>
+      <ul style="margin-top:1rem; padding-left:1.1rem; color:var(--text-muted);">
+        <li>Diagnóstico presencial del riesgo real del local.</li>
+        <li>Clasificación: Bajo, Medio o Alto.</li>
+        <li>Informe PDF con recomendaciones priorizadas.</li>
+      </ul>
+      <p style="margin-top:1rem; font-size:.9rem; color:var(--text-muted);">
+        La evaluación no implica contratación. En caso de solicitar soluciones,
+        estas se gestionan exclusivamente a través de Securitas Direct.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<section id="proceso">
+  <div class="container">
+    <h2 style="text-align:center; margin-bottom:2rem;">Cómo funciona</h2>
+    <ol style="max-width:800px; margin:0 auto; color:var(--text-muted);">
+      <li>Solicitud de evaluación.</li>
+      <li>Visita presencial (15–20 minutos).</li>
+      <li>Dictamen profesional documentado.</li>
+      <li>Entrega de informe PDF.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2 style="text-align:center; margin-bottom:2rem;">Preguntas frecuentes</h2>
+
+    <details>
+      <summary>¿Esto es una venta encubierta?</summary>
+      <p>
+        No. Punto Seguro es una evaluación informativa cuyo objetivo es aportar claridad sobre el nivel de riesgo.
+        El profesional que la realiza es colaborador de Securitas Direct, lo que garantiza conocimiento real del sector.
+        La evaluación no obliga a contratar ningún servicio.
+      </p>
+    </details>
+
+    <details>
+      <summary>¿Qué ocurre después de la evaluación?</summary>
+      <p>
+        El cliente decide libremente cómo actuar. Si solicita información sobre soluciones de seguridad,
+        estas se ofrecen exclusivamente a través de Securitas Direct y bajo sus condiciones oficiales.
+      </p>
+    </details>
+  </div>
+</section>
+
+<section id="formulario">
+  <div class="container" style="max-width:720px;">
+    <h2>Solicitar evaluación Punto Seguro</h2>
+    <p style="color:var(--text-muted); margin-bottom:1.2rem;">
+      Datos mínimos para coordinar la visita. Sin compromiso.
+    </p>
+
+    <form action="https://hook.eu1.make.com/k0esriipv68520fapeymkdst7ous5r6t" method="POST">
+      <label>Nombre y apellidos
+        <input type="text" name="nombre_contacto" required>
+      </label>
+      <label>Tipo de negocio
+        <input type="text" name="tipo_negocio" required>
+      </label>
+      <label>Código postal
+        <input type="text" name="codigo_postal" required>
+      </label>
+      <label>Teléfono
+        <input type="tel" name="telefono" required>
+      </label>
+      <label>Email
+        <input type="email" name="email" required>
+      </label>
+
+      <label style="font-size:.85rem; color:var(--text-muted);">
+        <input type="checkbox" required>
+        Acepto que mis datos se utilicen para coordinar la evaluación y, si lo solicito,
+        para ser contactado por Securitas Direct España.
+      </label>
+
+      <button class="btn" type="submit">Enviar solicitud →</button>
+
+      <p style="font-size:.8rem; color:var(--text-muted); margin-top:1rem;">
+        Protección de datos: los datos facilitados se utilizarán exclusivamente para coordinar la evaluación.
+        En caso de solicitar información adicional, podrán ser tratados por Securitas Direct España, S.A.U.,
+        conforme a su Política de Privacidad.
+      </p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    © 2025 Punto Seguro · Iniciativa profesional desarrollada por asesor colaborador de Securitas Direct España
+  </p>
+  <p style="font-size:.75rem; max-width:960px; margin:1rem auto 0;">
+    Punto Seguro es un servicio de evaluación informativa realizado por asesor autorizado y colaborador de
+    Securitas Direct España, S.A.U. La evaluación no implica obligación de contratación.
+    Cualquier información sobre productos o servicios se realiza exclusivamente bajo los criterios y procesos
+    oficiales de Securitas Direct.
+  </p>
+</footer>
+
+</body>
+</html>

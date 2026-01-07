@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punto Seguro | El intruso no busca valor, busca oportunidad</title>
+  <meta name="description" content="La mayoría de robos no se producen por lo que hay dentro, sino por lo fácil que parece entrar y salir." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../../logo-punto-seguro.png" />
+
+  <style>
+    :root {
+      --bg-main: #f7f8fa;
+      --bg-card: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --brand-primary: #2b5cff;
+      --brand-secondary: #0f172a;
+      --border-soft: #e5e7eb;
+
+      --shadow-sm: 0 8px 30px rgba(0,0,0,0.05);
+      --shadow-md: 0 14px 45px rgba(0,0,0,0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 140px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      padding: .6rem .9rem;
+      border-radius: 12px;
+      z-index: 9999;
+      box-shadow: var(--shadow-sm);
+    }
+    .skip-link:focus { left: 14px; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      padding: 1rem 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 260px;
+    }
+    .logo img { height: 78px; width: auto; display: block; }
+    .back-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: .92rem;
+      padding: .5rem .6rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      height: 44px;
+      white-space: nowrap;
+    }
+    .back-link:hover { color: var(--brand-secondary); background: rgba(43,92,255,0.07); }
+
+    .btn {
+      background: var(--brand-primary);
+      color: #fff;
+      padding: 0.92rem 1.55rem;
+      border-radius: 999px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      box-shadow: 0 10px 25px rgba(43,92,255,0.22);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(43,92,255,0.26); }
+    .btn:active { transform: translateY(0); opacity: .95; }
+
+    main { padding: 4.2rem 0 3.2rem; }
+    .breadcrumb {
+      color: var(--text-muted);
+      font-size: .92rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+    .breadcrumb a { color: var(--brand-primary); text-decoration: none; font-weight: 700; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .article {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 2.6rem;
+      box-shadow: var(--shadow-md);
+    }
+    .article h1 {
+      color: var(--brand-secondary);
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+      font-size: 2.35rem;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem 1rem;
+      color: var(--text-muted);
+      font-size: .92rem;
+      font-weight: 600;
+      margin-bottom: 1.4rem;
+    }
+    .hero-image {
+      margin: 1.25rem 0 1.3rem;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+      background: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-image img {
+      display: block;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      max-height: min(480px, 55vh);
+    }
+    .article p { color: var(--text-muted); margin-top: .9rem; }
+    .article h2 {
+      color: var(--brand-secondary);
+      letter-spacing: -0.02em;
+      margin-top: 1.6rem;
+      font-size: 1.4rem;
+    }
+    .article ul {
+      margin-top: .85rem;
+      padding-left: 1.15rem;
+      color: var(--text-muted);
+      display: grid;
+      gap: .55rem;
+    }
+    .quote {
+      margin-top: 1.4rem;
+      padding: 1rem 1.1rem;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.03);
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .cta {
+      margin-top: 1.8rem;
+      padding-top: 1.6rem;
+      border-top: 1px dashed var(--border-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cta p { margin: 0; color: var(--text-muted); }
+
+    footer a { color: var(--brand-primary); text-decoration: none; font-weight: 700; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 860px) {
+      .container { padding: 0 1.25rem; }
+      .article { padding: 1.9rem; }
+      .article h1 { font-size: 2.05rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <a class="logo" href="../../index_compliance.html#main" aria-label="Ir al inicio de Punto Seguro">
+          <img src="../../logo-punto-seguro.png" alt="Punto Seguro">
+        </a>
+        <a class="back-link" href="../../blog.html" aria-label="Volver al blog">← Volver al blog</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="../../blog.html">Blog</a> · Busca oportunidad
+      </div>
+
+      <article class="article">
+        <h1>El intruso no busca valor, busca oportunidad</h1>
+
+        <div class="meta">
+          <span>Comportamiento</span><span>·</span>
+          <time datetime="2026-01-07">7 ene 2026</time><span>·</span>
+          <span>5 min lectura</span>
+        </div>
+
+        <figure class="hero-image"><img src="../../el_intruso_busca_oportunidad.png" alt="Análisis de oportunidad y comportamiento del intruso" loading="lazy" /></figure>
+
+        <p>Existe una creencia muy extendida:</p>
+        <p>“Han entrado porque había cosas de valor”.</p>
+        <p>En la mayoría de los casos, <b>no es cierto</b>.</p>
+        <p>El intruso no conoce tu vida, ni tus bienes, ni tu historia.</p>
+        <p>No sabe qué hay dentro… ni le importa demasiado.</p>
+        <h2>Cómo piensa realmente quien roba</h2>
+        <p>El proceso mental es simple y frío:</p>
+        <ul>
+        <li>¿Puedo entrar sin ser visto?</li>
+        <li>¿Cuánto tiempo tengo?</li>
+        <li>¿Qué pasa si alguien me detecta?</li>
+        <li>¿Puedo salir rápido?</li>
+        </ul>
+        <p>Si las respuestas son favorables, <b>la oportunidad existe</b>.</p>
+        <p>Y cuando existe, el valor pasa a segundo plano.</p>
+        <h2>El error de proteger solo lo “valioso”</h2>
+        <p>Muchos sistemas se diseñan pensando en proteger:</p>
+        <ul>
+        <li>Objetos caros</li>
+        <li>Zonas principales</li>
+        <li>Espacios “importantes”</li>
+        </ul>
+        <p>Mientras tanto, se descuidan:</p>
+        <ul>
+        <li>Accesos secundarios</li>
+        <li>Zonas de paso</li>
+        <li>Recorridos de entrada y salida</li>
+        </ul>
+        <p>El intruso no entra por donde está lo valioso.</p>
+        <p>Entra por donde <b>nadie está mirando</b>.</p>
+        <h2>Tiempo y reacción: las dos variables clave</h2>
+        <p>Para quien roba, hay dos factores decisivos:</p>
+        <p><b>Tiempo</b></p>
+        <ul>
+        <li>Cuánto tarda en acceder</li>
+        <li>Cuánto puede permanecer dentro</li>
+        </ul>
+        <p><b>Reacción</b></p>
+        <ul>
+        <li>Qué ocurre si alguien prueba</li>
+        <li>Si hay respuesta clara o no</li>
+        </ul>
+        <p>Cuando el tiempo es corto y la reacción es inmediata, la oportunidad desaparece.</p>
+        <p>Y con ella, el intento.</p>
+        <h2>Viviendas y negocios: mismo principio</h2>
+        <p>Da igual el contexto.</p>
+        <p><b>En viviendas</b>:</p>
+        <ul>
+        <li>Ausencias prolongadas</li>
+        <li>Rutinas previsibles</li>
+        <li>Falta de respuesta visible</li>
+        </ul>
+        <p><b>En negocios</b>:</p>
+        <ul>
+        <li>Horarios muertos</li>
+        <li>Cierres sin supervisión</li>
+        <li>Accesos traseros olvidados</li>
+        </ul>
+        <p>En ambos casos, el intruso no ve un lugar.</p>
+        <p>Ve una <b>oportunidad</b>.</p>
+        <h2>Seguridad inteligente = eliminar oportunidades</h2>
+        <p>La seguridad eficaz no consiste en blindarlo todo.</p>
+        <p>Consiste en <b>hacer que no merezca la pena intentarlo</b>.</p>
+        <p>Reducir accesos fáciles.</p>
+        <p>Aumentar percepción de control.</p>
+        <p>Provocar reacción inmediata.</p>
+        <p>👉 El intruso no busca valor.</p>
+        <p>Busca oportunidad.</p>
+        <p>Y cuando la oportunidad desaparece, también lo hace el riesgo.</p>
+
+        <div class="cta">
+          <p><b style="color: var(--brand-secondary);">Conclusión:</b> Reducir la oportunidad reduce el riesgo.</p>
+          <a class="btn" href="../../index_compliance.html#formulario">Solicitar evaluación</a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
+    <p style="margin:0 0 .4rem;">
+      © 2026 <b>Punto Seguro</b> · Iniciativa profesional desarrollada por asesor colaborador de Securitas Direct España
+    </p>
+
+    <p style="margin:0 0 .4rem;">
+      Punto Seguro es un servicio informativo de evaluación en materia de riesgo en seguridad.
+      La evaluación no implica obligación de contratación.
+      Si se solicita información sobre soluciones, el contacto y tratamiento de datos se realizará por
+      <b>Securitas Direct España, S.A.U.</b> conforme a sus políticas oficiales.
+    </p>
+
+    <p style="margin:.2rem 0 0;">
+      <a href="https://www.verisure.es/politica-privacidad" target="_blank" rel="noopener noreferrer">Política de privacidad</a>
+      ·
+      <a href="https://ventas.securitasdirect.es/socios/politica-de-cookies/" target="_blank" rel="noopener noreferrer">Política de cookies</a>
+      ·
+      <a href="https://www.verisure.es/aviso-legal" target="_blank" rel="noopener noreferrer">Aviso legal</a>
+      ·
+      <a href="https://www.securitasdirect.es/clientes-securitas-direct" target="_blank" rel="noopener noreferrer">Derechos y más información</a>
+      ·
+      <a href="https://www.securitasdirect.es/telefono-contacto" target="_blank" rel="noopener noreferrer">Contacto oficial</a>
+    </p>
+  </footer>
+</body>
+</html>

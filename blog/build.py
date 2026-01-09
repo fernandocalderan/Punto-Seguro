@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Dict, List, Tuple
-from urllib.parse import urldefrag
 import html
 import math
 import unicodedata
@@ -15,17 +14,8 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = ROOT / "blog" / "content" / "posts"
 POSTS_OUT_DIR = ROOT / "blog" / "posts"
-TEMPLATE_PATH = ROOT / "blog" / "templates" / "post.html"
 BLOG_INDEX_PATH = ROOT / "blog.html"
-
-POSTS_MARKER_START = "<!-- BLOG:POSTS_START -->"
-POSTS_MARKER_END = "<!-- BLOG:POSTS_END -->"
-QUICK_MARKER_START = "<!-- BLOG:QUICKREADS_START -->"
-QUICK_MARKER_END = "<!-- BLOG:QUICKREADS_END -->"
-NEW_MARKER_START = "<!-- BLOG:NEWLINK_START -->"
-NEW_MARKER_END = "<!-- BLOG:NEWLINK_END -->"
-SIDEBAR_MARKER_START = "<!-- BLOG:SIDEBAR_START -->"
-SIDEBAR_MARKER_END = "<!-- BLOG:SIDEBAR_END -->"
+INDEX_PATH = ROOT / "index.html"
 
 
 MONTHS_ES = {
@@ -210,8 +200,8 @@ def compute_conclusion(md: str) -> str:
             continue
         if line.startswith("👉"):
             line = line.lstrip("👉").strip()
-            return strip_md(line)[:180] or "Evaluar el riesgo aporta claridad para decidir."
-    return "Evaluar el riesgo aporta claridad para decidir."
+            return strip_md(line)[:180] or "Contrastar el riesgo aporta claridad para decidir."
+    return "Contrastar el riesgo aporta claridad para decidir."
 
 
 def md_to_html(md: str) -> str:
@@ -220,7 +210,7 @@ def md_to_html(md: str) -> str:
     i = 0
     in_list = False
 
-    def close_list():
+    def close_list() -> None:
         nonlocal in_list
         if in_list:
             out.append("</ul>")
@@ -239,17 +229,31 @@ def md_to_html(md: str) -> str:
             i += 1
             continue
 
+        if line.startswith(">"):
+            close_list()
+            quote = inline_format(line[1:].strip())
+            out.append(f"<div class=\"quote\">{quote}</div>")
+            i += 1
+            continue
+
         if line.startswith("## "):
             close_list()
-            out.append(f"<h2>{inline_format(line[3:].strip())}</h2>")
+            out.append(f"<h3>{inline_format(line[3:].strip())}</h3>")
+            i += 1
+            continue
+
+        if line.startswith("### "):
+            close_list()
+            out.append(f"<h4>{inline_format(line[4:].strip())}</h4>")
             i += 1
             continue
 
         if line.startswith("- "):
             if not in_list:
-                out.append("<ul>")
+                out.append("<ul class=\"checklist\">")
                 in_list = True
-            out.append(f"<li>{inline_format(line[2:].strip())}</li>")
+            item = inline_format(line[2:].strip())
+            out.append(f"<li><span class=\"check\">✓</span><span>{item}</span></li>")
             i += 1
             continue
 
@@ -324,179 +328,190 @@ def read_post(md_path: Path) -> Post:
     )
 
 
-def apply_template(template: str, mapping: Dict[str, str]) -> str:
-    out = template
-    for k, v in mapping.items():
-        out = out.replace(f"{{{{{k}}}}}", v)
-    return out
-
-
-def ensure_markers(text: str, start: str, end: str) -> None:
-    if start not in text or end not in text:
-        raise ValueError(f"Faltan marcadores {start} / {end} en blog.html")
-
-
-def replace_between(text: str, start: str, end: str, replacement: str) -> str:
-    ensure_markers(text, start, end)
-    pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.DOTALL)
-    return pattern.sub(start + "\n" + replacement + "\n" + end, text, count=1)
-
-
-def rel_image_for_post(image_path: str) -> str:
+def rel_image_for_post(image_path: str, prefix: str) -> str:
     if image_path.startswith(("http://", "https://")):
         return image_path
-    return "../../" + image_path.lstrip("/")
+    normalized = image_path.lstrip("/")
+    return f"{prefix}{normalized}" if normalized else image_path
 
 
-def render_post_html(post: Post, template: str) -> str:
+def prefix_relative_urls(base_html: str, prefix: str) -> str:
+    if not prefix:
+        return base_html
+
+    attr_re = re.compile(
+        r"(?P<attr>\b(?:href|src)\s*=\s*[\"'])(?P<url>[^\"']+)(?P<end>[\"'])",
+        re.IGNORECASE,
+    )
+
+    def needs_prefix(url: str) -> bool:
+        return not url.startswith(
+            ("#", "http://", "https://", "mailto:", "tel:", "data:", "/")
+        )
+
+    def apply_prefix(url: str) -> str:
+        if not needs_prefix(url) or url.startswith(prefix) or url.startswith("../"):
+            return url
+        normalized = url[2:] if url.startswith("./") else url
+        base = normalized
+        suffix = ""
+        for sep in ("#", "?"):
+            if sep in base:
+                base, rest = base.split(sep, 1)
+                suffix = sep + rest
+                break
+        if not base:
+            return url
+        return f"{prefix}{base}{suffix}"
+
+    def repl(match: re.Match[str]) -> str:
+        url = match.group("url")
+        updated = apply_prefix(url)
+        if updated == url:
+            return match.group(0)
+        return f"{match.group('attr')}{updated}{match.group('end')}"
+
+    return attr_re.sub(repl, base_html)
+
+
+def build_page(content_html: str, *, path_prefix: str = "") -> str:
+    base = INDEX_PATH.read_text(encoding="utf-8")
+    base = prefix_relative_urls(base, path_prefix)
+    pattern = re.compile(r"(<main id=\"main\">)(.*?)(</main>)", re.DOTALL)
+    if not pattern.search(base):
+        raise ValueError("No se encontró <main id=\"main\"> en index.html")
+    return pattern.sub(
+        lambda match: f"{match.group(1)}\n{content_html}\n{match.group(3)}",
+        base,
+        count=1,
+    )
+
+
+def expert_invite_block(asset_prefix: str = "") -> str:
+    return f"""
+    <section class="expert-invite">
+
+      <p class="expert-invite-intro">
+        Si necesitas contrastar si tu vivienda, local u oficina
+        está correctamente protegida,
+        puedes hablar directamente conmigo.
+      </p>
+
+      <a
+        href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+        class="expert-invite-action"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="{asset_prefix}logo_whatsapp.png" alt="WhatsApp">
+        <span>Hablar por WhatsApp</span>
+      </a>
+
+      <p class="expert-invite-note">
+        Conversación directa · Sin formularios · Sin compromiso<br>
+        Resolver una duda a tiempo evita decisiones equivocadas después.
+      </p>
+
+    </section>
+    """.strip()
+
+
+def render_post_content(post: Post, asset_prefix: str = "") -> str:
     hero_image = ""
     if post.image.strip():
         hero_image = (
-            '<figure class="hero-image">'
-            f'<img src="{html.escape(rel_image_for_post(post.image))}" alt="{html.escape(post.image_alt)}" loading="lazy" />'
-            "</figure>"
+            f"<div class=\"hero-claim\">\n"
+            f"  <img src=\"{html.escape(rel_image_for_post(post.image, asset_prefix))}\" alt=\"{html.escape(post.image_alt)}\">\n"
+            f"</div>"
         )
 
     content_html = md_to_html(post.body_md)
+    conclusion_html = f"<div class=\"quote\">{html.escape(post.conclusion)}</div>"
 
-    mapping = {
-        "PAGE_TITLE": html.escape(f"Punto Seguro | {post.title}"),
-        "META_DESCRIPTION": html.escape(post.excerpt),
-        "BREADCRUMB": html.escape(post.quick_title),
-        "TITLE": html.escape(post.title),
-        "TAG": html.escape(post.tag),
-        "DATE_ISO": html.escape(post.date_iso),
-        "DATE_HUMAN": html.escape(post.date_human),
-        "READ_TIME": str(post.read_time),
-        "HERO_IMAGE": hero_image,
-        "CONTENT": content_html,
-        "CONCLUSION": html.escape(post.conclusion),
-    }
-    return apply_template(template, mapping)
+    return f"""
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>{html.escape(post.title)}</h1>
+          <p class="hero-subtitle">{html.escape(post.excerpt)}</p>
+          <p class="fineprint">{html.escape(post.tag)} · {html.escape(post.date_human)} · {post.read_time} min</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="hero-panel">
+          {hero_image}
+          {content_html}
+          {conclusion_html}
+        </div>
+      </div>
+    </section>
+
+    {expert_invite_block(asset_prefix)}
+    """.strip()
 
 
 def render_blog_cards(posts: List[Post]) -> str:
     chunks: List[str] = []
     for post in posts:
-        title_attr = html.escape(post.title, quote=True)
-        excerpt_attr = html.escape(post.excerpt, quote=True)
-        tag_attr = html.escape(post.tag, quote=True)
+        image_html = ""
+        if post.image:
+            image_html = (
+                f"<img src=\"{html.escape(post.image)}\" alt=\"{html.escape(post.image_alt)}\">"
+            )
         chunks.append(
-            f'''          <article class="blog-card" data-title="{title_attr}" data-excerpt="{excerpt_attr}" data-tag="{tag_attr}">
-            <a href="{post.href}" aria-label="Leer: {html.escape(post.title)}">
-              <figure class="blog-card-media">
-                <img src="{html.escape(post.image)}" alt="{html.escape(post.image_alt)}" loading="lazy" />
-                <span class="blog-card-tag">{html.escape(post.tag)}</span>
-              </figure>
-              <div class="blog-card-body">
-                <h3 class="blog-card-title">{html.escape(post.title)}</h3>
-                <p class="blog-card-summary">{html.escape(post.excerpt)}</p>
-                <div class="blog-card-meta">
-                  <time datetime="{html.escape(post.date_iso)}">{html.escape(post.date_human)}</time>
-                  <span>{post.read_time} min lectura</span>
-                </div>
-              </div>
-            </a>
-          </article>'''
+            "\n".join(
+                [
+                    f"<a class=\"card\" href=\"{post.href}\">",
+                    f"  {image_html}" if image_html else "  ",
+                    f"  <h3>{html.escape(post.title)}</h3>",
+                    f"  <p>{html.escape(post.excerpt)}</p>",
+                    f"  <p class=\"fineprint\">{html.escape(post.tag)} · {html.escape(post.date_human)} · {post.read_time} min</p>",
+                    "</a>",
+                ]
+            )
         )
     return "\n".join(chunks)
 
 
-def render_quickreads(posts: List[Post], limit: int = 3) -> str:
-    chunks: List[str] = []
-    for post in posts[:limit]:
-        chunks.append(
-            f'''          <details>
-            <summary>{html.escape(post.quick_title)}</summary>
-            <p>{html.escape(post.quick_summary)}</p>
-            <p><a href="{post.href}">Leer artículo completo</a> · <a href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">Solicitar evaluación oficial ↗</a></p>
-          </details>'''
-        )
-    return "\n".join(chunks)
-
-def render_sidebar(posts_sorted: List[Post]) -> str:
-    popular = [p for p in posts_sorted if p.popular_rank is not None]
-    if popular:
-        popular_sorted = sorted(popular, key=lambda p: (p.popular_rank or 999999, p.date_iso, p.slug))
-        featured = popular_sorted[:3]
-        featured_title = "Más leídos"
-        featured_note = "Orden manual."
-    else:
-        featured = posts_sorted[:3]
-        featured_title = "Destacados"
-        featured_note = "Sin métricas públicas."
-
-    tag_counts: Dict[str, int] = {}
-    for p in posts_sorted:
-        tag_counts[p.tag] = tag_counts.get(p.tag, 0) + 1
-    tags_sorted = sorted(tag_counts.items(), key=lambda kv: (-kv[1], kv[0].lower()))
-
-    featured_items: List[str] = []
-    for p in featured:
-        featured_items.append(
-            f'''                  <li>
-                    <a href="{p.href}">
-                      <span class="hero-strip-link-title">{html.escape(p.quick_title)}</span>
-                      <span class="hero-strip-link-meta">{html.escape(p.tag)} · {p.read_time} min</span>
-                    </a>
-                  </li>'''
-        )
-
-    tags_items: List[str] = []
-    for tag, _ in tags_sorted[:8]:
-        tags_items.append(
-            f'''                <button type="button" class="hero-strip-tag" data-tag="{html.escape(tag, quote=True)}" aria-pressed="false">{html.escape(tag)}</button>'''
-        )
-
-    return f"""
-            <div class="hero-strip-inner">
-              <div>
-                <div class="hero-strip-head">
-                  <span class="hero-strip-title">{featured_title}</span>
-                  <button type="button" class="hero-strip-clear" data-clear-filters>Ver todo</button>
-                </div>
-                <ul class="hero-strip-links" aria-label="{featured_title}">
-{chr(10).join(featured_items)}
-                </ul>
-                <div class="hero-strip-note">{featured_note}</div>
-              </div>
-              <div>
-                <div class="hero-strip-head">
-                  <span class="hero-strip-title">Temas</span>
-                </div>
-                <div class="hero-strip-tags" aria-label="Filtrar por tema">
-{chr(10).join(tags_items)}
-                </div>
-              </div>
-            </div>
-""".strip("\n")
-
-
-def update_blog_html(blog_html: str, posts_sorted: List[Post]) -> str:
+def render_blog_content(posts_sorted: List[Post]) -> str:
     cards_html = render_blog_cards(posts_sorted)
-    quick_html = render_quickreads(posts_sorted, limit=3)
-    sidebar_html = render_sidebar(posts_sorted)
-
-    new_post = posts_sorted[0]
-    new_link_html = (
-        f'<a class="btn btn-ghost" href="{new_post.href}" '
-        f'aria-label="Leer el artículo: {html.escape(new_post.title)}">'
-        f'Nuevo: {html.escape(new_post.quick_title.lower())}</a>'
+    intro = (
+        "Criterio aplicado a casos reales para entender exposición, rutina y puntos ignorados."
     )
 
-    blog_html = replace_between(blog_html, POSTS_MARKER_START, POSTS_MARKER_END, cards_html)
-    blog_html = replace_between(blog_html, QUICK_MARKER_START, QUICK_MARKER_END, quick_html)
-    blog_html = replace_between(blog_html, NEW_MARKER_START, NEW_MARKER_END, new_link_html)
-    blog_html = replace_between(blog_html, SIDEBAR_MARKER_START, SIDEBAR_MARKER_END, sidebar_html)
-    return blog_html
+    return f"""
+    <section class=\"hero\">
+      <div class=\"container hero-grid\">
+        <div>
+          <h1>Blog Punto Seguro</h1>
+          <p class=\"hero-subtitle\">{html.escape(intro)}</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class=\"container\">
+        <div class=\"section-title\">
+          <h2>Últimas publicaciones</h2>
+          <p>Lecturas breves para detectar exposición real y evitar decisiones basadas en percepciones.</p>
+        </div>
+        <div class=\"grid\">
+          {cards_html}
+        </div>
+      </div>
+    </section>
+
+    {expert_invite_block()}
+    """.strip()
 
 
 def main() -> None:
     if not CONTENT_DIR.exists():
         raise SystemExit(f"No existe {CONTENT_DIR}")
     POSTS_OUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    template = TEMPLATE_PATH.read_text(encoding="utf-8")
 
     posts: List[Post] = []
     for md_path in sorted(CONTENT_DIR.glob("*.md")):
@@ -512,11 +527,10 @@ def main() -> None:
 
     for post in posts_sorted:
         out_path = POSTS_OUT_DIR / f"{post.slug}.html"
-        out_html = render_post_html(post, template)
+        out_html = build_page(render_post_content(post, asset_prefix="../../"), path_prefix="../../")
         out_path.write_text(out_html, encoding="utf-8")
 
-    blog_html = BLOG_INDEX_PATH.read_text(encoding="utf-8")
-    blog_html_updated = update_blog_html(blog_html, posts_sorted)
+    blog_html_updated = build_page(render_blog_content(posts_sorted))
     BLOG_INDEX_PATH.write_text(blog_html_updated, encoding="utf-8")
 
     print("OK")

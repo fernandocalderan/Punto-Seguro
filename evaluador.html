@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Punto Seguro | Criterio profesional para detectar exposición real a intrusión</title>
+
+  <meta name="description" content="Criterio profesional para identificar exposición real a intrusión en viviendas y negocios. Sitio informativo. Sin venta. Sin recogida de datos." />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #f7f8fa;
+      --bg-card: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --brand-primary: #2b5cff;
+      --brand-secondary: #0f172a;
+      --border-soft: #e5e7eb;
+
+      --shadow-sm: 0 8px 30px rgba(0,0,0,0.05);
+      --shadow-md: 0 14px 45px rgba(0,0,0,0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 140px;
+         }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      padding: .6rem .9rem;
+      border-radius: 12px;
+      z-index: 9999;
+      box-shadow: var(--shadow-sm);
+    }
+    .skip-link:focus { left: 14px; }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      padding: 1rem 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 260px;
+    }
+    .logo img {
+      height: 150px;
+      width: auto;
+      display: block;
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+    }
+    .brand-text strong {
+      color: var(--brand-secondary);
+      font-size: .98rem;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .brand-text span {
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.2;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: .92rem;
+      padding: .5rem .6rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      height: 44px;
+    }
+    nav a:hover { color: var(--brand-secondary); background: rgba(43,92,255,0.07); }
+
+    .header-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: .92rem;
+      padding: .5rem .6rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      height: 44px;
+      white-space: nowrap;
+    }
+    .header-link:hover { color: var(--brand-secondary); background: rgba(43,92,255,0.07); }
+    .header-whatsapp{
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      height: 44px;
+      padding: 0 .85rem 0 .65rem;
+      border-radius: 999px;
+      background: #25D366;
+      color: #ffffff;
+      font-size: .88rem;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(37,211,102,.28);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .header-whatsapp img{
+      width: 18px;
+      height: 18px;
+    }
+    .header-whatsapp:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(37,211,102,.38);
+    }
+    .header-whatsapp:active{
+      transform: translateY(0);
+      opacity: .95;
+    }
+
+    .btn {
+      background: var(--brand-primary);
+      color: #fff;
+      padding: 0.92rem 1.55rem;
+      border-radius: 999px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      box-shadow: 0 10px 25px rgba(43,92,255,0.22);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(43,92,255,0.26); }
+    .btn:active { transform: translateY(0); opacity: .95; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--brand-secondary);
+      border: 1px solid var(--border-soft);
+      box-shadow: none;
+      font-weight: 700;
+    }
+    .btn-ghost:hover { background: rgba(15,23,42,0.04); transform: none; }
+
+    /* Sections */
+    section { padding: 4.75rem 0; }
+
+    .section-title {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto 2.9rem;
+    }
+    .section-title h2 {
+      font-size: 2.1rem;
+      color: var(--brand-secondary);
+      letter-spacing: -0.02em;
+      margin-bottom: .85rem;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.02rem;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 4.8rem 0 4.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto -10%;
+      height: 520px;
+      background:
+        radial-gradient(600px 240px at 18% 30%, rgba(43,92,255,0.16), transparent 60%),
+        radial-gradient(520px 220px at 76% 20%, rgba(15,23,42,0.10), transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    .hero h1 {
+      font-size: 2.85rem;
+      line-height: 1.08;
+      color: var(--brand-secondary);
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+    }
+    .hero-subtitle {
+      font-size: 1.12rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin-bottom: 1.45rem;
+    }
+    .hero-claim {
+      background: rgba(255,255,255,0.85);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.2rem;
+      box-shadow: var(--shadow-sm);
+      margin: 1.1rem 0 1.6rem;
+    }
+    .hero-claim img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+    }
+    .hero-claim strong {
+      display: block;
+      color: var(--brand-secondary);
+      font-size: 1.02rem;
+      margin-bottom: .35rem;
+      letter-spacing: -0.01em;
+    }
+    .hero-claim p { color: var(--text-muted); font-size: .98rem; }
+
+    .hero-actions {
+      margin-top: 1.2rem;
+    }
+    #evaluador-punto-seguro {
+      background: #ffffff;
+    }
+    .evaluador-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 2rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .evaluador-field {
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+      font-weight: 600;
+      color: var(--brand-secondary);
+      font-size: .95rem;
+    }
+    .evaluador-field select {
+      width: 100%;
+      padding: .65rem .8rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: .95rem;
+      transition: all .3s ease;
+    }
+    .field-hint {
+      font-size: .82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .form-alerta {
+      display: none;
+      margin-top: .6rem;
+      padding: .65rem .8rem;
+      border-radius: 12px;
+      border: 1px solid rgba(251,191,36,.45);
+      background: rgba(251,191,36,.14);
+      color: #92400e;
+      font-size: .9rem;
+      font-weight: 600;
+    }
+    .form-alerta.activo {
+      display: block;
+    }
+    .formulario-panel {
+      display: none;
+      margin-top: 1.2rem;
+      border-radius: 16px;
+      transition: all .3s ease;
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    .formulario-panel.activo {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: panelFade .3s ease;
+      border: 1px solid rgba(15,23,42,.08);
+      background: rgba(248,250,252,.6);
+      padding: .8rem 1rem 1.2rem;
+    }
+    .evaluador-fieldset {
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 1rem 1.2rem 1.2rem;
+      margin: 1rem 0 0;
+      background: #ffffff;
+    }
+    .evaluador-fieldset legend {
+      padding: 0 .5rem;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--brand-secondary);
+    }
+    .evaluador-field select:focus-visible,
+    .btn-evaluador:focus-visible,
+    .btn-whatsapp-evaluador:focus-visible {
+      outline: 2px solid rgba(43,92,255,0.35);
+      outline-offset: 2px;
+    }
+    .evaluador-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1.5rem;
+      margin-top: .9rem;
+    }
+    .btn-evaluador {
+      margin-top: 1.4rem;
+      background-color: #25D366;
+      color: #ffffff;
+      font-weight: 800;
+      padding: .85rem 1.4rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(37,211,102,.25);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+    .btn-evaluador:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 36px rgba(37,211,102,.32);
+    }
+    .btn-evaluador:active { transform: translateY(0); opacity: .95; }
+    #resultado {
+      margin-top: 1.4rem;
+    }
+    #resultado:empty { display: none; }
+    .resultado-card {
+      background: #ffffff;
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      padding: 1.4rem 1.5rem;
+    }
+    .resultado-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-bottom: .6rem;
+    }
+    .resultado-score {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--brand-secondary);
+    }
+    .resultado-nivel {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .2rem .7rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .nivel-bajo {
+      background: rgba(16,185,129,.16);
+      color: #0f766e;
+    }
+    .nivel-medio {
+      background: rgba(245,158,11,.2);
+      color: #92400e;
+    }
+    .nivel-alto {
+      background: rgba(239,68,68,.16);
+      color: #991b1b;
+    }
+    .resultado-subtitle {
+      color: var(--text-muted);
+      font-size: .95rem;
+      margin-bottom: .9rem;
+    }
+    .resultado-factores-title {
+      color: var(--brand-secondary);
+      font-weight: 700;
+      margin-bottom: .4rem;
+    }
+    .resultado-factores {
+      list-style: none;
+      display: grid;
+      gap: .4rem;
+      margin: 0 0 .9rem;
+      padding: 0;
+      color: var(--text-muted);
+      font-size: .95rem;
+    }
+    .btn-whatsapp-evaluador {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #25D366;
+      color: white;
+      font-weight: bold;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      text-align: center;
+      text-decoration: none;
+    }
+    @keyframes panelFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .expert-invite{
+      margin-top: 3.5rem;
+      padding: 2.5rem 2rem;
+      border-top: 1px solid rgba(15,23,42,.08);
+      text-align: center;
+    }
+    .expert-invite-intro{
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.55;
+      max-width: 620px;
+      margin: 0 auto 1.6rem;
+      color: #0f172a;
+    }
+    .expert-invite-action{
+      display: inline-flex;
+      align-items: center;
+      gap: .9rem;
+      padding: .95rem 1.6rem;
+      border-radius: 999px;
+      background: #25D366;
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 12px 30px rgba(37,211,102,.35);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .expert-invite-action img{
+      width: 64px;
+      height: 64px;
+    }
+    .expert-invite-action:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 20px 50px rgba(37,211,102,.45);
+    }
+    .expert-invite-note{
+      margin-top: 1.2rem;
+      font-size: .9rem;
+      color: rgba(15,23,42,.65);
+      line-height: 1.45;
+    }
+    .microtrust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+      margin-top: 1.35rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: .9rem;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+    }
+    .pill b { color: var(--brand-secondary); font-weight: 800; }
+
+    /* Right hero card */
+    .hero-panel {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-soft);
+      padding: 2rem;
+      position: relative;
+    }
+    .hero-panel h3 {
+      color: var(--brand-secondary);
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+      margin-bottom: .6rem;
+    }
+    .hero-panel p { color: var(--text-muted); margin-bottom: 1.15rem; }
+    .checklist { list-style: none; display: grid; gap: .7rem; margin: 1rem 0 1.25rem; }
+    .checklist li {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: .75rem;
+      align-items: start;
+      color: var(--text-muted);
+      font-size: .95rem;
+    }
+    .check {
+      width: 18px; height: 18px;
+      border-radius: 6px;
+      background: rgba(43,92,255,0.12);
+      border: 1px solid rgba(43,92,255,0.25);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-primary);
+      font-weight: 900;
+      line-height: 1;
+      margin-top: 1px;
+      user-select: none;
+    }
+    .panel-note {
+      border-top: 1px dashed var(--border-soft);
+      padding-top: 1rem;
+      color: var(--text-muted);
+      font-size: .92rem;
+    }
+    .panel-note b { color: var(--brand-secondary); }
+    .fineprint {
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.45;
+      margin-top: 1.1rem;
+    }
+
+    /* Cards / grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      justify-content: center;
+    }
+    .card {
+      background: var(--bg-card);
+      padding: 2.2rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      position: relative;
+      overflow: hidden;
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, rgba(43,92,255,0.95), rgba(43,92,255,0.12));
+      opacity: .95;
+    }
+    .card h3 { color: var(--brand-secondary); margin-bottom: .6rem; letter-spacing: -0.01em; }
+    .card p { color: var(--text-muted); font-size: .96rem; }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+      margin-bottom: .85rem;
+    }
+
+    /* Two-col narrative */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .box h3 { color: var(--brand-secondary); margin-bottom: .55rem; }
+    .box p { color: var(--text-muted); }
+    .box ul { list-style: none; margin-top: 1.1rem; display: grid; gap: .75rem; }
+    .box li { color: var(--text-muted); font-size: .96rem; }
+
+    .quote {
+      margin-top: 1.4rem;
+      padding: 1rem 1.1rem;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.03);
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Advisor */
+    .advisor {
+      margin: 3rem auto;
+      max-width: 820px;
+    }
+    .advisor-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+    .advisor-photo {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #111;
+    }
+    .advisor-info h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    .advisor-role {
+      font-weight: 600;
+      color: #444;
+      margin: 0.2rem 0;
+    }
+    .advisor-desc {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    /* Process */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.6rem;
+    }
+    .step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 1.7rem 1.7rem 1.6rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .step .n {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: rgba(43,92,255,0.12);
+      border: 1px solid rgba(43,92,255,0.22);
+      color: var(--brand-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      margin-bottom: .8rem;
+      user-select: none;
+    }
+    .step h3 { color: var(--brand-secondary); margin-bottom: .5rem; }
+    .step p { color: var(--text-muted); font-size: .96rem; }
+
+    /* FAQ */
+    details {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+    }
+    details + details { margin-top: .9rem; }
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--brand-secondary);
+      letter-spacing: -0.01em;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    details p { margin-top: .7rem; color: var(--text-muted); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem 0 2.4rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-soft);
+      background: rgba(255,255,255,0.55);
+    }
+
+    /* Legal links */
+    footer a { color: var(--brand-primary); text-decoration: none; font-weight: 700; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-panel { position: relative; top: 0; }
+      nav { display: none; } /* simple: header limpio en móvil */
+      .header-whatsapp{ margin-left: auto; }
+    }
+    @media (max-width: 860px) {
+      .split { grid-template-columns: 1fr; }
+      .logo img { height: 78px; }
+      .brand { min-width: 0; }
+      .hero h1 { font-size: 2.2rem; }
+      .advisor-card { flex-direction: column; align-items: flex-start; }
+      .evaluador-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .expert-invite{
+        padding: 2rem 1.2rem;
+      }
+      .expert-invite-intro{
+        font-size: 1.05rem;
+      }
+      .expert-invite-action{
+        width: 100%;
+        justify-content: center;
+        font-size: 1.05rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Basado en tu index de referencia (colores + logo + tipografía). -->
+  <!-- Fuente: archivo adjunto index.html -->
+  <!-- :contentReference[oaicite:0]{index=0} -->
+
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header>
+	    <div class="container header-inner">
+	      <div class="brand">
+	        <div class="logo">
+	          <img src="logo-punto-seguro.png" alt="Punto Seguro">
+	        </div>
+	        <div class="brand-text">
+          <strong>Criterio profesional para detectar exposición real</strong>
+          <span>Referencia informativa aplicada por asesor de seguridad</span>
+	        </div>
+	      </div>
+
+      <nav aria-label="Navegación principal">
+        <a href="index.html#criterio">Criterio</a>
+        <a href="index.html#evaluamos">Qué revisar</a>
+        <a href="index.html#faq">Preguntas</a>
+      </nav>
+      <a
+        href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+        class="header-whatsapp"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Contactar por WhatsApp"
+      >
+        <img src="logo_whatsapp.png" alt="">
+        <span>WhatsApp</span>
+      </a>
+
+      <a class="header-link" href="blog.html" aria-label="Ir al blog de Punto Seguro">
+        Blog
+      </a>
+    </div>
+  </header>
+
+    <main id="main">
+    <section id="evaluador-punto-seguro">
+      <div class="container">
+        <div class="section-title">
+          <h2>Evaluador Punto Seguro</h2>
+          <p>Calcula en 30 segundos el riesgo real de robo en tu vivienda o comercio</p>
+        </div>
+
+        <div class="evaluador-card">
+          <form id="evaluador-form" onsubmit="event.preventDefault(); calcularRiesgo();" novalidate>
+            <div class="evaluador-field">
+              <label for="tipo-inmueble">Tipo de inmueble</label>
+              <select id="tipo-inmueble" name="tipo_inmueble" onchange="cambiarFormulario(this.value)" aria-label="Tipo de inmueble para evaluar" aria-describedby="hint-tipo" required tabindex="0">
+                <option value="">Selecciona tipo</option>
+                <option value="vivienda">Vivienda</option>
+                <option value="comercio">Comercio</option>
+              </select>
+              <small id="hint-tipo" class="field-hint">Elige el tipo para mostrar el formulario correspondiente.</small>
+            </div>
+
+            <div id="form-alerta" class="form-alerta" role="status" aria-live="polite"></div>
+
+            <div id="formulario-vivienda" class="formulario-panel" aria-hidden="true">
+              <fieldset class="evaluador-fieldset" aria-label="Datos de la vivienda">
+                <legend>Datos de la vivienda</legend>
+                <div class="evaluador-grid">
+                  <div class="evaluador-field">
+                    <label for="tipo_vivienda">Tipo de vivienda</label>
+                    <select id="tipo_vivienda" name="tipo_vivienda" aria-describedby="hint-tipo-vivienda" required tabindex="0">
+                      <option value="">Selecciona tipo de vivienda</option>
+                      <option value="casa">Casa</option>
+                      <option value="adosado">Adosado</option>
+                      <option value="piso_bajo">Piso bajo</option>
+                      <option value="piso_medio">Piso medio</option>
+                      <option value="piso_alto">Piso alto</option>
+                    </select>
+                    <small id="hint-tipo-vivienda" class="field-hint">Influye en la facilidad de acceso al inmueble.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="puerta">Tipo de puerta principal</label>
+                    <select id="puerta" name="puerta" aria-describedby="hint-puerta" required tabindex="0">
+                      <option value="">Selecciona puerta</option>
+                      <option value="blindada_certificada">Blindada certificada</option>
+                      <option value="acero_multipunto">Acero con cerradura multipunto</option>
+                      <option value="madera_maciza">Madera maciza</option>
+                      <option value="aluminio_simple">Aluminio o chapa simple</option>
+                      <option value="madera_hueca">Madera hueca</option>
+                    </select>
+                    <small id="hint-puerta" class="field-hint">Evalúa la resistencia del acceso principal.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="ventanas">Protección en ventanas accesibles</label>
+                    <select id="ventanas" name="ventanas" aria-describedby="hint-ventanas" required tabindex="0">
+                      <option value="">Selecciona protección</option>
+                      <option value="sensor_y_lamina">Sensor + lámina de seguridad</option>
+                      <option value="sensor_apertura">Sensor de apertura</option>
+                      <option value="lamina_seguridad">Lámina de seguridad</option>
+                      <option value="con_rejas">Rejas visibles</option>
+                      <option value="sin_proteccion">Sin protección visible</option>
+                    </select>
+                    <small id="hint-ventanas" class="field-hint">Indica si hay barreras o detección en puntos vulnerables.</small>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset class="evaluador-fieldset" aria-label="Seguridad y hábitos">
+                <legend>Seguridad y hábitos</legend>
+                <div class="evaluador-grid">
+                  <div class="evaluador-field">
+                    <label for="horas_vacia">Horas al día que la vivienda está vacía</label>
+                    <select id="horas_vacia" name="horas_vacia" aria-describedby="hint-horas" required tabindex="0">
+                      <option value="">Selecciona tramo</option>
+                      <option value="10plus">10+</option>
+                      <option value="6a10">6–10</option>
+                      <option value="menos6">&lt;6</option>
+                    </select>
+                    <small id="hint-horas" class="field-hint">A más horas sin presencia, mayor oportunidad.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="alarma_vivienda">Sistema de alarma</label>
+                    <select id="alarma_vivienda" name="alarma_vivienda" aria-describedby="hint-alarma-vivienda" required tabindex="0">
+                      <option value="">Selecciona alarma</option>
+                      <option value="con_respuesta">Con respuesta</option>
+                      <option value="con_aviso">Con aviso remoto</option>
+                      <option value="basica_local">Básica (sirena local)</option>
+                      <option value="ninguna">Sin alarma</option>
+                    </select>
+                    <small id="hint-alarma-vivienda" class="field-hint">Considera el nivel de respuesta o aviso.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="camaras">Cámaras de seguridad</label>
+                    <select id="camaras" name="camaras" aria-describedby="hint-camaras" required tabindex="0">
+                      <option value="">Selecciona cámaras</option>
+                      <option value="interior_exterior">Interior + exterior</option>
+                      <option value="exterior">Solo exterior</option>
+                      <option value="interior">Solo interior</option>
+                      <option value="no">No</option>
+                    </select>
+                    <small id="hint-camaras" class="field-hint">Ayudan a disuadir y registrar accesos.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="historial">Historial de robos en vivienda o edificio</label>
+                    <select id="historial" name="historial" aria-describedby="hint-historial" required tabindex="0">
+                      <option value="">Selecciona historial</option>
+                      <option value="si_yo">Sí en mi vivienda</option>
+                      <option value="si_vecinos">Sí en vecinos</option>
+                      <option value="no">No</option>
+                    </select>
+                    <small id="hint-historial" class="field-hint">Una zona con incidencias aumenta el atractivo.</small>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div id="formulario-comercio" class="formulario-panel" aria-hidden="true">
+              <fieldset class="evaluador-fieldset" aria-label="Acceso y cerramientos">
+                <legend>Acceso y cerramientos</legend>
+                <div class="evaluador-grid">
+                  <div class="evaluador-field">
+                    <label for="tipo_local">Tipo de local</label>
+                    <select id="tipo_local" name="tipo_local" aria-describedby="hint-tipo-local" required tabindex="0">
+                      <option value="">Selecciona tipo de local</option>
+                      <option value="calle">A pie de calle</option>
+                      <option value="galeria">Galería comercial</option>
+                      <option value="interior">Interior de edificio</option>
+                    </select>
+                    <small id="hint-tipo-local" class="field-hint">La visibilidad y acceso condicionan el riesgo.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="cierre">Sistema de cierre frontal</label>
+                    <select id="cierre" name="cierre" aria-describedby="hint-cierre" required tabindex="0">
+                      <option value="">Selecciona cierre</option>
+                      <option value="persiana_simple">Persiana lama simple</option>
+                      <option value="persiana_microperforada">Persiana microperforada</option>
+                      <option value="persiana_reforzada">Persiana ciega reforzada</option>
+                      <option value="cierre_seguridad">Cierre de seguridad motorizado</option>
+                    </select>
+                    <small id="hint-cierre" class="field-hint">Indica la resistencia del frente del local.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="cierre_interior">Sistema de cierre interior</label>
+                    <select id="cierre_interior" name="cierre_interior" aria-describedby="hint-cierre-interior" required tabindex="0">
+                      <option value="">Selecciona cierre interior</option>
+                      <option value="ninguno">Ninguno</option>
+                      <option value="cerradura_basica">Cerradura básica</option>
+                      <option value="cerradura_multipunto">Cerradura multipunto</option>
+                      <option value="reja_interior">Reja interior</option>
+                    </select>
+                    <small id="hint-cierre-interior" class="field-hint">Refuerzo adicional en caso de intrusión.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="lunas">Protección en lunas / escaparate</label>
+                    <select id="lunas" name="lunas" aria-describedby="hint-lunas" required tabindex="0">
+                      <option value="">Selecciona protección</option>
+                      <option value="sin_proteccion">Sin film ni reja</option>
+                      <option value="film_seguridad">Film de seguridad</option>
+                      <option value="reja">Reja interior/exterior</option>
+                      <option value="laminado">Cristal laminado</option>
+                    </select>
+                    <small id="hint-lunas" class="field-hint">Valora la resistencia del escaparate.</small>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset class="evaluador-fieldset" aria-label="Protección y atractivo">
+                <legend>Protección y atractivo</legend>
+                <div class="evaluador-grid">
+                  <div class="evaluador-field">
+                    <label for="alarma">Sistema de alarma actual</label>
+                    <select id="alarma" name="alarma" aria-describedby="hint-alarma" required tabindex="0">
+                      <option value="">Selecciona alarma</option>
+                      <option value="ninguna">Sin alarma</option>
+                      <option value="basica_local">Básica (sirena local)</option>
+                      <option value="con_aviso">Con aviso remoto</option>
+                      <option value="con_respuesta">Con respuesta</option>
+                    </select>
+                    <small id="hint-alarma" class="field-hint">Define el nivel de respuesta ante intrusión.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="actividad">Actividad del local</label>
+                    <select id="actividad" name="actividad" aria-describedby="hint-actividad" required tabindex="0">
+                      <option value="">Selecciona actividad</option>
+                      <option value="electronica">Electrónica</option>
+                      <option value="joyeria">Joyería</option>
+                      <option value="ropa">Ropa</option>
+                      <option value="alimentacion">Alimentación</option>
+                      <option value="oficina">Oficina</option>
+                      <option value="otros">Otros</option>
+                    </select>
+                    <small id="hint-actividad" class="field-hint">El tipo de producto determina el atractivo.</small>
+                  </div>
+                  <div class="evaluador-field">
+                    <label for="historial_local">Histórico de robos en el local o en la misma calle</label>
+                    <select id="historial_local" name="historial_local" aria-describedby="hint-historial-local" required tabindex="0">
+                      <option value="">Selecciona historial</option>
+                      <option value="si">Sí</option>
+                      <option value="no">No</option>
+                    </select>
+                    <small id="hint-historial-local" class="field-hint">Incidencias previas elevan la exposición.</small>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <button type="submit" class="btn-evaluador" aria-label="Calcular riesgo ahora" tabindex="0">Calcular riesgo ahora</button>
+          </form>
+
+          <div id="resultado" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
+    <p style="margin:0 0 .4rem;">
+      © 2026 <b>Punto Seguro</b> · Sitio informativo de concienciación en seguridad.
+      No se comercializan productos ni se recogen datos personales en esta web.
+      El contacto se realiza únicamente a iniciativa del usuario.
+    </p>
+  </footer>
+
+  <script>
+    const alertaEvaluador = document.getElementById("form-alerta");
+
+    function mostrarAlerta(mensaje) {
+      if (!alertaEvaluador) return;
+      if (mensaje) {
+        alertaEvaluador.textContent = mensaje;
+        alertaEvaluador.classList.add("activo");
+      } else {
+        alertaEvaluador.textContent = "";
+        alertaEvaluador.classList.remove("activo");
+      }
+    }
+
+    function resetCampos(contenedor) {
+      if (!contenedor) return;
+      contenedor.querySelectorAll("select").forEach((select) => {
+        select.selectedIndex = 0;
+      });
+    }
+
+    function setEstadoFormulario(contenedor, activo) {
+      if (!contenedor) return;
+      contenedor.classList.toggle("activo", activo);
+      contenedor.style.display = activo ? "block" : "none";
+      contenedor.setAttribute("aria-hidden", String(!activo));
+      contenedor.querySelectorAll("select").forEach((select) => {
+        select.disabled = !activo;
+      });
+    }
+
+    function cambiarFormulario(tipo) {
+      const vivienda = document.getElementById("formulario-vivienda");
+      const comercio = document.getElementById("formulario-comercio");
+
+      mostrarAlerta("");
+
+      if (tipo === "vivienda") {
+        setEstadoFormulario(vivienda, true);
+        setEstadoFormulario(comercio, false);
+        comercio.reset?.();
+        resetCampos(comercio);
+        return;
+      }
+
+      if (tipo === "comercio") {
+        setEstadoFormulario(vivienda, false);
+        setEstadoFormulario(comercio, true);
+        vivienda.reset?.();
+        resetCampos(vivienda);
+        return;
+      }
+
+      setEstadoFormulario(vivienda, false);
+      setEstadoFormulario(comercio, false);
+      resetCampos(vivienda);
+      resetCampos(comercio);
+    }
+
+    function validarFormularioActivo(tipoInmueble) {
+      if (!tipoInmueble) {
+        mostrarAlerta("Selecciona el tipo de inmueble antes de calcular el riesgo.");
+        document.getElementById("tipo-inmueble").focus();
+        return false;
+      }
+
+      const contenedor = tipoInmueble === "vivienda"
+        ? document.getElementById("formulario-vivienda")
+        : document.getElementById("formulario-comercio");
+      const selects = Array.from(contenedor.querySelectorAll("select"));
+      const incompleto = selects.find((select) => !select.value);
+
+      if (incompleto) {
+        mostrarAlerta("Completa todos los campos del formulario para continuar.");
+        incompleto.focus();
+        return false;
+      }
+
+      mostrarAlerta("");
+      return true;
+    }
+
+    cambiarFormulario(document.getElementById("tipo-inmueble").value);
+  </script>
+
+  <script>
+  function registrarFactor(factores, puntos, texto) {
+    factores.push({ puntos, texto });
+    return puntos;
+  }
+
+  function obtenerDatosVivienda() {
+    return {
+      tipoVivienda: document.getElementById("tipo_vivienda").value,
+      puerta: document.getElementById("puerta").value,
+      ventanas: document.getElementById("ventanas").value,
+      horasVacia: document.getElementById("horas_vacia").value,
+      alarma: document.getElementById("alarma_vivienda").value,
+      camaras: document.getElementById("camaras").value,
+      historial: document.getElementById("historial").value,
+    };
+  }
+
+  function obtenerDatosComercio() {
+    return {
+      tipoLocal: document.getElementById("tipo_local").value,
+      cierre: document.getElementById("cierre").value,
+      cierreInterior: document.getElementById("cierre_interior").value,
+      lunas: document.getElementById("lunas").value,
+      alarma: document.getElementById("alarma").value,
+      actividad: document.getElementById("actividad").value,
+      historialLocal: document.getElementById("historial_local").value,
+    };
+  }
+
+  function calcularVulnerabilidad(tipoInmueble, datos) {
+    let puntos = 0;
+    const factores = [];
+
+    if (tipoInmueble === "vivienda") {
+      const tipoMap = {
+        casa: { puntos: 14, texto: "Tipo de vivienda: casa independiente" },
+        adosado: { puntos: 10, texto: "Tipo de vivienda: adosado" },
+        piso_bajo: { puntos: 12, texto: "Tipo de vivienda: piso bajo" },
+        piso_medio: { puntos: 6, texto: "Tipo de vivienda: piso medio" },
+        piso_alto: { puntos: 3, texto: "Tipo de vivienda: piso alto/ático" },
+      };
+      const puertaMap = {
+        blindada_certificada: { puntos: 0, texto: "Puerta principal blindada certificada" },
+        acero_multipunto: { puntos: 4, texto: "Puerta principal de acero con cerradura multipunto" },
+        madera_maciza: { puntos: 7, texto: "Puerta principal de madera maciza (resistencia media)" },
+        aluminio_simple: { puntos: 12, texto: "Puerta principal de aluminio o chapa simple" },
+        madera_hueca: { puntos: 16, texto: "Puerta principal poco resistente (madera hueca)" },
+      };
+      const ventanasMap = {
+        sensor_y_lamina: { puntos: 2, texto: "Ventanas con sensor y lámina de seguridad" },
+        sensor_apertura: { puntos: 4, texto: "Ventanas con sensor de apertura sin refuerzo" },
+        lamina_seguridad: { puntos: 6, texto: "Ventanas con lámina de seguridad sin sensor" },
+        con_rejas: { puntos: 8, texto: "Ventanas con rejas visibles sin sensor" },
+        sin_proteccion: { puntos: 12, texto: "Ventanas sin protección visible" },
+      };
+
+      puntos += registrarFactor(factores, tipoMap[datos.tipoVivienda].puntos, tipoMap[datos.tipoVivienda].texto);
+      puntos += registrarFactor(factores, puertaMap[datos.puerta].puntos, puertaMap[datos.puerta].texto);
+      puntos += registrarFactor(factores, ventanasMap[datos.ventanas].puntos, ventanasMap[datos.ventanas].texto);
+    }
+
+    if (tipoInmueble === "comercio") {
+      const tipoLocalMap = {
+        calle: { puntos: 16, texto: "Local a pie de calle" },
+        galeria: { puntos: 10, texto: "Local en galería comercial" },
+        interior: { puntos: 6, texto: "Local interior de edificio" },
+      };
+      const cierreMap = {
+        persiana_simple: { puntos: 16, texto: "Persiana lama simple" },
+        persiana_microperforada: { puntos: 12, texto: "Persiana microperforada" },
+        persiana_reforzada: { puntos: 8, texto: "Persiana ciega reforzada" },
+        cierre_seguridad: { puntos: 4, texto: "Cierre motorizado de seguridad" },
+      };
+      const cierreInteriorMap = {
+        ninguno: { puntos: 10, texto: "Sin cierre interior complementario" },
+        cerradura_basica: { puntos: 7, texto: "Cierre interior con cerradura básica" },
+        cerradura_multipunto: { puntos: 4, texto: "Cierre interior con cerradura multipunto" },
+        reja_interior: { puntos: 2, texto: "Reja interior de protección" },
+      };
+      const lunasMap = {
+        sin_proteccion: { puntos: 12, texto: "Lunas sin film ni reja" },
+        film_seguridad: { puntos: 8, texto: "Lunas con film de seguridad" },
+        reja: { puntos: 5, texto: "Lunas con reja interior/exterior" },
+        laminado: { puntos: 3, texto: "Cristal laminado de seguridad" },
+      };
+
+      puntos += registrarFactor(factores, tipoLocalMap[datos.tipoLocal].puntos, tipoLocalMap[datos.tipoLocal].texto);
+      puntos += registrarFactor(factores, cierreMap[datos.cierre].puntos, cierreMap[datos.cierre].texto);
+      puntos += registrarFactor(factores, cierreInteriorMap[datos.cierreInterior].puntos, cierreInteriorMap[datos.cierreInterior].texto);
+      puntos += registrarFactor(factores, lunasMap[datos.lunas].puntos, lunasMap[datos.lunas].texto);
+    }
+
+    return { puntos, factores };
+  }
+
+  function calcularOportunidad(tipoInmueble, datos) {
+    let puntos = 0;
+    const factores = [];
+
+    if (tipoInmueble === "vivienda") {
+      const horasMap = {
+        "10plus": { puntos: 12, texto: "Vivienda vacía más de 10 horas al día" },
+        "6a10": { puntos: 8, texto: "Vivienda vacía entre 6 y 10 horas al día" },
+        menos6: { puntos: 4, texto: "Vivienda vacía menos de 6 horas al día" },
+      };
+      const alarmaMap = {
+        con_respuesta: { puntos: 2, texto: "Alarma con respuesta" },
+        con_aviso: { puntos: 5, texto: "Alarma con aviso remoto" },
+        basica_local: { puntos: 8, texto: "Alarma básica con sirena local" },
+        ninguna: { puntos: 12, texto: "Sin sistema de alarma" },
+      };
+      const camarasMap = {
+        interior_exterior: { puntos: 2, texto: "Cámaras interior y exterior" },
+        exterior: { puntos: 4, texto: "Cámaras solo exteriores" },
+        interior: { puntos: 6, texto: "Cámaras solo interiores" },
+        no: { puntos: 8, texto: "Sin cámaras de seguridad" },
+      };
+
+      puntos += registrarFactor(factores, horasMap[datos.horasVacia].puntos, horasMap[datos.horasVacia].texto);
+      puntos += registrarFactor(factores, alarmaMap[datos.alarma].puntos, alarmaMap[datos.alarma].texto);
+      puntos += registrarFactor(factores, camarasMap[datos.camaras].puntos, camarasMap[datos.camaras].texto);
+    }
+
+    if (tipoInmueble === "comercio") {
+      const alarmaMap = {
+        ninguna: { puntos: 14, texto: "Sin sistema de alarma" },
+        basica_local: { puntos: 9, texto: "Alarma básica con sirena local" },
+        con_aviso: { puntos: 5, texto: "Alarma con aviso remoto" },
+        con_respuesta: { puntos: 3, texto: "Alarma con respuesta" },
+      };
+
+      puntos += registrarFactor(factores, alarmaMap[datos.alarma].puntos, alarmaMap[datos.alarma].texto);
+    }
+
+    return { puntos, factores };
+  }
+
+  function calcularAtractivo(tipoInmueble, datos) {
+    let puntos = 0;
+    const factores = [];
+
+    if (tipoInmueble === "vivienda") {
+      const historialMap = {
+        si_yo: { puntos: 10, texto: "Historial de robos en la vivienda" },
+        si_vecinos: { puntos: 6, texto: "Historial de robos en la zona/vecinos" },
+        no: { puntos: 2, texto: "Sin historial reciente de robos" },
+      };
+
+      puntos += registrarFactor(factores, historialMap[datos.historial].puntos, historialMap[datos.historial].texto);
+    }
+
+    if (tipoInmueble === "comercio") {
+      const actividadMap = {
+        joyeria: { puntos: 18, texto: "Actividad de alto valor (joyería)" },
+        electronica: { puntos: 18, texto: "Actividad de alto valor (electrónica)" },
+        ropa: { puntos: 10, texto: "Actividad con stock atractivo (ropa)" },
+        alimentacion: { puntos: 10, texto: "Actividad con stock atractivo (alimentación)" },
+        oficina: { puntos: 6, texto: "Actividad de oficina" },
+        otros: { puntos: 6, texto: "Actividad general" },
+      };
+      const historialMap = {
+        si: { puntos: 8, texto: "Histórico de robos en la zona" },
+        no: { puntos: 2, texto: "Sin histórico reciente de robos" },
+      };
+
+      puntos += registrarFactor(factores, actividadMap[datos.actividad].puntos, actividadMap[datos.actividad].texto);
+      puntos += registrarFactor(factores, historialMap[datos.historialLocal].puntos, historialMap[datos.historialLocal].texto);
+    }
+
+    return { puntos, factores };
+  }
+
+  function calcularRiesgo() {
+    const tipoInmueble = document.getElementById("tipo-inmueble").value;
+    if (!validarFormularioActivo(tipoInmueble)) return;
+    const datos = tipoInmueble === "vivienda" ? obtenerDatosVivienda() : obtenerDatosComercio();
+
+    // Cálculo modular por ejes del modelo
+    const vulnerabilidad = calcularVulnerabilidad(tipoInmueble, datos);
+    const oportunidad = calcularOportunidad(tipoInmueble, datos);
+    const atractivo = calcularAtractivo(tipoInmueble, datos);
+
+    const riesgoBruto = vulnerabilidad.puntos + oportunidad.puntos + atractivo.puntos;
+    const riesgoTotal = Math.min(100, Math.round(riesgoBruto));
+
+    let nivel = "";
+    if (riesgoTotal < 35) nivel = "BAJO";
+    else if (riesgoTotal <= 65) nivel = "MEDIO";
+    else nivel = "ALTO";
+
+    const nivelClass = `nivel-${nivel.toLowerCase()}`;
+    const factores = [
+      ...vulnerabilidad.factores,
+      ...oportunidad.factores,
+      ...atractivo.factores,
+    ];
+    const factoresTop = factores
+      .sort((a, b) => b.puntos - a.puntos)
+      .slice(0, 3);
+    const factoresHtml = factoresTop
+      .map((factor) => `<li>✖ ${factor.texto}</li>`)
+      .join("");
+
+    document.getElementById("resultado").innerHTML = `
+      <div class="resultado-card">
+        <div class="resultado-header">
+          <div class="resultado-score">Riesgo estimado: ${riesgoTotal} / 100</div>
+          <span class="resultado-nivel ${nivelClass}">${nivel}</span>
+        </div>
+        <p class="resultado-subtitle">
+          Análisis basado en vulnerabilidad, oportunidad y atractivo del inmueble.
+        </p>
+        <div class="resultado-factores-title">Factores de mayor impacto</div>
+        <ul class="resultado-factores">
+          ${factoresHtml}
+        </ul>
+        <a href="https://wa.me/TU_NUMERO?text=Hola,%20he%20hecho%20el%20Evaluador%20Punto%20Seguro.%20Mi%20riesgo%20es%20${riesgoTotal}%20(${nivel})."
+           target="_blank"
+           class="btn-whatsapp-evaluador">
+           Hablar con un Asesor Punto Seguro
+        </a>
+      </div>
+    `;
+  }
+  </script>
+
+</body>
+</html>

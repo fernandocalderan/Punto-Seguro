@@ -240,11 +240,46 @@
     .hero-claim p { color: var(--text-muted); font-size: .98rem; }
 
     .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
       margin-top: 1.2rem;
+    }
+    .cta-panel {
+      display: grid;
+      gap: .65rem;
+      padding: 1.1rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow-sm);
+      width: 100%;
+      max-width: 560px;
+    }
+    .cta-primary {
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .85rem 1.1rem;
+      border-radius: 999px;
+      background: #ecf8f1;
+      border: 1px solid #cfe9db;
+      color: #0f5b33;
+      font-weight: 700;
+      text-decoration: none;
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp img {
+      width: 20px;
+      height: 20px;
+    }
+    .cta-whatsapp:hover { background: #e2f4ea; }
+    .cta-note {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .9rem;
     }
     .microtrust {
       display: flex;
@@ -374,6 +409,41 @@
       border: 1px solid var(--border-soft);
       color: var(--text-muted);
       font-style: italic;
+    }
+
+    /* Advisor */
+    .advisor {
+      margin: 3rem auto;
+      max-width: 820px;
+    }
+    .advisor-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+    .advisor-photo {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #111;
+    }
+    .advisor-info h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    .advisor-role {
+      font-weight: 600;
+      color: #444;
+      margin: 0.2rem 0;
+    }
+    .advisor-desc {
+      font-size: 0.95rem;
+      color: #555;
     }
 
     /* Process */
@@ -519,6 +589,7 @@
       .logo img { height: 78px; }
       .brand { min-width: 0; }
       .hero h1 { font-size: 2.2rem; }
+      .advisor-card { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -566,17 +637,48 @@
           </h1>
 
           <p class="hero-subtitle">
-            Evaluación profesional de riesgo para viviendas y negocios con local físico.
+            Punto Seguro es una marca educativa que ofrece una evaluación informativa orientativa para viviendas y negocios con local físico.
           </p>
 
-          <div class="hero-actions">
-            <a class="btn" href="#formulario">Solicitar evaluación</a>
-          </div>
+          <section class="advisor">
+            <div class="advisor-card">
+              <img src="foto_perfil.jpeg" alt="Fernando – Asesor de Seguridad Securitas Direct" class="advisor-photo">
 
-          <div class="microtrust" aria-label="Puntos clave del servicio">
-            <div class="pill"><b>15–20 min</b> · Presencial</div>
-            <div class="pill"><b>Dictamen claro:</b> Bajo / Medio / Alto</div>
-            <div class="pill"><b>Sin</b> compromiso</div>
+              <div class="advisor-info">
+                <h3>Fernando Aringhieri Calderan</h3>
+                <p class="advisor-role">Asesor de Seguridad · Securitas Direct</p>
+                <p class="advisor-desc">
+                  Evaluación orientativa y acompañamiento profesional en decisiones de seguridad
+                  para viviendas y negocios.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="hero-actions">
+            <div class="cta-panel">
+              <a
+                href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB"
+                class="btn cta-primary"
+              >
+                Solicitar evaluación ↗
+              </a>
+              <p class="cta-note">
+                Al continuar accederás a la web oficial de Securitas Direct para completar la solicitud.
+              </p>
+              <a
+                href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20una%20evaluación%20de%20seguridad"
+                class="cta-whatsapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="logo_whatsapp.png" alt="WhatsApp">
+                Hablar por WhatsApp con asesor ↗
+              </a>
+              <p class="cta-note">
+                Canal directo con asesor.
+              </p>
+            </div>
           </div>
         </div>
 	      </div>
@@ -589,8 +691,8 @@
           <h3>Qué obtienes</h3>
 
           <ul class="checklist" style="margin-top: .85rem;">
-            <li><span class="check">✓</span><span>Diagnóstico presencial del riesgo real.</span></li>
-            <li><span class="check">✓</span><span>Clasificación clara: <b>Bajo</b> · <b>Medio</b> · <b>Alto</b>.</span></li>
+            <li><span class="check">✓</span><span>Análisis preliminar in situ del riesgo real.</span></li>
+            <li><span class="check">✓</span><span>Criterio inicial: <b>Bajo</b> · <b>Medio</b> · <b>Alto</b>.</span></li>
             <li><span class="check">✓</span><span>Recomendaciones priorizadas.</span></li>
           </ul>
 
@@ -603,7 +705,7 @@
           </div>
 
           <p class="fineprint">
-            Evaluación informativa realizada por profesional del sector de la seguridad, colaborador de Securitas Direct España.
+            Evaluación informativa orientativa realizada por profesional del sector de la seguridad, colaborador de Securitas Direct España.
             Sin obligación de contratación.
           </p>
 
@@ -646,9 +748,9 @@
     <section>
       <div class="container">
         <div class="section-title">
-          <h2>Para qué sirve el dictamen</h2>
+          <h2>Para qué sirve el análisis preliminar</h2>
           <p>
-            El dictamen Punto Seguro convierte la percepción en un criterio profesional documentado.
+            El análisis preliminar Punto Seguro convierte la percepción en un criterio inicial documentado.
             Útil para decidir, priorizar y justificar acciones con claridad.
           </p>
         </div>
@@ -670,7 +772,7 @@
 
 	        <div class="section-title" style="margin-top:2.8rem; margin-bottom:0;">
 	          <p>
-		            A partir del dictamen, el propietario o responsable decide cómo actuar.
+		            A partir del análisis preliminar, el propietario o responsable decide cómo actuar.
 		            En caso de que el cliente lo solicite, se le informará de las soluciones disponibles en Securitas Direct,
 		            siempre bajo los criterios comerciales y contractuales de la compañía.
 	          </p>
@@ -688,43 +790,40 @@
             sino por puntos ignorados, rutinas previsibles y entorno mal evaluado.
           </p>
           <p style="margin-top:.8rem;">
-            Medimos exposición, oportunidad y rutina. Y lo traducimos en un dictamen claro.
+            Medimos exposición, oportunidad y rutina. Y lo traducimos en un análisis preliminar claro.
           </p>
         </div>
 
-        <details style="max-width: 980px; margin: 0 auto;">
-          <summary>Ver el criterio completo</summary>
-          <div class="split" style="margin-top: 1.2rem;">
-            <div class="box">
-              <h3>Lo que suele fallar</h3>
-              <p>
-                La mayoría de negocios y viviendas no se exponen por “falta de medidas”, sino por puntos ignorados,
-                hábitos previsibles y entorno no considerado.
-              </p>
-              <p style="margin-top:.85rem;">
-                <b>En la mayoría de incidentes recientes, el acceso no fue forzado. Fue ignorado.</b>
-              </p>
-              <ul>
-                <li><span class="check">✓</span> Cerramientos que “parecen” sólidos, pero no resisten un ataque real.</li>
-                <li><span class="check">✓</span> Rutinas repetidas (cierres, llegadas/salidas, horarios) fáciles de anticipar.</li>
-                <li><span class="check">✓</span> Zonas de baja visibilidad, iluminación deficiente o accesos secundarios olvidados.</li>
-              </ul>
-            </div>
-
-            <div class="box">
-              <h3>Qué medimos de verdad</h3>
-              <p>
-                El riesgo de allanamiento se reduce cuando aumentas el “coste” de la intrusión:
-                tiempo, dificultad, visibilidad y control operativo.
-              </p>
-              <ul>
-                <li><span class="check">✓</span> Tiempo y facilidad de acceso (puertas, ventanas, puntos débiles).</li>
-                <li><span class="check">✓</span> Visibilidad del acto (entorno, iluminación, tránsito).</li>
-                <li><span class="check">✓</span> Patrones operativos (aperturas, cierres, ausencias, hábitos).</li>
-              </ul>
-            </div>
+        <div class="split" style="margin-top: 1.2rem;">
+          <div class="box">
+            <h3>Lo que suele fallar</h3>
+            <p>
+              La mayoría de negocios y viviendas no se exponen por “falta de medidas”, sino por puntos ignorados,
+              hábitos previsibles y entorno no considerado.
+            </p>
+            <p style="margin-top:.85rem;">
+              <b>En la mayoría de incidentes recientes, el acceso no fue forzado. Fue ignorado.</b>
+            </p>
+            <ul>
+              <li><span class="check">✓</span> Cerramientos que “parecen” sólidos, pero no resisten un ataque real.</li>
+              <li><span class="check">✓</span> Rutinas repetidas (cierres, llegadas/salidas, horarios) fáciles de anticipar.</li>
+              <li><span class="check">✓</span> Zonas de baja visibilidad, iluminación deficiente o accesos secundarios olvidados.</li>
+            </ul>
           </div>
-        </details>
+
+          <div class="box">
+            <h3>Qué medimos de verdad</h3>
+            <p>
+              El riesgo de allanamiento se reduce cuando aumentas el “coste” de la intrusión:
+              tiempo, dificultad, visibilidad y control operativo.
+            </p>
+            <ul>
+              <li><span class="check">✓</span> Tiempo y facilidad de acceso (puertas, ventanas, puntos débiles).</li>
+              <li><span class="check">✓</span> Visibilidad del acto (entorno, iluminación, tránsito).</li>
+              <li><span class="check">✓</span> Patrones operativos (aperturas, cierres, ausencias, hábitos).</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -734,7 +833,7 @@
         <div class="section-title">
           <h2>Cómo funciona</h2>
           <p>
-            Proceso simple, sin fricción. La evaluación es presencial, breve y orientada a resultado.
+            Proceso simple, sin fricción. La evaluación informativa orientativa es breve y orientada a resultado.
           </p>
         </div>
 
@@ -742,17 +841,17 @@
           <div class="step">
             <div class="n">1</div>
             <h3>Solicitud</h3>
-            <p>Rellenas el formulario con los datos básicos. Contactamos para coordinar la visita.</p>
+            <p>Inicias la solicitud en la web oficial de Securitas Direct o contactas por WhatsApp para coordinar la visita.</p>
           </div>
 	          <div class="step">
 	            <div class="n">2</div>
-	            <h3>Evaluación presencial</h3>
+	            <h3>Evaluación informativa orientativa</h3>
 	            <p>15–20 minutos in situ. Observación de accesos, rutinas y entorno sin interrumpir tu actividad o rutina.</p>
 	          </div>
           <div class="step">
             <div class="n">3</div>
-            <h3>Dictamen profesional</h3>
-            <p>Clasificación clara del riesgo: Bajo · Medio · Alto (sin términos ambiguos).</p>
+            <h3>Análisis preliminar</h3>
+            <p>Criterio inicial del riesgo: Bajo · Medio · Alto (sin términos ambiguos).</p>
           </div>
           <div class="step">
             <div class="n">4</div>
@@ -787,7 +886,7 @@
 	              Si el cliente desea información sobre soluciones de seguridad, estas se ofrecen exclusivamente a través de Securitas Direct y bajo sus condiciones oficiales.
 	            </p>
               <p>
-                De hecho, muchos clientes usan el dictamen solo para decidir qué NO hacer.
+                De hecho, muchos clientes usan el análisis preliminar solo para decidir qué NO hacer.
               </p>
 	          </details>
 
@@ -806,7 +905,7 @@
 
 	          <details>
 	            <summary>¿Qué incluye el informe PDF?</summary>
-	            <p>Un <b>dictamen (Bajo/Medio/Alto) y recomendaciones priorizadas</b>, claras y aplicables según lo observado en el inmueble.</p>
+	            <p>Un <b>criterio inicial (Bajo/Medio/Alto) y recomendaciones priorizadas</b>, claras y aplicables según lo observado en el inmueble.</p>
 	          </details>
 
 	          <details>
@@ -815,14 +914,14 @@
 	          </details>
 
 	          <details>
-	            <summary>¿Qué datos se piden y para qué?</summary>
-	            <p>Los <b>mínimos para coordinar la evaluación</b>: contacto, tipo de inmueble y zona (código postal). Se usan solo para concertar la visita.</p>
+	            <summary>¿Se recogen datos en esta web?</summary>
+	            <p>No. Esta landing no captura datos. La solicitud se completa en la web oficial de Securitas Direct o por WhatsApp con el asesor.</p>
 	          </details>
         </div>
       </div>
     </section>
 
-    <!-- FORM -->
+    <!-- CTA FINAL -->
     <section id="formulario">
       <div class="container">
         <div class="fit-block" aria-label="Esto es para ti si">
@@ -835,83 +934,36 @@
         </div>
 
         <div class="form-wrap">
-          <div class="form-box" aria-label="Formulario de solicitud">
-            <h2>Solicitar evaluación</h2>
+          <div class="form-box" aria-label="Solicitud en web oficial">
+            <h2>Solicitar evaluación en la web oficial</h2>
             <p>
-              Te pedimos lo justo para coordinar la visita. <b>Sin compromiso</b>.
+              Esta web no recoge datos. Para iniciar la solicitud, accederás a la <b>web oficial de Securitas Direct</b> o podrás escribir por <b>WhatsApp directamente al asesor.</b>
             </p>
 
-            <form
-	      action="https://hook.eu1.make.com/k0esriipv68520fapeymkdst7ous5r6t"
-              method="POST"				
-	    >
-              <div class="field">
-                <label for="nombre_contacto">Nombre y apellidos</label>
-                <input id="nombre_contacto" type="text" name="nombre_contacto" placeholder="Ej.: Marta López" required>
-              </div>
-
-              <div class="row2">
-                <div class="field">
-	                  <label for="tipo_negocio">Tipo de inmueble</label>
-	                  <select id="tipo_negocio" name="tipo_negocio" required>
-	                    <option value="">Selecciona una opción</option>
-	                    <option>Vivienda (piso)</option>
-	                    <option>Casa / Chalet</option>
-	                    <option>Clínica</option>
-	                    <option>Restaurante</option>
-	                    <option>Comercio</option>
-	                    <option>Oficina</option>
-	                    <option>Taller</option>
-	                    <option>Otro</option>
-	                  </select>
-                </div>
-
-                <div class="field">
-                  <label for="codigo_postal">Código Postal</label>
-                  <input id="codigo_postal" type="text" name="codigo_postal" placeholder="Ej.: 08007" required>
-                </div>
-              </div>
-
-              <div class="row2">
-                <div class="field">
-                  <label for="telefono">Teléfono</label>
-                  <input id="telefono" type="tel" name="telefono" placeholder="Ej.: 600 123 456" required>
-                </div>
-
-	                <div class="field">
-	                  <label for="email">Email</label>
-	                  <input id="email" type="email" name="email" placeholder="Ej.: contacto@email.com" required>
-	                </div>
-	              </div>
-
-	              <div class="field">
-	                <label for="comentarios">Observaciones (opcional)</label>
-	                <textarea id="comentarios" name="comentarios" placeholder="Ej.: acceso trasero, horario nocturno, incidencias en la zona..."></textarea>
-	              </div>
-
-	              <div class="field">
-	                <label>
-	                  <input type="checkbox" required>
-	                  Acepto que mis datos se utilicen para coordinar la evaluación y, si lo solicito, para ser contactado por Securitas Direct España, S.A.U.
-                    He leído la <a href="https://www.verisure.es/politica-privacidad" target="_blank" rel="noopener noreferrer">Política de privacidad</a> y la
-                    <a href="https://ventas.securitasdirect.es/socios/politica-de-cookies/" target="_blank" rel="noopener noreferrer">Política de cookies</a>.
-	                </label>
-	              </div>
-
-	              <button type="submit" class="btn" aria-label="Solicitar evaluación">
-	                Solicitar evaluación
-	                <span aria-hidden="true">→</span>
-	              </button>
-
-	              <div class="form-meta">
-	                <b>Protección de datos:</b> los datos facilitados se utilizarán para coordinar la evaluación solicitada.
-	                Si solicitas información sobre soluciones de seguridad, tus datos podrán ser tratados por <b>Securitas Direct España, S.A.U.</b> conforme a su
-                  <a href="https://www.verisure.es/politica-privacidad" target="_blank" rel="noopener noreferrer">Política de privacidad</a>.
-                  Consulta también la <a href="https://ventas.securitasdirect.es/socios/politica-de-cookies/" target="_blank" rel="noopener noreferrer">Política de cookies</a> y el
-                  <a href="https://www.verisure.es/aviso-legal" target="_blank" rel="noopener noreferrer">Aviso legal</a>.
-	              </div>
-	            </form>
-	          </div>
+            <div class="cta-panel" style="margin-top: 1rem;">
+              <a
+                href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB"
+                class="btn cta-primary"
+              >
+                Solicitar evaluación en la web oficial ↗
+              </a>
+              <p class="cta-note">
+                Accederás a la web oficial de Securitas Direct para completar la solicitud.
+              </p>
+              <a
+                href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20una%20evaluación%20de%20seguridad"
+                class="cta-whatsapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="logo_whatsapp.png" alt="WhatsApp">
+                Hablar por WhatsApp con asesor ↗
+              </a>
+              <p class="cta-note">
+                Canal directo con asesor.
+              </p>
+            </div>
+          </div>
 
         </div>
       </div>

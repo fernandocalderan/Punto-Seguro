@@ -409,7 +409,7 @@ def render_quickreads(posts: List[Post], limit: int = 3) -> str:
             f'''          <details>
             <summary>{html.escape(post.quick_title)}</summary>
             <p>{html.escape(post.quick_summary)}</p>
-            <p><a href="{post.href}">Leer artículo completo</a> · <a href="index_compliance.html#formulario">Solicitar evaluación</a></p>
+            <p><a href="{post.href}">Leer artículo completo</a> · <a href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">Solicitar evaluación oficial ↗</a></p>
           </details>'''
         )
     return "\n".join(chunks)

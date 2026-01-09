@@ -104,6 +104,46 @@
     }
     .btn-ghost:hover { background: rgba(15,23,42,0.04); transform: none; }
 
+    .cta-panel {
+      display: grid;
+      gap: .65rem;
+      padding: 1.1rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow-sm);
+      width: 100%;
+      max-width: 560px;
+    }
+    .cta-primary {
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .85rem 1.1rem;
+      border-radius: 999px;
+      background: #ecf8f1;
+      border: 1px solid #cfe9db;
+      color: #0f5b33;
+      font-weight: 700;
+      text-decoration: none;
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp img {
+      width: 20px;
+      height: 20px;
+    }
+    .cta-whatsapp:hover { background: #e2f4ea; }
+    .cta-note {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .9rem;
+    }
+
     /* Header */
     header {
       position: sticky;
@@ -193,26 +233,23 @@
       font-size: 1.02rem;
     }
 
-    .microtrust {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .65rem;
-      margin-top: 1.35rem;
-    }
-    .pill {
+    .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: .5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      padding: .55rem .8rem;
-      border-radius: 999px;
+      gap: .55rem;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-weight: 800;
       color: var(--text-muted);
-      font-weight: 600;
-      font-size: .9rem;
-      box-shadow: 0 10px 26px rgba(0,0,0,0.04);
     }
-    .pill b { color: var(--brand-secondary); font-weight: 700; }
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--brand-primary);
+    }
 
     .hero-panel {
       background: var(--bg-card);
@@ -633,9 +670,8 @@
         <a href="index_compliance.html#faq">Preguntas</a>
       </nav>
 
-      <a class="btn header-cta" href="index_compliance.html#formulario" aria-label="Ir al formulario para solicitar evaluación">
-        Solicitar evaluación
-        <span aria-hidden="true">→</span>
+      <a class="btn header-cta" href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB" aria-label="Solicitar evaluación en la web oficial de Securitas Direct">
+        Solicitar evaluación ↗
       </a>
     </div>
   </header>
@@ -644,9 +680,7 @@
     <section class="blog-hero">
       <div class="container blog-hero-inner">
         <div>
-          <div class="microtrust" aria-label="Etiqueta">
-            <div class="pill"><b>Blog</b> Punto Seguro</div>
-          </div>
+          <div class="eyebrow" aria-label="Etiqueta">Blog · Punto Seguro</div>
           <h1>Seguridad con criterio: vulnerabilidades, prevención y decisiones</h1>
           <p>Lecturas rápidas para identificar puntos ignorados, reducir oportunidad y decidir con información (sin dramatismos, sin tecnicismos innecesarios).</p>
           <div class="blog-hero-cta">
@@ -837,17 +871,17 @@
           <details>
             <summary>Busca oportunidad</summary>
             <p>El intruso no piensa como el propietario. Evalúa accesos, tiempos y reacción, no valor emocional.</p>
-            <p><a href="blog/posts/06-intruso-busca-oportunidad.html">Leer artículo completo</a> · <a href="index_compliance.html#formulario">Solicitar evaluación</a></p>
+            <p><a href="blog/posts/06-intruso-busca-oportunidad.html">Leer artículo completo</a> · <a href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">Solicitar evaluación oficial ↗</a></p>
           </details>
           <details>
             <summary>Seguridad sin diagnóstico</summary>
             <p>Sin diagnóstico se cubre lo secundario, se ignora lo crítico y se genera una confianza que no responde al riesgo real.</p>
-            <p><a href="blog/posts/05-seguridad-sin-diagnostico.html">Leer artículo completo</a> · <a href="index_compliance.html#formulario">Solicitar evaluación</a></p>
+            <p><a href="blog/posts/05-seguridad-sin-diagnostico.html">Leer artículo completo</a> · <a href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">Solicitar evaluación oficial ↗</a></p>
           </details>
           <details>
             <summary>Pisos bajos, áticos y locales</summary>
             <p>El riesgo no depende del inmueble, sino de cómo se accede, cuándo queda expuesto y qué respuesta provoca.</p>
-            <p><a href="blog/posts/04-pisos-bajos-aticos-locales.html">Leer artículo completo</a> · <a href="index_compliance.html#formulario">Solicitar evaluación</a></p>
+            <p><a href="blog/posts/04-pisos-bajos-aticos-locales.html">Leer artículo completo</a> · <a href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">Solicitar evaluación oficial ↗</a></p>
           </details>
 <!-- BLOG:QUICKREADS_END -->
         </div>
@@ -865,15 +899,26 @@
     <section class="blog-cta">
       <div class="container blog-cta-inner">
         <div>
-          <div class="microtrust" aria-label="Etiqueta">
-            <div class="pill"><b>Punto Seguro</b> Evaluación informativa</div>
-          </div>
+          <div class="eyebrow" aria-label="Etiqueta">Punto Seguro · Evaluación informativa</div>
           <h2>Decidir con información cambia el resultado</h2>
-          <p>Si tienes un local o una vivienda y quieres claridad sobre tu nivel de riesgo, solicita una evaluación breve y orientada a decisión.</p>
+          <p>Si tienes un local o una vivienda y quieres claridad sobre tu nivel de riesgo, inicia la solicitud en la web oficial o contacta por WhatsApp.</p>
         </div>
         <div class="blog-cta-actions">
-          <a class="btn" href="index_compliance.html#formulario">Solicitar evaluación</a>
-          <a class="btn btn-ghost" href="index_compliance.html#proceso">Ver proceso</a>
+          <div class="cta-panel">
+            <a class="btn cta-primary" href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">
+              Solicitar evaluación en la web oficial ↗
+            </a>
+            <p class="cta-note">
+              Accederás a la web oficial de Securitas Direct para completar la solicitud.
+            </p>
+            <a class="cta-whatsapp" href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20una%20evaluación%20de%20seguridad" target="_blank" rel="noopener noreferrer">
+              <img src="logo_whatsapp.png" alt="WhatsApp">
+              Hablar por WhatsApp con asesor ↗
+            </a>
+            <p class="cta-note">
+              Canal directo con asesor.
+            </p>
+          </div>
         </div>
       </div>
     </section>

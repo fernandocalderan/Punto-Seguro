@@ -16,7 +16,7 @@ Cuando alguien imagina un robo, piensa en una **puerta forzada**, un **cristal r
 Es lógico. Es lo visible.
 
 Pero la realidad es menos cinematográfica y mucho más incómoda:  
-**la mayoría de robos empiezan por accesos ignorados**.
+**La mayoría de robos empiezan por accesos ignorados**.
 
 No por la puerta principal.  
 No por el escaparate.  

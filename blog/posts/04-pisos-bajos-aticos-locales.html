@@ -184,13 +184,49 @@
       margin-top: 1.8rem;
       padding-top: 1.6rem;
       border-top: 1px dashed var(--border-soft);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: center;
-      justify-content: space-between;
+      display: grid;
+      gap: 1.2rem;
     }
     .cta p { margin: 0; color: var(--text-muted); }
+    .cta-panel {
+      display: grid;
+      gap: .65rem;
+      padding: 1.1rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow-sm);
+      width: 100%;
+      max-width: 520px;
+    }
+    .cta-primary {
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .85rem 1.1rem;
+      border-radius: 999px;
+      background: #ecf8f1;
+      border: 1px solid #cfe9db;
+      color: #0f5b33;
+      font-weight: 700;
+      text-decoration: none;
+      width: 100%;
+      justify-content: center;
+    }
+    .cta-whatsapp img {
+      width: 20px;
+      height: 20px;
+    }
+    .cta-whatsapp:hover { background: #e2f4ea; }
+    .cta-note {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .88rem;
+    }
 
     footer a { color: var(--brand-primary); text-decoration: none; font-weight: 700; }
     footer a:hover { text-decoration: underline; }
@@ -287,7 +323,21 @@
 
         <div class="cta">
           <p><b style="color: var(--brand-secondary);">Conclusión:</b> El riesgo no se presupone. Se analiza con método.</p>
-          <a class="btn" href="../../index_compliance.html#formulario">Solicitar evaluación</a>
+          <div class="cta-panel">
+            <a class="btn cta-primary" href="https://www.securitasdirect.es/solicitud?origin=PS-FERNANDO-BLL-WEB">
+              Solicitar evaluación en la web oficial ↗
+            </a>
+            <p class="cta-note">
+              Al continuar accederás a la web oficial de Securitas Direct para completar la solicitud.
+            </p>
+            <a class="cta-whatsapp" href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20una%20evaluación%20de%20seguridad" target="_blank" rel="noopener noreferrer">
+              <img src="../../logo_whatsapp.png" alt="WhatsApp">
+              Hablar por WhatsApp con asesor ↗
+            </a>
+            <p class="cta-note">
+              Canal directo con asesor. El contacto lo inicias tú.
+            </p>
+          </div>
         </div>
       </article>
     </div>

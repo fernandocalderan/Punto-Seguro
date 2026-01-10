@@ -103,6 +103,22 @@
       font-size: .88rem;
       line-height: 1.2;
     }
+    .brand-text-mobile {
+      display: none;
+      flex-direction: column;
+      gap: .1rem;
+    }
+    .brand-text-mobile strong {
+      color: var(--brand-secondary);
+      font-size: .95rem;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .brand-text-mobile span {
+      color: var(--text-muted);
+      font-size: .78rem;
+      line-height: 1.1;
+    }
 
     nav {
       display: flex;
@@ -137,31 +153,27 @@
       white-space: nowrap;
     }
     .header-link:hover { color: var(--brand-secondary); background: rgba(43,92,255,0.07); }
-    .header-whatsapp{
+    .header-contact{
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
       height: 44px;
-      padding: 0 .85rem 0 .65rem;
+      padding: 0 .9rem;
       border-radius: 999px;
-      background: #25D366;
-      color: #ffffff;
-      font-size: .88rem;
-      font-weight: 800;
+      background: transparent;
+      color: var(--brand-secondary);
+      font-size: .9rem;
+      font-weight: 700;
       text-decoration: none;
-      box-shadow: 0 6px 18px rgba(37,211,102,.28);
+      border: 1px solid var(--border-soft);
+      box-shadow: none;
       transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
       white-space: nowrap;
     }
-    .header-whatsapp img{
-      width: 18px;
-      height: 18px;
-    }
-    .header-whatsapp:hover{
+    .header-contact:hover{
+      background: rgba(15,23,42,0.04);
       transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(37,211,102,.38);
     }
-    .header-whatsapp:active{
+    .header-contact:active{
       transform: translateY(0);
       opacity: .95;
     }
@@ -562,7 +574,7 @@
       .hero-grid { grid-template-columns: 1fr; }
       .hero-panel { position: relative; top: 0; }
       nav { display: none; } /* simple: header limpio en móvil */
-      .header-whatsapp{ margin-left: auto; }
+      .header-contact{ margin-left: auto; }
     }
     @media (max-width: 860px) {
       .split { grid-template-columns: 1fr; }
@@ -572,16 +584,233 @@
       .advisor-card { flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 768px) {
+      .container { padding: 0 1.1rem; }
+
+      header {
+        position: static;
+        background: #ffffff;
+        backdrop-filter: none;
+        height: 56px;
+      }
+      .header-inner {
+        height: 100%;
+        padding: 0;
+        gap: .5rem;
+        justify-content: flex-start;
+      }
+      .brand {
+        min-width: 0;
+        gap: .5rem;
+      }
+      .logo img { height: 34px; }
+      .brand-text { display: none; }
+      .brand-text-mobile { display: flex; }
+      .brand-text-mobile strong { font-size: .95rem; line-height: 1.1; }
+      .brand-text-mobile span { font-size: .72rem; line-height: 1.1; }
+      nav { display: none; }
+      .header-link { display: none; }
+
+      .header-contact {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border-radius: 50%;
+        background: #25D366;
+        border: none;
+        box-shadow: 0 10px 24px rgba(37,211,102,.35);
+        text-indent: -9999px;
+        overflow: hidden;
+        color: transparent;
+        font-size: 0;
+        z-index: 70;
+        background-image: url('logo_whatsapp.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 28px;
+      }
+      .header-contact:hover {
+        transform: none;
+        box-shadow: 0 10px 24px rgba(37,211,102,.35);
+      }
+
+      main { padding-bottom: 90px; }
+
+      .hero { padding: 2.8rem 0 3.2rem; }
+      .hero::before { display: none; }
+      .hero-grid { gap: 1.8rem; }
+      .hero-grid > div {
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-eyebrow {
+        order: 1;
+        font-size: .78rem;
+        color: var(--text-muted);
+        letter-spacing: .02em;
+        margin-bottom: .6rem;
+      }
+      .hero h1 {
+        order: 2;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        margin-bottom: 1.2rem;
+      }
+      .hero-subtitle {
+        order: 3;
+        font-size: 1rem;
+        margin-bottom: 1.4rem;
+      }
+      .advisor {
+        order: 4;
+        margin: 1rem 0 1.4rem;
+      }
+      .advisor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .8rem;
+        padding: 1.15rem;
+        background: #ffffff;
+        border: 1px solid var(--border-soft);
+        box-shadow: none;
+      }
+      .advisor-photo {
+        width: 80px;
+        height: 80px;
+      }
+      .advisor-info h3 { font-size: 1.05rem; }
+      .advisor-role { font-size: .9rem; }
+      .advisor-desc { font-size: .9rem; line-height: 1.45; }
+
+      .hero-mobile-cta {
+        order: 5;
+        display: flex;
+        flex-direction: column;
+        gap: .55rem;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 52px;
+        border-radius: 999px;
+        background: #25D366;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(37,211,102,.35);
+      }
+      .hero-cta-note {
+        font-size: .84rem;
+        color: rgba(15,23,42,.65);
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      section { padding: 3.9rem 0; }
+      .section-title {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+      .section-title h2 { font-size: 1.65rem; }
+      .section-title p { font-size: .98rem; }
+
+      .hero-panel,
+      .card,
+      .box,
+      .step {
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+
+      .grid,
+      .steps,
+      .split { gap: 1.4rem; }
+
+      .checklist { gap: .6rem; }
+      .checklist li { font-size: .95rem; }
+
+      .quote { margin-top: 1.1rem; font-size: .95rem; }
+
+      .fineprint { font-size: .85rem; }
+
+      details {
+        padding: 1.35rem 1.2rem;
+        border-radius: 18px;
+      }
+      details + details { margin-top: 1.1rem; }
+      summary {
+        font-size: 1rem;
+        line-height: 1.3;
+      }
+      details p {
+        font-size: .95rem;
+        line-height: 1.55;
+        margin-top: .75rem;
+      }
+
       .expert-invite{
-        padding: 2rem 1.2rem;
+        padding: 2.6rem 1.3rem;
       }
       .expert-invite-intro{
         font-size: 1.05rem;
+        margin-bottom: 1.2rem;
       }
       .expert-invite-action{
         width: 100%;
         justify-content: center;
-        font-size: 1.05rem;
+        font-size: 1.02rem;
+        padding: .95rem 1.2rem;
+      }
+      .expert-invite-action img{
+        width: 42px;
+        height: 42px;
+      }
+      .expert-invite-note{
+        font-size: .85rem;
+        line-height: 1.5;
+      }
+    }
+    @media (min-width: 769px) {
+      .hero-eyebrow,
+      .hero-mobile-cta {
+        display: none;
+      }
+      .header-contact {
+        background: #25D366;
+        color: #ffffff;
+        border: none;
+        box-shadow: 0 6px 18px rgba(37,211,102,.28);
+        padding: 0 .9rem 0 .7rem;
+        gap: .45rem;
+        font-weight: 800;
+        font-size: 0;
+      }
+      .header-contact::before {
+        content: "";
+        width: 18px;
+        height: 18px;
+        display: inline-block;
+        background: url('logo_whatsapp.png') center/contain no-repeat;
+      }
+      .header-contact::after {
+        content: "WhatsApp";
+        font-size: .88rem;
+        line-height: 1;
+      }
+      .header-contact:hover {
+        background: #25D366;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 28px rgba(37,211,102,.38);
+      }
+      .header-contact:active {
+        transform: translateY(0);
+        opacity: .95;
       }
     }
   </style>
@@ -604,6 +833,10 @@
           <strong>Criterio profesional para detectar exposición real</strong>
           <span>Referencia informativa aplicada por asesor de seguridad</span>
 	        </div>
+          <div class="brand-text-mobile">
+            <strong>Punto Seguro</strong>
+            <span>Asesoría en seguridad</span>
+          </div>
 	      </div>
 
       <nav aria-label="Navegación principal">
@@ -613,13 +846,12 @@
       </nav>
       <a
         href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
-        class="header-whatsapp"
+        class="header-contact"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Contactar por WhatsApp"
+        aria-label="Contactar"
       >
-        <img src="logo_whatsapp.png" alt="">
-        <span>WhatsApp</span>
+        Contactar
       </a>
 
       <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
@@ -633,6 +865,7 @@
     <section class="hero">
       <div class="container hero-grid">
         <div>
+          <p class="hero-eyebrow">Criterio profesional en seguridad</p>
           <h1>
             La mayoría de propietarios se equivocan<br>
             al evaluar la seguridad de su inmueble.
@@ -659,6 +892,19 @@
             </div>
           </section>
 
+          <div class="hero-mobile-cta">
+            <a
+              href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+              class="hero-cta"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Hablar por WhatsApp"
+            >
+              Hablar por WhatsApp
+            </a>
+            <p class="hero-cta-note">Sin formularios · Conversación directa · Sin compromiso</p>
+          </div>
+
         </div>
 	      </div>
 	    </section>
@@ -667,35 +913,35 @@
     <section>
       <div class="container" style="max-width: 920px;">
         <div class="hero-panel" aria-label="Qué aprenderás">
-          <h3>Lo que la mayoría pasa por alto</h3>
+          <h3>Lo que suele pasar desapercibido</h3>
 
           <p style="margin-top:.5rem; color: var(--text-muted);">
-            La mayoría de inmuebles no fallan por falta de medidas,
-            sino por una lectura incorrecta del riesgo real.
+            Muchos inmuebles no presentan problemas visibles hasta que ocurre el primer incidente.
+            No por ausencia de medidas, sino por una evaluación incompleta de su exposición real.
           </p>
 
           <ul class="checklist" style="margin-top: .85rem;">
-            <li><span class="check">✓</span><span>Accesos que parecen seguros pero no lo son.</span></li>
-            <li><span class="check">✓</span><span>Hábitos cotidianos que vuelven el inmueble predecible.</span></li>
-            <li><span class="check">✓</span><span>Detalles que un intruso detecta en segundos y el propietario no.</span></li>
-            <li><span class="check">✓</span><span>Señales tempranas que suelen ignorarse antes del primer incidente.</span></li>
+            <li><span class="check">✓</span><span>Accesos que parecen seguros, pero resultan previsibles.</span></li>
+            <li><span class="check">✓</span><span>Rutinas cotidianas que facilitan la observación externa.</span></li>
+            <li><span class="check">✓</span><span>Detalles que un intruso identifica en segundos y el propietario no percibe.</span></li>
+            <li><span class="check">✓</span><span>Indicadores tempranos que suelen ignorarse antes de cualquier incidente.</span></li>
           </ul>
 
           <p style="margin-top: 1.05rem; color: var(--brand-secondary); font-weight: 800;">
-            Es para decidir con claridad antes de que una suposición se convierta en problema.
+            Este análisis ayuda a detectar esos puntos con antelación, antes de que una falsa sensación de seguridad genere un problema evitable.
           </p>
 
           <div class="quote" style="margin-top: 1.15rem;">
-            “La mayoría de incidentes ocurren en inmuebles donde nunca había pasado nada.”
+            “Una parte significativa de los incidentes se produce en inmuebles donde nunca había ocurrido nada.”
           </div>
 
           <div class="quote" style="margin-top:1rem;">
-            Si alguien observara tu inmueble durante 3 días…<br>
-            ¿sabría cuándo está vacío?
+            Si alguien observara tu inmueble durante varios días,<br>
+            ¿podría identificar cuándo está vacío?
           </div>
 
           <p class="fineprint" style="margin-top:.6rem;">
-            Si la respuesta no es un “seguro que no”, hay algo que conviene revisar.
+            Si la respuesta <b>NO es</b> “seguro que no”, hay algo que conviene revisar.
           </p>
 
           <p class="fineprint">
@@ -703,7 +949,7 @@
           </p>
 
           <p class="fineprint" style="margin-top: .75rem;">
-            Pensado para propietarios que quieren anticiparse con criterio.
+            Dirigido a propietarios que prefieren comprender su situación antes de tomar decisiones.
           </p>
         </div>
       </div>
@@ -715,7 +961,7 @@
         <div class="section-title">
           <h2>Factores clave de riesgo de intrusión</h2>
           <p>
-            Este criterio se centra en los factores que más impactan la probabilidad de incidente,
+            Los que más impactan la probabilidad de incidente,
             sin tecnicismos innecesarios.
           </p>
         </div>
@@ -743,8 +989,8 @@
         <div class="section-title">
           <h2>Para qué sirve una evaluación de riesgo de intrusión</h2>
           <p>
-            Este criterio convierte la percepción en una referencia clara para priorizar acciones.
-            Útil para decidir, priorizar y justificar acciones con claridad.
+            Convierte la percepción en una referencia clara para priorizar acciones.
+            Útil para decidir y justificar acciones con claridad.
           </p>
         </div>
 
@@ -841,57 +1087,51 @@
 
         <div style="max-width: 900px; margin: 0 auto;">
           <details>
-            <summary>¿Qué diferencia este criterio de los consejos genéricos sobre seguridad?</summary>
+            <summary>¿Qué factores aumentan realmente el riesgo de intrusión en un inmueble?</summary>
             <p>
-              La mayoría de consejos se centran en añadir medidas.
-              Este criterio analiza la <b>exposición real</b>: accesos, rutinas repetidas y señales que un intruso detecta en segundos.
-              Es una lectura profesional, no una lista genérica.
+              El riesgo no depende solo del barrio o del tipo de inmueble.
+              Influyen factores como la <b>previsibilidad de horarios, accesos secundarios poco visibles, iluminación, hábitos repetidos y la facilidad con la que alguien puede observar sin ser detectado.</b>
+              Muchos de estos factores pasan desapercibidos para el propietario, pero no para quien busca oportunidades.
             </p>
           </details>
 
           <details>
-            <summary>¿Esto sustituye a un estudio técnico o a un sistema de alarma?</summary>
+            <summary>¿Por qué algunos robos ocurren en viviendas o negocios donde “nunca había pasado nada”?</summary>
             <p>
-              No.
-              Este contenido no sustituye estudios técnicos ni implica contratar nada.
-              Sirve para <b>entender el riesgo real antes de decidir</b>, evitando decisiones basadas en suposiciones.
+              Porque la ausencia de incidentes previos no reduce el riesgo.
+              De hecho, <b>muchos intrusos priorizan inmuebles sin antecedentes,</b> donde la percepción de seguridad suele ser más relajada y las rutinas más estables.
             </p>
           </details>
 
           <details>
-            <summary>¿Por qué muchos robos ocurren en inmuebles “bien protegidos”?</summary>
+            <summary>¿Cómo sabe un intruso si un inmueble está vacío o es predecible?</summary>
             <p>
-              Porque el problema rara vez es la falta de medidas, sino
-              <b>puntos ignorados y hábitos previsibles</b>.
-              En muchos casos recientes, el acceso no fue forzado: fue observado.
+              A través de señales simples: <b>horarios repetidos, persianas, iluminación constante, ausencia prolongada de movimiento, entregas acumuladas o accesos que nunca cambian.</b>
+              No requiere tecnología avanzada, solo observación durante pocos días.
             </p>
           </details>
 
           <details>
-            <summary>¿Es útil si nunca ha pasado nada en mi vivienda o negocio?</summary>
+            <summary>¿Un inmueble puede parecer seguro y aun así ser vulnerable?</summary>
             <p>
-              Especialmente en ese caso.
-              La mayoría de incidentes ocurren <b>antes del primer robo</b>,
-              cuando la percepción de seguridad es alta y nadie revisa su exposición real.
+              Sí.
+              Es habitual encontrar inmuebles con cerraduras, rejas o medidas visibles que <b>transmiten seguridad, pero que presentan puntos débiles en accesos menos evidentes</b> o en el comportamiento diario de quienes lo usan.
             </p>
           </details>
 
           <details>
-            <summary>¿Se recogen datos o se me va a contactar después?</summary>
+            <summary>¿Tiene sentido evaluar el riesgo si no he sufrido ningún intento de intrusión?</summary>
             <p>
-              No.
-              Esta web no recoge datos ni utiliza formularios.
-              Cualquier contacto solo ocurre <b>si tú lo inicias voluntariamente</b>.
+              Precisamente en ese momento es cuando la evaluación aporta más valor.
+              <b>Identificar vulnerabilidades antes de un incidente permite corregirlas sin urgencias ni decisiones precipitadas.</b>
             </p>
           </details>
 
           <details>
-            <summary>¿Quién está detrás de este contenido y con qué intención?</summary>
+            <summary>¿Este contenido implica que se me va a contactar o que se recopilan datos personales?</summary>
             <p>
-              Un profesional del sector de la seguridad que aplica
-              <b>criterio técnico y experiencia real</b>
-              para ayudar a propietarios a decidir con información,
-              no desde el miedo ni la presión comercial.
+              <b>No. Este contenido es informativo y no implica recogida automática de datos ni contacto posterior.</b>
+              El contacto solo se produce si el usuario lo solicita expresamente para una evaluación personalizada.
             </p>
           </details>
         </div>

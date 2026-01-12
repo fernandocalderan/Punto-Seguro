@@ -398,7 +398,7 @@ def expert_invite_block(asset_prefix: str = "") -> str:
       </p>
 
       <a
-        href="https://wa.me/34XXXXXXXXX?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+        href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
         class="expert-invite-action"
         target="_blank"
         rel="noopener noreferrer"

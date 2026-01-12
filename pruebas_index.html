@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Punto Seguro | Cuando “nunca ha pasado nada” es precisamente el problema</title>
+  <title>Punto Seguro | Evaluación profesional de riesgo de intrusión en viviendas y negocios</title>
 
-  <meta name="description" content="La ausencia de incidentes no reduce el riesgo: lo adormece. El entorno cambia antes de que alguien se dé cuenta." />
+  <meta name="description" content="Evaluación profesional de la exposición real a intrusión en viviendas y negocios. Análisis informativo, sin venta, sin formularios y sin recogida de datos." />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,7 +60,7 @@
     }
     .skip-link:focus { left: 14px; }
 
-        /* Header */
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -178,7 +178,6 @@
       opacity: .95;
     }
 
-
     .btn {
       background: var(--brand-primary);
       color: #fff;
@@ -209,6 +208,7 @@
 
     /* Sections */
     section { padding: 4.75rem 0; }
+    .section-compact { padding: 3.4rem 0; }
 
     .section-title {
       text-align: center;
@@ -224,6 +224,17 @@
     .section-title p {
       color: var(--text-muted);
       font-size: 1.02rem;
+    }
+    .image-block {
+      display: flex;
+      justify-content: center;
+    }
+    .image-block img {
+      width: 100%;
+      max-width: 980px;
+      height: auto;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
     }
 
     /* Hero */
@@ -584,28 +595,6 @@
       .advisor-card { flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 768px) {
-      .expert-invite{
-        padding: 2rem 1.2rem;
-      }
-      .expert-invite-intro{
-        font-size: 1.05rem;
-      }
-      .expert-invite-action{
-        width: 100%;
-        justify-content: center;
-        font-size: 1.05rem;
-      }
-    }
-  
-    @media (max-width: 980px) {
-      nav { display: none; }
-      .header-contact{ margin-left: auto; }
-    }
-    @media (max-width: 860px) {
-      .logo img { height: 78px; }
-      .brand { min-width: 0; }
-    }
-    @media (max-width: 768px) {
       .container { padding: 0 1.1rem; }
 
       header {
@@ -648,7 +637,7 @@
         color: transparent;
         font-size: 0;
         z-index: 70;
-        background-image: url('../../logo_whatsapp.png');
+        background-image: url('logo_whatsapp.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: 28px;
@@ -659,8 +648,150 @@
       }
 
       main { padding-bottom: 90px; }
+
+      .hero { padding: 2.8rem 0 3.2rem; }
+      .hero::before { display: none; }
+      .hero-grid { gap: 1.8rem; }
+      .hero-grid > div {
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-eyebrow {
+        order: 1;
+        font-size: .78rem;
+        color: var(--text-muted);
+        letter-spacing: .02em;
+        margin-bottom: .6rem;
+      }
+      .hero h1 {
+        order: 2;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        margin-bottom: 1.2rem;
+      }
+      .hero-subtitle {
+        order: 3;
+        font-size: 1rem;
+        margin-bottom: 1.4rem;
+      }
+      .advisor {
+        order: 4;
+        margin: 1rem 0 1.4rem;
+      }
+      .advisor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .8rem;
+        padding: 1.15rem;
+        background: #ffffff;
+        border: 1px solid var(--border-soft);
+        box-shadow: none;
+      }
+      .advisor-photo {
+        width: 80px;
+        height: 80px;
+      }
+      .advisor-info h3 { font-size: 1.05rem; }
+      .advisor-role { font-size: .9rem; }
+      .advisor-desc { font-size: .9rem; line-height: 1.45; }
+
+      .hero-mobile-cta {
+        order: 5;
+        display: flex;
+        flex-direction: column;
+        gap: .55rem;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 52px;
+        border-radius: 999px;
+        background: #25D366;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(37,211,102,.35);
+      }
+      .hero-cta-note {
+        font-size: .84rem;
+        color: rgba(15,23,42,.65);
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      section { padding: 3.9rem 0; }
+      .section-title {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+      .section-title h2 { font-size: 1.65rem; }
+      .section-title p { font-size: .98rem; }
+
+      .hero-panel,
+      .card,
+      .box,
+      .step {
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+
+      .grid,
+      .steps,
+      .split { gap: 1.4rem; }
+
+      .checklist { gap: .6rem; }
+      .checklist li { font-size: .95rem; }
+
+      .quote { margin-top: 1.1rem; font-size: .95rem; }
+
+      .fineprint { font-size: .85rem; }
+
+      details {
+        padding: 1.35rem 1.2rem;
+        border-radius: 18px;
+      }
+      details + details { margin-top: 1.1rem; }
+      summary {
+        font-size: 1rem;
+        line-height: 1.3;
+      }
+      details p {
+        font-size: .95rem;
+        line-height: 1.55;
+        margin-top: .75rem;
+      }
+
+      .expert-invite{
+        padding: 2.6rem 1.3rem;
+      }
+      .expert-invite-intro{
+        font-size: 1.05rem;
+        margin-bottom: 1.2rem;
+      }
+      .expert-invite-action{
+        width: 100%;
+        justify-content: center;
+        font-size: 1.02rem;
+        padding: .95rem 1.2rem;
+      }
+      .expert-invite-action img{
+        width: 42px;
+        height: 42px;
+      }
+      .expert-invite-note{
+        font-size: .85rem;
+        line-height: 1.5;
+      }
     }
     @media (min-width: 769px) {
+      .hero-eyebrow,
+      .hero-mobile-cta {
+        display: none;
+      }
       .header-contact {
         background: #25D366;
         color: #ffffff;
@@ -676,7 +807,7 @@
         width: 18px;
         height: 18px;
         display: inline-block;
-        background: url('../../logo_whatsapp.png') center/contain no-repeat;
+        background: url('logo_whatsapp.png') center/contain no-repeat;
       }
       .header-contact::after {
         content: "WhatsApp";
@@ -693,7 +824,6 @@
         opacity: .95;
       }
     }
-
   </style>
 </head>
 
@@ -708,22 +838,22 @@
 	    <div class="container header-inner">
 	      <div class="brand">
 	        <div class="logo">
-	          <img src="../../logo-punto-seguro.png" alt="Punto Seguro">
+	          <img src="logo-punto-seguro.png" alt="Punto Seguro">
 	        </div>
 	        <div class="brand-text">
-	          <strong>Criterio profesional para detectar exposición real</strong>
-	          <span>Referencia informativa aplicada por asesor de seguridad</span>
+          <strong>Criterio profesional para detectar exposición real</strong>
+          <span>Referencia informativa aplicada por asesor de seguridad</span>
 	        </div>
-	        <div class="brand-text-mobile">
-	          <strong>Punto Seguro</strong>
-	          <span>Asesoría en seguridad</span>
-	        </div>
-	        </div>
+          <div class="brand-text-mobile">
+            <strong>Punto Seguro</strong>
+            <span>Asesoría en seguridad</span>
+          </div>
+	      </div>
 
       <nav aria-label="Navegación principal">
-        <a href="../../index.html#criterio">Criterio</a>
-        <a href="../../index.html#evaluamos">Qué revisar</a>
-        <a href="../../index.html#faq">Preguntas</a>
+        <a href="index.html#criterio">Criterio</a>
+        <a href="index.html#evaluamos">Qué revisar</a>
+        <a href="index.html#faq">Preguntas</a>
       </nav>
       <a
         href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
@@ -735,90 +865,267 @@
         Contactar
       </a>
 
-      <a class="header-link" href="../../blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
+      <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
         Blog
       </a>
     </div>
   </header>
 
   <main id="main">
-<section class="hero">
+    <!-- HERO -->
+    <section class="hero">
       <div class="container hero-grid">
         <div>
-          <h1>Cuando “nunca ha pasado nada” es precisamente el problema</h1>
-          <p class="hero-subtitle">La ausencia de incidentes no reduce el riesgo: lo adormece. El entorno cambia antes de que alguien se dé cuenta.</p>
-          <p class="fineprint">Riesgo · 7 ene 2026 · 5 min</p>
-          <div class="hero-actions">
-            <a class="btn btn-ghost" href="../../blog.html" aria-label="Volver al blog">← Volver al blog</a>
+          <p class="hero-eyebrow">Criterio profesional en seguridad</p>
+          <h1>
+            La mayoría de propietarios se equivocan<br>
+            al evaluar la seguridad de su inmueble.
+          </h1>
+
+          <p class="hero-subtitle">
+            El problema no suele ser la falta de medidas,
+            sino una percepción de seguridad que no coincide con la realidad.
+          </p>
+
+          <section class="advisor">
+            <div class="advisor-card">
+              <img src="foto_perfil.jpeg" alt="Fernando – Asesor de Seguridad" class="advisor-photo">
+
+              <div class="advisor-info">
+                <h3>Fernando Aringhieri</h3>
+                <p class="advisor-role">Asesor de Seguridad</p>
+                <p class="advisor-desc">
+                  Análisis orientativo basado en criterio profesional para detectar
+                  exposición real, errores de percepción y puntos ignorados
+                  en viviendas y negocios.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="hero-mobile-cta">
+            <a
+              href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+              class="hero-cta"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Hablar por WhatsApp"
+            >
+              Hablar por WhatsApp
+            </a>
+            <p class="hero-cta-note">Sin formularios · Conversación directa · Sin compromiso</p>
+          </div>
+
+        </div>
+	      </div>
+	    </section>
+
+    <!-- QUÉ OBTIENES (DECISIÓN RÁPIDA) -->
+    <section>
+      <div class="container" style="max-width: 920px;">
+        <div class="hero-panel" aria-label="Qué aprenderás">
+          <h3>Lo que suele pasar desapercibido</h3>
+
+          <p style="margin-top:.5rem; color: var(--text-muted);">
+            Muchos inmuebles no presentan problemas visibles hasta que ocurre el primer incidente.
+            No por ausencia de medidas, sino por una evaluación incompleta de su exposición real.
+          </p>
+
+          <ul class="checklist" style="margin-top: .85rem;">
+            <li><span class="check">✓</span><span>Accesos que parecen seguros, pero resultan previsibles.</span></li>
+            <li><span class="check">✓</span><span>Rutinas cotidianas que facilitan la observación externa.</span></li>
+            <li><span class="check">✓</span><span>Detalles que un intruso identifica en segundos y el propietario no percibe.</span></li>
+            <li><span class="check">✓</span><span>Indicadores tempranos que suelen ignorarse antes de cualquier incidente.</span></li>
+          </ul>
+
+          <p style="margin-top: 1.05rem; color: var(--brand-secondary); font-weight: 800;">
+            Este análisis ayuda a detectar esos puntos con antelación, antes de que una falsa sensación de seguridad genere un problema evitable.
+          </p>
+
+          <div class="quote" style="margin-top: 1.15rem;">
+            “Una parte significativa de los incidentes se produce en inmuebles donde nunca había ocurrido nada.”
+          </div>
+
+          <div class="quote" style="margin-top:1rem;">
+            Si alguien observara tu inmueble durante varios días,<br>
+            ¿podría identificar cuándo está vacío?
+          </div>
+         
+          <div class="quote" style="margin-top:.6rem;">
+            Tu percepción de seguridad se basa en hechos actuales o en la costumbre de que “siempre ha sido así”?
+          </div>
+
+          <p class="fineprint">
+            Contenido orientativo elaborado con <a href="autor.html">criterio profesional</a> del sector de la seguridad.
+          </p>
+
+          <p class="fineprint" style="margin-top: .75rem;">
+            Dirigido a propietarios que prefieren comprender su situación antes de tomar decisiones.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUÉ REVISAR -->
+    <section id="evaluamos">
+      <div class="container">
+        <div class="image-block">
+          <img src="factores_clave_de_riesgo.png" alt="Factores clave de riesgo de intrusión: accesos y cerramientos, hábitos operativos, entorno y ubicación.">
+        </div>
+      </div>
+    </section>
+
+    <!-- PARA QUÉ SIRVE -->
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Para qué sirve una evaluación de riesgo de intrusión</h2>
+          <p>
+            Convierte la percepción en una referencia clara para priorizar acciones.
+            Útil para decidir y justificar acciones con claridad.
+          </p>
+        </div>
+
+        <div class="grid">
+	          <div class="card">
+	            <h3>Conocer el riesgo real</h3>
+	            <p>Eliminar suposiciones y entender la exposición del inmueble con una <a href="evaluador.html">evaluación de riesgo</a> externa y profesional.</p>
+	          </div>
+          <div class="card">
+            <h3>Priorizar acciones</h3>
+            <p>Separar lo crítico de lo accesorio: saber qué reduce riesgo de forma inmediata y qué no.</p>
+          </div>
+          <div class="card">
+            <h3>Respaldar decisiones</h3>
+            <p>Contar con un criterio escrito para cambios operativos, mejoras o inversiones futuras.</p>
+          </div>
+        </div>
+
+	        <div class="section-title" style="margin-top:2.8rem; margin-bottom:0;">
+	          <p>
+		            A partir de este criterio, el propietario o responsable decide cómo actuar.
+	          </p>
+	        </div>
+	      </div>
+	    </section>
+
+    <!-- CRITERIO (COLAPSABLE) -->
+    <section id="criterio">
+      <div class="container">
+        <div class="section-title">
+          <h2>Método profesional de evaluación de seguridad</h2>
+          <p>
+            La mayoría de incidentes no ocurren por falta de medidas,<br>
+            sino por puntos ignorados, rutinas previsibles y entorno mal evaluado.
+          </p>
+          <p style="margin-top:.8rem;">
+            Medimos exposición, oportunidad y rutina. Y lo traducimos en un criterio inicial claro.
+          </p>
+        </div>
+
+        <div class="split" style="margin-top: 1.2rem;">
+          <div class="box">
+            <h3>Lo que suele fallar</h3>
+            <p>
+              La mayoría de negocios y viviendas no se exponen por “falta de medidas”, sino por puntos ignorados,
+              hábitos previsibles y entorno no considerado.
+            </p>
+            <p style="margin-top:.85rem;">
+              <b>En la mayoría de incidentes recientes, el acceso no fue forzado. Fue ignorado.</b>
+            </p>
+            <ul>
+              <li><span class="check">✓</span> Cerramientos que “parecen” sólidos, pero no resisten un ataque real.</li>
+              <li><span class="check">✓</span> Rutinas repetidas (cierres, llegadas/salidas, horarios) fáciles de anticipar.</li>
+              <li><span class="check">✓</span> Zonas de baja visibilidad, iluminación deficiente o accesos secundarios olvidados.</li>
+            </ul>
+          </div>
+
+          <div class="box">
+            <h3>Qué medimos de verdad</h3>
+            <p>
+              El riesgo de allanamiento se reduce cuando aumentas el “coste” de la intrusión:
+              tiempo, dificultad, visibilidad y control operativo.
+            </p>
+            <ul>
+              <li><span class="check">✓</span> Tiempo y facilidad de acceso (puertas, ventanas, puntos débiles).</li>
+              <li><span class="check">✓</span> Visibilidad del acto (entorno, iluminación, tránsito).</li>
+              <li><span class="check">✓</span> Patrones operativos (aperturas, cierres, ausencias, hábitos).</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section>
+    <section class="section-compact">
+      <div class="container" style="max-width: 920px;">
+        <div class="hero-panel" aria-label="Evaluador Punto Seguro">
+          <h3>Evaluador Punto Seguro</h3>
+          <b><p>Calcula en segundos el <a href="evaluador.html">nivel de exposición a intrusión</a> en tu vivienda o local.</p></b>
+          <p>Basado en técnicas de seguridad física, CPTED y criterios profesionales.</p>
+          <a class="btn" href="evaluador.html" target="_blank" rel="noopener noreferrer">Ir al evaluador</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
       <div class="container">
-        <div class="hero-panel">
-          <div class="hero-claim">
-  <img src="../../nunca_ha_pasado_nada.png" alt="Iluminación exterior y zonas de acceso con baja visibilidad">
-</div>
-          <p>“Nunca ha pasado nada aquí.”</p>
-        <p>Es una frase habitual.</p>
-        <p>Y una de las más peligrosas en materia de seguridad.</p>
-        <p>No porque sea falsa, sino porque <b>genera una confianza que no se revisa</b>.</p>
-        <h3>El sesgo invisible</h3>
-        <p>El cerebro humano confunde dos cosas muy distintas:</p>
-        <p><b>historial</b> y <b>protección</b>.</p>
-        <p>Que no haya ocurrido ningún incidente no significa que el riesgo sea bajo.</p>
-        <p>Significa que <b>todavía no se ha manifestado</b>.</p>
-        <p>La ausencia de robos no elimina el riesgo.</p>
-        <p>Solo lo mantiene fuera de foco.</p>
-        <h3>El riesgo casi nunca nace dentro</h3>
-        <p>La mayoría de robos no se activan por cambios en el inmueble, sino por cambios alrededor.</p>
-        <p>Los detonantes suelen ser externos:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Nuevas rutinas en la zona</span></li>
-        <li><span class="check">✓</span><span>Menor tránsito nocturno</span></li>
-        <li><span class="check">✓</span><span>Negocios cercanos que cierran</span></li>
-        <li><span class="check">✓</span><span>Cambios de horarios</span></li>
-        <li><span class="check">✓</span><span>Alteraciones en la iluminación o visibilidad</span></li>
-        </ul>
-        <p>El inmueble sigue siendo el mismo.</p>
-        <p>El contexto no.</p>
-        <p>Y cuando el contexto cambia, el riesgo aparece sin avisar.</p>
-        <h3>El momento crítico</h3>
-        <p>Muchos incidentes ocurren justo después de situaciones aparentemente normales:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Vacaciones</span></li>
-        <li><span class="check">✓</span><span>Mudanzas</span></li>
-        <li><span class="check">✓</span><span>Reformas</span></li>
-        <li><span class="check">✓</span><span>Cambios de horario</span></li>
-        <li><span class="check">✓</span><span>Cierres temporales</span></li>
-        </ul>
-        <p>No porque el lugar sea más vulnerable estructuralmente.</p>
-        <p>Sino porque <b>deja de ser observado</b>.</p>
-        <p>La vigilancia pasiva desaparece…</p>
-        <p>y alguien lo nota.</p>
-        <h3>Viviendas y negocios: mismo patrón, distinto escenario</h3>
-        <p><b>En viviendas</b>:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Segundas residencias</span></li>
-        <li><span class="check">✓</span><span>Ausencias prolongadas</span></li>
-        <li><span class="check">✓</span><span>Rutinas previsibles</span></li>
-        </ul>
-        <p><b>En negocios</b>:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Festivos</span></li>
-        <li><span class="check">✓</span><span>Noches sin actividad</span></li>
-        <li><span class="check">✓</span><span>Cierres prolongados</span></li>
-        </ul>
-        <p>En ambos casos, la confianza excesiva no protege.</p>
-        <p>Funciona como una <b>ventana abierta que nadie revisa</b>.</p>
-        <h3>La seguridad no va de recordar el pasado</h3>
-        <p>Va de anticipar el futuro.</p>
-        <p>Preguntarse “¿qué podría cambiar?” es mucho más útil que pensar “nunca ha pasado nada”.</p>
-        <p>👉 Evaluar el riesgo es anticiparse, no reaccionar.</p>
-        <p>Y en seguridad, llegar antes lo cambia todo.</p>
-          <div class="quote">Evaluar el riesgo es anticiparse; reaccionar siempre llega tarde.</div>
+        <div class="section-title">
+          <h2>Preguntas frecuentes sobre riesgo de intrusión</h2>
+          <p>
+            Lo que conviene tener claro antes de formarse una opinión real sobre la seguridad de un inmueble.
+          </p>
+        </div>
+
+        <div style="max-width: 900px; margin: 0 auto;">
+          <details>
+            <summary>¿Qué factores aumentan realmente el riesgo de intrusión en un inmueble?</summary>
+            <p>
+              El riesgo no depende solo del barrio o del tipo de inmueble.
+              Influyen factores como la <b>previsibilidad de horarios, accesos secundarios poco visibles, iluminación, hábitos repetidos y la facilidad con la que alguien puede observar sin ser detectado.</b>
+              Muchos de estos factores pasan desapercibidos para el propietario, pero no para quien busca oportunidades.
+            </p>
+          </details>
+
+          <details>
+            <summary>¿Por qué algunos robos ocurren en viviendas o negocios donde “nunca había pasado nada”?</summary>
+            <p>
+              Porque la ausencia de incidentes previos no reduce el riesgo.
+              De hecho, <b>muchos intrusos priorizan inmuebles sin antecedentes,</b> donde la percepción de seguridad suele ser más relajada y las rutinas más estables.
+            </p>
+          </details>
+
+          <details>
+            <summary>¿Cómo sabe un intruso si un inmueble está vacío o es predecible?</summary>
+            <p>
+              A través de señales simples: <b>horarios repetidos, persianas, iluminación constante, ausencia prolongada de movimiento, entregas acumuladas o accesos que nunca cambian.</b>
+              No requiere tecnología avanzada, solo observación durante pocos días.
+            </p>
+          </details>
+
+          <details>
+            <summary>¿Un inmueble puede parecer seguro y aun así ser vulnerable?</summary>
+            <p>
+              Sí.
+              Es habitual encontrar inmuebles con cerraduras, rejas o medidas visibles que <b>transmiten seguridad, pero que presentan puntos débiles en accesos menos evidentes</b> o en el comportamiento diario de quienes lo usan.
+            </p>
+          </details>
+
+          <details>
+            <summary>¿Tiene sentido evaluar el riesgo si no he sufrido ningún intento de intrusión?</summary>
+            <p>
+              Precisamente en ese momento es cuando la evaluación aporta más valor.
+              <b>Identificar vulnerabilidades antes de un incidente permite corregirlas sin urgencias ni decisiones precipitadas.</b>
+            </p>
+          </details>
+
+          <details>
+            <summary>¿Este contenido implica que se me va a contactar o que se recopilan datos personales?</summary>
+            <p>
+              <b>No. Este contenido es informativo y no implica recogida automática de datos ni contacto posterior.</b>
+              El contacto solo se produce si el usuario lo solicita expresamente para una evaluación personalizada.
+            </p>
+          </details>
         </div>
       </div>
     </section>
@@ -837,7 +1144,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="../../logo_whatsapp.png" alt="WhatsApp">
+        <img src="logo_whatsapp.png" alt="WhatsApp">
         <span>Hablar por WhatsApp</span>
       </a>
 
@@ -847,7 +1154,8 @@
       </p>
 
     </section>
-</main>
+
+  </main>
 
   <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
     <p style="margin:0 0 .4rem;">
@@ -863,11 +1171,64 @@
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué diferencia este criterio de los consejos genéricos sobre seguridad?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "La mayoría de consejos se centran en añadir medidas. Este criterio analiza la exposición real: accesos, rutinas repetidas y señales que un intruso detecta en segundos. Es una lectura profesional, no una lista genérica."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Esto sustituye a un estudio técnico o a un sistema de alarma?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Este contenido no sustituye estudios técnicos ni implica contratar nada. Sirve para entender el riesgo real antes de decidir, evitando decisiones basadas en suposiciones."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué muchos robos ocurren en inmuebles “bien protegidos”?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque el problema rara vez es la falta de medidas, sino puntos ignorados y hábitos previsibles. En muchos casos recientes, el acceso no fue forzado: fue observado."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Es útil si nunca ha pasado nada en mi vivienda o negocio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Especialmente en ese caso. La mayoría de incidentes ocurren antes del primer robo, cuando la percepción de seguridad es alta y nadie revisa su exposición real."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Se recogen datos o se me va a contactar después?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Esta web no recoge datos ni utiliza formularios. Cualquier contacto solo ocurre si tú lo inicias voluntariamente."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Quién está detrás de este contenido y con qué intención?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Un profesional del sector de la seguridad que aplica criterio técnico y experiencia real para ayudar a propietarios a decidir con información, no desde el miedo ni la presión comercial."
+            }
+          }
+        ]
+      },
+      {
         "@type": "Person",
         "name": "Fernando Aringhieri",
         "jobTitle": "Asesor de Seguridad",
         "description": "Profesional del sector de la seguridad especializado en evaluación de riesgo y exposición a intrusión",
-        "image": "../../foto_perfil.jpeg",
+        "image": "foto_perfil.jpeg",
         "sameAs": []
       },
       {

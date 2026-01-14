@@ -12,82 +12,104 @@ quick_summary: No empiezan donde miras cada día, sino donde has dejado de mirar
 conclusion: Antes de añadir sistemas, hay que entender por dónde entra realmente el riesgo.
 ---
 
-Cuando alguien imagina un robo, piensa en una **puerta forzada**, un **cristal roto** o un **asalto frontal**.  
-Es lógico. Es lo visible.
+Cuando un intruso analiza tu inmueble, no empieza por donde imaginas
 
-Pero la realidad es menos cinematográfica y mucho más incómoda:  
-**La mayoría de robos empiezan por accesos ignorados**.
+La mayoría de personas visualiza un robo como una puerta forzada, un cristal roto o un asalto directo.
+Es normal: pensamos en lo que vemos.
 
-No por la puerta principal.  
-No por el escaparate.  
-Empiezan por ese punto que nadie revisa porque “nunca ha pasado nada”.
+Pero el patrón real es distinto.
+Mucho menos dramático, mucho más silencioso:
+la mayoría de intrusiones empiezan por accesos que nadie revisa.
 
-## El patrón real del intruso
+No por la puerta principal.
+No por el escaparate.
+Empiezan por ese punto secundario que lleva años “sin dar problemas”.
 
-Quien entra a robar rara vez improvisa. Observa. Espera. Analiza.
+El verdadero criterio de un intruso
 
-Busca siempre lo mismo:
+Quien analiza una vivienda o un negocio no improvisa. Observa. Contrasta. Comprueba.
 
-- Rutinas repetidas y previsibles  
-- Zonas sin visibilidad directa  
-- Accesos secundarios poco utilizados  
-- Horarios con ausencia de tránsito  
+Siempre sigue el mismo enfoque:
 
-Cuando detecta un punto débil, **prueba**.  
-Si no hay reacción clara, **avanza**.  
-Y si no hay consecuencias, **entra**.
+Rutinas repetidas y fáciles de anticipar
 
-El robo no empieza con violencia.  
-Empieza con una comprobación silenciosa.
+Áreas sin visibilidad directa desde la calle
 
-## El error más común en seguridad
+Accesos secundarios con poco uso
 
-La mayoría de personas protege su vivienda o negocio **desde dentro hacia fuera**.
+Momentos con ausencia de tránsito o supervisión
 
-Refuerzan lo que ven cada día:
-- La puerta principal  
-- El acceso más usado  
-- La zona “importante”  
+Cuando identifica un punto débil, hace una comprobación silenciosa.
+Si nadie reacciona, sigue avanzando.
+Y si sigue sin consecuencias, ahí es donde entra.
 
-Y descuidan justo lo contrario:
-- Terrazas  
-- Patios traseros  
-- Puertas laterales  
-- Zonas comunes  
-- Accesos de servicio  
+La intrusión no comienza con violencia.
+Comienza con un test rápido para medir si hay respuesta.
 
-No porque no les importen.  
-Sino porque **no forman parte de la rutina**.
+El error más común: proteger lo que ves, no lo que un intruso usaría
 
-Y lo que no forma parte de la rutina, se vuelve invisible.
+La mayoría de propietarios refuerzan su inmueble desde dentro hacia fuera.
 
-## Viviendas y negocios cometen el mismo fallo
+Protegen lo que forma parte de su rutina:
 
-Cambia el contexto, pero no el patrón.
+La puerta principal
 
-**En viviendas**:
-- Terrazas traseras  
-- Patios interiores  
-- Puertas que “casi nunca se usan”  
+El acceso habitual
 
-**En negocios**:
-- Accesos de carga  
-- Puertas secundarias  
-- Cierres nocturnos sin supervisión  
+La zona “importante”
 
-El problema no es la falta de medidas.  
-El problema es **no haber evaluado el riesgo real**.
+Y dejan fuera lo que rara vez miran:
 
-Porque proteger sin evaluar es como cerrar con llave… sin saber por dónde está abierta la ventana.
+Terrazas
 
-## La pregunta clave no es “qué instalar”
+Patios interiores
 
-La pregunta correcta es esta:
+Puertas laterales o traseras
 
-**¿Por dónde empezaría alguien que no vive ni trabaja aquí?**
+Áreas comunes
 
-Hasta que no respondes eso, cualquier decisión es parcial.
+Accesos de servicio
 
-👉 Una evaluación profesional no añade sistemas.  
-Aclara dónde eres vulnerable.  
-Y solo entonces, la seguridad empieza a tener sentido.
+No por falta de interés.
+Simplemente porque lo que no está en la rutina se vuelve invisible.
+
+Viviendas y negocios: distinto contexto, mismo fallo
+
+Cambian los metros cuadrados, no el patrón.
+
+En viviendas, los puntos más ignorados suelen ser:
+
+Terrazas traseras
+
+Patios interiores
+
+Habitaciones con acceso secundario
+
+Puertas que “casi nunca se usan”
+
+En negocios, el problema se repite con otras formas:
+
+Accesos de carga
+
+Puertas secundarias
+
+Cierres nocturnos sin supervisión
+
+Zonas sin visión desde el interior
+
+El problema no es la ausencia de medidas.
+El problema es haberlas colocado sin una evaluación real.
+
+Proteger sin evaluar es como reforzar una puerta… sin saber que la ventana de al lado lleva años sin cerrarse del todo.
+
+La pregunta estratégica no es “qué instalar”
+
+Antes de pensar en sistemas, la pregunta clave es:
+
+¿Por dónde empezaría alguien que no vive ni trabaja aquí?
+
+Esa perspectiva externa es lo que separa una protección intuitiva de una protección profesional.
+
+👉 Una evaluación experta no añade más elementos.
+Revela dónde estás expuesto.
+Solo entonces, cualquier medida empieza a tener sentido.

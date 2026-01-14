@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Punto Seguro | Dónde empiezan realmente la mayoría de robos (y no es donde crees)</title>
+  <title>Punto Seguro | Evaluación profesional de riesgo de intrusión en viviendas y negocios</title>
 
-  <meta name="description" content="La mayoría de robos no empiezan por la puerta principal. Empiezan por lo que nadie mira porque “nunca ha pasado nada”." />
+  <meta name="description" content="Evaluación profesional de la exposición real a intrusión en viviendas y negocios. Análisis informativo, sin venta, sin formularios y sin recogida de datos." />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,7 +60,7 @@
     }
     .skip-link:focus { left: 14px; }
 
-        /* Header */
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -178,7 +178,6 @@
       opacity: .95;
     }
 
-
     .btn {
       background: var(--brand-primary);
       color: #fff;
@@ -209,6 +208,7 @@
 
     /* Sections */
     section { padding: 4.75rem 0; }
+    .section-compact { padding: 3.4rem 0; }
 
     .section-title {
       text-align: center;
@@ -584,28 +584,6 @@
       .advisor-card { flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 768px) {
-      .expert-invite{
-        padding: 2rem 1.2rem;
-      }
-      .expert-invite-intro{
-        font-size: 1.05rem;
-      }
-      .expert-invite-action{
-        width: 100%;
-        justify-content: center;
-        font-size: 1.05rem;
-      }
-    }
-  
-    @media (max-width: 980px) {
-      nav { display: none; }
-      .header-contact{ margin-left: auto; }
-    }
-    @media (max-width: 860px) {
-      .logo img { height: 78px; }
-      .brand { min-width: 0; }
-    }
-    @media (max-width: 768px) {
       .container { padding: 0 1.1rem; }
 
       header {
@@ -648,7 +626,7 @@
         color: transparent;
         font-size: 0;
         z-index: 70;
-        background-image: url('../../logo_whatsapp.png');
+        background-image: url('logo_whatsapp.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: 28px;
@@ -659,8 +637,150 @@
       }
 
       main { padding-bottom: 90px; }
+
+      .hero { padding: 2.8rem 0 3.2rem; }
+      .hero::before { display: none; }
+      .hero-grid { gap: 1.8rem; }
+      .hero-grid > div {
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-eyebrow {
+        order: 1;
+        font-size: .78rem;
+        color: var(--text-muted);
+        letter-spacing: .02em;
+        margin-bottom: .6rem;
+      }
+      .hero h1 {
+        order: 2;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        margin-bottom: 1.2rem;
+      }
+      .hero-subtitle {
+        order: 3;
+        font-size: 1rem;
+        margin-bottom: 1.4rem;
+      }
+      .advisor {
+        order: 4;
+        margin: 1rem 0 1.4rem;
+      }
+      .advisor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .8rem;
+        padding: 1.15rem;
+        background: #ffffff;
+        border: 1px solid var(--border-soft);
+        box-shadow: none;
+      }
+      .advisor-photo {
+        width: 80px;
+        height: 80px;
+      }
+      .advisor-info h3 { font-size: 1.05rem; }
+      .advisor-role { font-size: .9rem; }
+      .advisor-desc { font-size: .9rem; line-height: 1.45; }
+
+      .hero-mobile-cta {
+        order: 5;
+        display: flex;
+        flex-direction: column;
+        gap: .55rem;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 52px;
+        border-radius: 999px;
+        background: #25D366;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(37,211,102,.35);
+      }
+      .hero-cta-note {
+        font-size: .84rem;
+        color: rgba(15,23,42,.65);
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      section { padding: 3.9rem 0; }
+      .section-title {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+      .section-title h2 { font-size: 1.65rem; }
+      .section-title p { font-size: .98rem; }
+
+      .hero-panel,
+      .card,
+      .box,
+      .step {
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+
+      .grid,
+      .steps,
+      .split { gap: 1.4rem; }
+
+      .checklist { gap: .6rem; }
+      .checklist li { font-size: .95rem; }
+
+      .quote { margin-top: 1.1rem; font-size: .95rem; }
+
+      .fineprint { font-size: .85rem; }
+
+      details {
+        padding: 1.35rem 1.2rem;
+        border-radius: 18px;
+      }
+      details + details { margin-top: 1.1rem; }
+      summary {
+        font-size: 1rem;
+        line-height: 1.3;
+      }
+      details p {
+        font-size: .95rem;
+        line-height: 1.55;
+        margin-top: .75rem;
+      }
+
+      .expert-invite{
+        padding: 2.6rem 1.3rem;
+      }
+      .expert-invite-intro{
+        font-size: 1.05rem;
+        margin-bottom: 1.2rem;
+      }
+      .expert-invite-action{
+        width: 100%;
+        justify-content: center;
+        font-size: 1.02rem;
+        padding: .95rem 1.2rem;
+      }
+      .expert-invite-action img{
+        width: 42px;
+        height: 42px;
+      }
+      .expert-invite-note{
+        font-size: .85rem;
+        line-height: 1.5;
+      }
     }
     @media (min-width: 769px) {
+      .hero-eyebrow,
+      .hero-mobile-cta {
+        display: none;
+      }
       .header-contact {
         background: #25D366;
         color: #ffffff;
@@ -676,7 +796,7 @@
         width: 18px;
         height: 18px;
         display: inline-block;
-        background: url('../../logo_whatsapp.png') center/contain no-repeat;
+        background: url('logo_whatsapp.png') center/contain no-repeat;
       }
       .header-contact::after {
         content: "WhatsApp";
@@ -693,7 +813,6 @@
         opacity: .95;
       }
     }
-
   </style>
 </head>
 
@@ -711,14 +830,14 @@
 	          <img src="../../logo-punto-seguro.png" alt="Punto Seguro">
 	        </div>
 	        <div class="brand-text">
-	          <strong>Criterio profesional para detectar exposición real</strong>
-	          <span>Referencia informativa aplicada por asesor de seguridad</span>
+          <strong>Criterio profesional para detectar exposición real</strong>
+          <span>Referencia informativa aplicada por asesor de seguridad</span>
 	        </div>
-	        <div class="brand-text-mobile">
-	          <strong>Punto Seguro</strong>
-	          <span>Asesoría en seguridad</span>
-	        </div>
-	        </div>
+          <div class="brand-text-mobile">
+            <strong>Punto Seguro</strong>
+            <span>Asesoría en seguridad</span>
+          </div>
+	      </div>
 
       <nav aria-label="Navegación principal">
         <a href="../../index.html#criterio">Criterio</a>
@@ -748,9 +867,6 @@
           <h1>Dónde empiezan realmente la mayoría de robos (y no es donde crees)</h1>
           <p class="hero-subtitle">La mayoría de robos no empiezan por la puerta principal. Empiezan por lo que nadie mira porque “nunca ha pasado nada”.</p>
           <p class="fineprint">Accesos · 7 ene 2026 · 4 min</p>
-          <div class="hero-actions">
-            <a class="btn btn-ghost" href="../../blog.html" aria-label="Volver al blog">← Volver al blog</a>
-          </div>
         </div>
       </div>
     </section>
@@ -761,70 +877,63 @@
           <div class="hero-claim">
   <img src="../../blog/donde_empiezan_robos.png" alt="Seguridad residencial y comercial: puntos de acceso olvidados">
 </div>
-          <p>Cuando alguien imagina un robo, piensa en una <b>puerta forzada</b>, un <b>cristal roto</b> o un <b>asalto frontal</b>.</p>
-        <p>Es lógico. Es lo visible.</p>
-        <p>Pero la realidad es menos cinematográfica y mucho más incómoda:</p>
-        <p><b>La mayoría de robos empiezan por accesos ignorados</b>.</p>
+          <p>Cuando un intruso analiza tu inmueble, no empieza por donde imaginas</p>
+        <p>La mayoría de personas visualiza un robo como una puerta forzada, un cristal roto o un asalto directo.</p>
+        <p>Es normal: pensamos en lo que vemos.</p>
+        <p>Pero el patrón real es distinto.</p>
+        <p>Mucho menos dramático, mucho más silencioso:</p>
+        <p>la mayoría de intrusiones empiezan por accesos que nadie revisa.</p>
         <p>No por la puerta principal.</p>
         <p>No por el escaparate.</p>
-        <p>Empiezan por ese punto que nadie revisa porque “nunca ha pasado nada”.</p>
-        <h3>El patrón real del intruso</h3>
-        <p>Quien entra a robar rara vez improvisa. Observa. Espera. Analiza.</p>
-        <p>Busca siempre lo mismo:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Rutinas repetidas y previsibles</span></li>
-        <li><span class="check">✓</span><span>Zonas sin visibilidad directa</span></li>
-        <li><span class="check">✓</span><span>Accesos secundarios poco utilizados</span></li>
-        <li><span class="check">✓</span><span>Horarios con ausencia de tránsito</span></li>
-        </ul>
-        <p>Cuando detecta un punto débil, <b>prueba</b>.</p>
-        <p>Si no hay reacción clara, <b>avanza</b>.</p>
-        <p>Y si no hay consecuencias, <b>entra</b>.</p>
-        <p>El robo no empieza con violencia.</p>
-        <p>Empieza con una comprobación silenciosa.</p>
-        <h3>El error más común en seguridad</h3>
-        <p>La mayoría de personas protege su vivienda o negocio <b>desde dentro hacia fuera</b>.</p>
-        <p>Refuerzan lo que ven cada día:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>La puerta principal</span></li>
-        <li><span class="check">✓</span><span>El acceso más usado</span></li>
-        <li><span class="check">✓</span><span>La zona “importante”</span></li>
-        </ul>
-        <p>Y descuidan justo lo contrario:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Terrazas</span></li>
-        <li><span class="check">✓</span><span>Patios traseros</span></li>
-        <li><span class="check">✓</span><span>Puertas laterales</span></li>
-        <li><span class="check">✓</span><span>Zonas comunes</span></li>
-        <li><span class="check">✓</span><span>Accesos de servicio</span></li>
-        </ul>
-        <p>No porque no les importen.</p>
-        <p>Sino porque <b>no forman parte de la rutina</b>.</p>
-        <p>Y lo que no forma parte de la rutina, se vuelve invisible.</p>
-        <h3>Viviendas y negocios cometen el mismo fallo</h3>
-        <p>Cambia el contexto, pero no el patrón.</p>
-        <p><b>En viviendas</b>:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Terrazas traseras</span></li>
-        <li><span class="check">✓</span><span>Patios interiores</span></li>
-        <li><span class="check">✓</span><span>Puertas que “casi nunca se usan”</span></li>
-        </ul>
-        <p><b>En negocios</b>:</p>
-        <ul class="checklist">
-        <li><span class="check">✓</span><span>Accesos de carga</span></li>
-        <li><span class="check">✓</span><span>Puertas secundarias</span></li>
-        <li><span class="check">✓</span><span>Cierres nocturnos sin supervisión</span></li>
-        </ul>
-        <p>El problema no es la falta de medidas.</p>
-        <p>El problema es <b>no haber evaluado el riesgo real</b>.</p>
-        <p>Porque proteger sin evaluar es como cerrar con llave… sin saber por dónde está abierta la ventana.</p>
-        <h3>La pregunta clave no es “qué instalar”</h3>
-        <p>La pregunta correcta es esta:</p>
-        <p><b>¿Por dónde empezaría alguien que no vive ni trabaja aquí?</b></p>
-        <p>Hasta que no respondes eso, cualquier decisión es parcial.</p>
-        <p>👉 Una evaluación profesional no añade sistemas.</p>
-        <p>Aclara dónde eres vulnerable.</p>
-        <p>Y solo entonces, la seguridad empieza a tener sentido.</p>
+        <p>Empiezan por ese punto secundario que lleva años “sin dar problemas”.</p>
+        <p>El verdadero criterio de un intruso</p>
+        <p>Quien analiza una vivienda o un negocio no improvisa. Observa. Contrasta. Comprueba.</p>
+        <p>Siempre sigue el mismo enfoque:</p>
+        <p>Rutinas repetidas y fáciles de anticipar</p>
+        <p>Áreas sin visibilidad directa desde la calle</p>
+        <p>Accesos secundarios con poco uso</p>
+        <p>Momentos con ausencia de tránsito o supervisión</p>
+        <p>Cuando identifica un punto débil, hace una comprobación silenciosa.</p>
+        <p>Si nadie reacciona, sigue avanzando.</p>
+        <p>Y si sigue sin consecuencias, ahí es donde entra.</p>
+        <p>La intrusión no comienza con violencia.</p>
+        <p>Comienza con un test rápido para medir si hay respuesta.</p>
+        <p>El error más común: proteger lo que ves, no lo que un intruso usaría</p>
+        <p>La mayoría de propietarios refuerzan su inmueble desde dentro hacia fuera.</p>
+        <p>Protegen lo que forma parte de su rutina:</p>
+        <p>La puerta principal</p>
+        <p>El acceso habitual</p>
+        <p>La zona “importante”</p>
+        <p>Y dejan fuera lo que rara vez miran:</p>
+        <p>Terrazas</p>
+        <p>Patios interiores</p>
+        <p>Puertas laterales o traseras</p>
+        <p>Áreas comunes</p>
+        <p>Accesos de servicio</p>
+        <p>No por falta de interés.</p>
+        <p>Simplemente porque lo que no está en la rutina se vuelve invisible.</p>
+        <p>Viviendas y negocios: distinto contexto, mismo fallo</p>
+        <p>Cambian los metros cuadrados, no el patrón.</p>
+        <p>En viviendas, los puntos más ignorados suelen ser:</p>
+        <p>Terrazas traseras</p>
+        <p>Patios interiores</p>
+        <p>Habitaciones con acceso secundario</p>
+        <p>Puertas que “casi nunca se usan”</p>
+        <p>En negocios, el problema se repite con otras formas:</p>
+        <p>Accesos de carga</p>
+        <p>Puertas secundarias</p>
+        <p>Cierres nocturnos sin supervisión</p>
+        <p>Zonas sin visión desde el interior</p>
+        <p>El problema no es la ausencia de medidas.</p>
+        <p>El problema es haberlas colocado sin una evaluación real.</p>
+        <p>Proteger sin evaluar es como reforzar una puerta… sin saber que la ventana de al lado lleva años sin cerrarse del todo.</p>
+        <p>La pregunta estratégica no es “qué instalar”</p>
+        <p>Antes de pensar en sistemas, la pregunta clave es:</p>
+        <p>¿Por dónde empezaría alguien que no vive ni trabaja aquí?</p>
+        <p>Esa perspectiva externa es lo que separa una protección intuitiva de una protección profesional.</p>
+        <p>👉 Una evaluación experta no añade más elementos.</p>
+        <p>Revela dónde estás expuesto.</p>
+        <p>Solo entonces, cualquier medida empieza a tener sentido.</p>
           <div class="quote">Antes de añadir sistemas, hay que entender por dónde entra realmente el riesgo.</div>
         </div>
       </div>
@@ -870,11 +979,64 @@
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué diferencia este criterio de los consejos genéricos sobre seguridad?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "La mayoría de consejos se centran en añadir medidas. Este criterio analiza la exposición real: accesos, rutinas repetidas y señales que un intruso detecta en segundos. Es una lectura profesional, no una lista genérica."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Esto sustituye a un estudio técnico o a un sistema de alarma?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Este contenido no sustituye estudios técnicos ni implica contratar nada. Sirve para entender el riesgo real antes de decidir, evitando decisiones basadas en suposiciones."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué muchos robos ocurren en inmuebles “bien protegidos”?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque el problema rara vez es la falta de medidas, sino puntos ignorados y hábitos previsibles. En muchos casos recientes, el acceso no fue forzado: fue observado."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Es útil si nunca ha pasado nada en mi vivienda o negocio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Especialmente en ese caso. La mayoría de incidentes ocurren antes del primer robo, cuando la percepción de seguridad es alta y nadie revisa su exposición real."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Se recogen datos o se me va a contactar después?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Esta web no recoge datos ni utiliza formularios. Cualquier contacto solo ocurre si tú lo inicias voluntariamente."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Quién está detrás de este contenido y con qué intención?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Un profesional del sector de la seguridad que aplica criterio técnico y experiencia real para ayudar a propietarios a decidir con información, no desde el miedo ni la presión comercial."
+            }
+          }
+        ]
+      },
+      {
         "@type": "Person",
         "name": "Fernando Aringhieri",
         "jobTitle": "Asesor de Seguridad",
         "description": "Profesional del sector de la seguridad especializado en evaluación de riesgo y exposición a intrusión",
-        "image": "../../foto_perfil.jpeg",
+        "image": "foto_perfil.jpeg",
         "sameAs": []
       },
       {

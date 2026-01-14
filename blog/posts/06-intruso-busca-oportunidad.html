@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Punto Seguro | El intruso no busca valor, busca oportunidad</title>
+  <title>Punto Seguro | Evaluación profesional de riesgo de intrusión en viviendas y negocios</title>
 
-  <meta name="description" content="La mayoría de robos no se producen por lo que hay dentro, sino por lo fácil que parece entrar y salir." />
+  <meta name="description" content="Evaluación profesional de la exposición real a intrusión en viviendas y negocios. Análisis informativo, sin venta, sin formularios y sin recogida de datos." />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,7 +60,7 @@
     }
     .skip-link:focus { left: 14px; }
 
-        /* Header */
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -178,7 +178,6 @@
       opacity: .95;
     }
 
-
     .btn {
       background: var(--brand-primary);
       color: #fff;
@@ -209,6 +208,7 @@
 
     /* Sections */
     section { padding: 4.75rem 0; }
+    .section-compact { padding: 3.4rem 0; }
 
     .section-title {
       text-align: center;
@@ -584,28 +584,6 @@
       .advisor-card { flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 768px) {
-      .expert-invite{
-        padding: 2rem 1.2rem;
-      }
-      .expert-invite-intro{
-        font-size: 1.05rem;
-      }
-      .expert-invite-action{
-        width: 100%;
-        justify-content: center;
-        font-size: 1.05rem;
-      }
-    }
-  
-    @media (max-width: 980px) {
-      nav { display: none; }
-      .header-contact{ margin-left: auto; }
-    }
-    @media (max-width: 860px) {
-      .logo img { height: 78px; }
-      .brand { min-width: 0; }
-    }
-    @media (max-width: 768px) {
       .container { padding: 0 1.1rem; }
 
       header {
@@ -648,7 +626,7 @@
         color: transparent;
         font-size: 0;
         z-index: 70;
-        background-image: url('../../logo_whatsapp.png');
+        background-image: url('logo_whatsapp.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: 28px;
@@ -659,8 +637,150 @@
       }
 
       main { padding-bottom: 90px; }
+
+      .hero { padding: 2.8rem 0 3.2rem; }
+      .hero::before { display: none; }
+      .hero-grid { gap: 1.8rem; }
+      .hero-grid > div {
+        display: flex;
+        flex-direction: column;
+      }
+      .hero-eyebrow {
+        order: 1;
+        font-size: .78rem;
+        color: var(--text-muted);
+        letter-spacing: .02em;
+        margin-bottom: .6rem;
+      }
+      .hero h1 {
+        order: 2;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        margin-bottom: 1.2rem;
+      }
+      .hero-subtitle {
+        order: 3;
+        font-size: 1rem;
+        margin-bottom: 1.4rem;
+      }
+      .advisor {
+        order: 4;
+        margin: 1rem 0 1.4rem;
+      }
+      .advisor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .8rem;
+        padding: 1.15rem;
+        background: #ffffff;
+        border: 1px solid var(--border-soft);
+        box-shadow: none;
+      }
+      .advisor-photo {
+        width: 80px;
+        height: 80px;
+      }
+      .advisor-info h3 { font-size: 1.05rem; }
+      .advisor-role { font-size: .9rem; }
+      .advisor-desc { font-size: .9rem; line-height: 1.45; }
+
+      .hero-mobile-cta {
+        order: 5;
+        display: flex;
+        flex-direction: column;
+        gap: .55rem;
+      }
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 52px;
+        border-radius: 999px;
+        background: #25D366;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(37,211,102,.35);
+      }
+      .hero-cta-note {
+        font-size: .84rem;
+        color: rgba(15,23,42,.65);
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      section { padding: 3.9rem 0; }
+      .section-title {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+      .section-title h2 { font-size: 1.65rem; }
+      .section-title p { font-size: .98rem; }
+
+      .hero-panel,
+      .card,
+      .box,
+      .step {
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+
+      .grid,
+      .steps,
+      .split { gap: 1.4rem; }
+
+      .checklist { gap: .6rem; }
+      .checklist li { font-size: .95rem; }
+
+      .quote { margin-top: 1.1rem; font-size: .95rem; }
+
+      .fineprint { font-size: .85rem; }
+
+      details {
+        padding: 1.35rem 1.2rem;
+        border-radius: 18px;
+      }
+      details + details { margin-top: 1.1rem; }
+      summary {
+        font-size: 1rem;
+        line-height: 1.3;
+      }
+      details p {
+        font-size: .95rem;
+        line-height: 1.55;
+        margin-top: .75rem;
+      }
+
+      .expert-invite{
+        padding: 2.6rem 1.3rem;
+      }
+      .expert-invite-intro{
+        font-size: 1.05rem;
+        margin-bottom: 1.2rem;
+      }
+      .expert-invite-action{
+        width: 100%;
+        justify-content: center;
+        font-size: 1.02rem;
+        padding: .95rem 1.2rem;
+      }
+      .expert-invite-action img{
+        width: 42px;
+        height: 42px;
+      }
+      .expert-invite-note{
+        font-size: .85rem;
+        line-height: 1.5;
+      }
     }
     @media (min-width: 769px) {
+      .hero-eyebrow,
+      .hero-mobile-cta {
+        display: none;
+      }
       .header-contact {
         background: #25D366;
         color: #ffffff;
@@ -676,7 +796,7 @@
         width: 18px;
         height: 18px;
         display: inline-block;
-        background: url('../../logo_whatsapp.png') center/contain no-repeat;
+        background: url('logo_whatsapp.png') center/contain no-repeat;
       }
       .header-contact::after {
         content: "WhatsApp";
@@ -693,7 +813,6 @@
         opacity: .95;
       }
     }
-
   </style>
 </head>
 
@@ -711,14 +830,14 @@
 	          <img src="../../logo-punto-seguro.png" alt="Punto Seguro">
 	        </div>
 	        <div class="brand-text">
-	          <strong>Criterio profesional para detectar exposición real</strong>
-	          <span>Referencia informativa aplicada por asesor de seguridad</span>
+          <strong>Criterio profesional para detectar exposición real</strong>
+          <span>Referencia informativa aplicada por asesor de seguridad</span>
 	        </div>
-	        <div class="brand-text-mobile">
-	          <strong>Punto Seguro</strong>
-	          <span>Asesoría en seguridad</span>
-	        </div>
-	        </div>
+          <div class="brand-text-mobile">
+            <strong>Punto Seguro</strong>
+            <span>Asesoría en seguridad</span>
+          </div>
+	      </div>
 
       <nav aria-label="Navegación principal">
         <a href="../../index.html#criterio">Criterio</a>
@@ -748,9 +867,6 @@
           <h1>El intruso no busca valor, busca oportunidad</h1>
           <p class="hero-subtitle">La mayoría de robos no se producen por lo que hay dentro, sino por lo fácil que parece entrar y salir.</p>
           <p class="fineprint">Comportamiento · 7 ene 2026 · 5 min</p>
-          <div class="hero-actions">
-            <a class="btn btn-ghost" href="../../blog.html" aria-label="Volver al blog">← Volver al blog</a>
-          </div>
         </div>
       </div>
     </section>
@@ -875,11 +991,64 @@
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué diferencia este criterio de los consejos genéricos sobre seguridad?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "La mayoría de consejos se centran en añadir medidas. Este criterio analiza la exposición real: accesos, rutinas repetidas y señales que un intruso detecta en segundos. Es una lectura profesional, no una lista genérica."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Esto sustituye a un estudio técnico o a un sistema de alarma?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Este contenido no sustituye estudios técnicos ni implica contratar nada. Sirve para entender el riesgo real antes de decidir, evitando decisiones basadas en suposiciones."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué muchos robos ocurren en inmuebles “bien protegidos”?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque el problema rara vez es la falta de medidas, sino puntos ignorados y hábitos previsibles. En muchos casos recientes, el acceso no fue forzado: fue observado."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Es útil si nunca ha pasado nada en mi vivienda o negocio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Especialmente en ese caso. La mayoría de incidentes ocurren antes del primer robo, cuando la percepción de seguridad es alta y nadie revisa su exposición real."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Se recogen datos o se me va a contactar después?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Esta web no recoge datos ni utiliza formularios. Cualquier contacto solo ocurre si tú lo inicias voluntariamente."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Quién está detrás de este contenido y con qué intención?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Un profesional del sector de la seguridad que aplica criterio técnico y experiencia real para ayudar a propietarios a decidir con información, no desde el miedo ni la presión comercial."
+            }
+          }
+        ]
+      },
+      {
         "@type": "Person",
         "name": "Fernando Aringhieri",
         "jobTitle": "Asesor de Seguridad",
         "description": "Profesional del sector de la seguridad especializado en evaluación de riesgo y exposición a intrusión",
-        "image": "../../foto_perfil.jpeg",
+        "image": "foto_perfil.jpeg",
         "sameAs": []
       },
       {

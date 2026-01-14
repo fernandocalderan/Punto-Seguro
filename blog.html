@@ -177,6 +177,19 @@
       transform: translateY(0);
       opacity: .95;
     }
+    .header-contact-group{
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: .35rem;
+    }
+    .header-contact-note{
+      font-size: .72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      text-align: right;
+      max-width: 240px;
+    }
 
     .btn {
       background: var(--brand-primary);
@@ -631,6 +644,27 @@
         background-position: center;
         background-size: 28px;
       }
+      .header-contact-group{
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 70;
+        align-items: flex-end;
+      }
+      .header-contact-group .header-contact{
+        position: static;
+      }
+      .header-contact-note{
+        position: fixed;
+        right: 18px;
+        bottom: 80px;
+        max-width: 220px;
+        background: rgba(255,255,255,0.95);
+        padding: .4rem .55rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-sm);
+      }
       .header-contact:hover {
         transform: none;
         box-shadow: 0 10px 24px rgba(37,211,102,.35);
@@ -844,15 +878,20 @@
         <a href="index.html#evaluamos">Qué revisar</a>
         <a href="index.html#faq">Preguntas</a>
       </nav>
-      <a
-        href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
-        class="header-contact"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Contactar"
-      >
-        Contactar
-      </a>
+      <div class="header-contact-group">
+        <a
+          href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+          class="header-contact"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contactar"
+        >
+          Contactar
+        </a>
+        <p class="header-contact-note">
+          Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+        </p>
+      </div>
 
       <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
         Blog
@@ -866,6 +905,7 @@
         <div>
           <h1>Blog Punto Seguro</h1>
           <p class="hero-subtitle">Criterio aplicado a casos reales para entender exposición, rutina y puntos ignorados.</p>
+          <p class="fineprint">La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada.</p>
         </div>
       </div>
     </section>
@@ -917,6 +957,32 @@
       </div>
     </section>
 
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Cómo funciona Punto Seguro</h2>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <h3>Paso 1 – Información y criterio</h3>
+            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <h3>Paso 2 – Consulta voluntaria</h3>
+            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
+            <p>Si se solicita una evaluación profesional personalizada, esta se realiza bajo el marco legal correspondiente, con registro de datos conforme a la normativa de seguridad privada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="expert-invite">
 
       <p class="expert-invite-intro">
@@ -934,6 +1000,10 @@
         <img src="logo_whatsapp.png" alt="WhatsApp">
         <span>Hablar por WhatsApp</span>
       </a>
+
+      <p class="expert-invite-note">
+        Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+      </p>
 
       <p class="expert-invite-note">
         Conversación directa · Sin formularios · Sin compromiso<br>
@@ -989,6 +1059,14 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Especialmente en ese caso. La mayoría de incidentes ocurren antes del primer robo, cuando la percepción de seguridad es alta y nadie revisa su exposición real."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué una evaluación personalizada requiere registro de datos?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque cualquier evaluación técnica de seguridad debe realizarse bajo el marco legal de una empresa de seguridad homologada. Punto Seguro ofrece información y criterio preventivo. La evaluación profesional solo se realiza si el propietario lo solicita expresamente y siempre con total transparencia."
             }
           },
           {

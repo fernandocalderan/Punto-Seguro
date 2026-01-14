@@ -167,6 +167,19 @@
       transform: translateY(0);
       opacity: .95;
     }
+    .header-contact-group{
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: .35rem;
+    }
+    .header-contact-note{
+      font-size: .72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      text-align: right;
+      max-width: 240px;
+    }
 
     .btn {
       background: var(--brand-primary);
@@ -220,6 +233,11 @@
       font-weight: 600;
       margin-bottom: 1.4rem;
     }
+    .meta-note {
+      color: var(--text-muted);
+      font-size: .88rem;
+      margin: -0.4rem 0 1.1rem;
+    }
     .hero-image {
       margin: 1.25rem 0 1.3rem;
       border-radius: 18px;
@@ -272,6 +290,47 @@
       justify-content: space-between;
     }
     .cta p { margin: 0; color: var(--text-muted); }
+    .cta-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .4rem;
+    }
+    .cta-note {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      max-width: 360px;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.4rem;
+      margin-top: 1.2rem;
+    }
+    .step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 1.4rem 1.4rem 1.3rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .step .n {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(43,92,255,0.12);
+      border: 1px solid rgba(43,92,255,0.22);
+      color: var(--brand-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      margin-bottom: .7rem;
+      user-select: none;
+    }
+    .step h3 { color: var(--brand-secondary); margin-bottom: .45rem; font-size: 1.02rem; }
+    .step p { color: var(--text-muted); font-size: .95rem; }
 
     footer a { color: var(--brand-primary); text-decoration: none; font-weight: 700; }
     footer a:hover { text-decoration: underline; }
@@ -337,6 +396,27 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: 28px;
+      }
+      .header-contact-group{
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 70;
+        align-items: flex-end;
+      }
+      .header-contact-group .header-contact{
+        position: static;
+      }
+      .header-contact-note{
+        position: fixed;
+        right: 18px;
+        bottom: 80px;
+        max-width: 220px;
+        background: rgba(255,255,255,0.95);
+        padding: .4rem .55rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-sm);
       }
       .header-contact:hover {
         transform: none;
@@ -405,15 +485,20 @@
         <a href="../../index.html#evaluamos">Qué revisar</a>
         <a href="../../index.html#faq">Preguntas</a>
       </nav>
-      <a
-        href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
-        class="header-contact"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Contactar"
-      >
-        Contactar
-      </a>
+      <div class="header-contact-group">
+        <a
+          href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+          class="header-contact"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contactar"
+        >
+          Contactar
+        </a>
+        <p class="header-contact-note">
+          Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+        </p>
+      </div>
 
       <a class="header-link" href="../../blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
         Blog
@@ -429,6 +514,7 @@
 
       <article class="article">
         <h1>El intruso no busca valor, busca oportunidad</h1>
+        <p class="meta-note">La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada.</p>
 
         <div class="meta">
           <span>Blog</span><span>·</span>
@@ -441,9 +527,31 @@
         <p>Pega aquí tu texto.</p>
         <p>👉 (Opcional) Cierra con una frase de conclusión.</p>
 
+        <h2>Cómo funciona Punto Seguro</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <h3>Paso 1 – Información y criterio</h3>
+            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <h3>Paso 2 – Consulta voluntaria</h3>
+            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
+            <p>Si se solicita una evaluación profesional personalizada, esta se realiza bajo el marco legal correspondiente, con registro de datos conforme a la normativa de seguridad privada.</p>
+          </div>
+        </div>
+
         <div class="cta">
           <p><b style="color: var(--brand-secondary);">Conclusión:</b> (Opcional) Cierra con una frase de conclusión.</p>
-          <a class="btn" href="../../index_compliance.html#formulario">Solicitar evaluación</a>
+          <div class="cta-action">
+            <a class="btn" href="../../index_compliance.html#formulario">Solicitar evaluación</a>
+            <p class="cta-note">Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.</p>
+          </div>
         </div>
       </article>
     </div>
@@ -451,26 +559,10 @@
 
   <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
     <p style="margin:0 0 .4rem;">
-      © 2026 <b>Punto Seguro</b> · Iniciativa profesional desarrollada por asesor colaborador de Securitas Direct España
-    </p>
-
-    <p style="margin:0 0 .4rem;">
-      Punto Seguro es un servicio informativo de evaluación en materia de riesgo en seguridad.
-      La evaluación no implica obligación de contratación.
-      Si se solicita información sobre soluciones, el contacto y tratamiento de datos se realizará por
-      <b>Securitas Direct España, S.A.U.</b> conforme a sus políticas oficiales.
-    </p>
-
-    <p style="margin:.2rem 0 0;">
-      <a href="https://www.verisure.es/politica-privacidad" target="_blank" rel="noopener noreferrer">Política de privacidad</a>
-      ·
-      <a href="https://ventas.securitasdirect.es/socios/politica-de-cookies/" target="_blank" rel="noopener noreferrer">Política de cookies</a>
-      ·
-      <a href="https://www.verisure.es/aviso-legal" target="_blank" rel="noopener noreferrer">Aviso legal</a>
-      ·
-      <a href="https://www.securitasdirect.es/clientes-securitas-direct" target="_blank" rel="noopener noreferrer">Derechos y más información</a>
-      ·
-      <a href="https://www.securitasdirect.es/telefono-contacto" target="_blank" rel="noopener noreferrer">Contacto oficial</a>
+      © 2026 <b>Punto Seguro</b> · Sitio informativo de concienciación en seguridad.
+      No se comercializan productos ni se recogen datos personales en esta web.
+      El contacto se realiza únicamente a iniciativa del usuario.
+      <br>Contenido elaborado por profesional del sector de la seguridad. Enfoque informativo y preventivo.
     </p>
   </footer>
   <script type="application/ld+json">

@@ -177,6 +177,19 @@
       transform: translateY(0);
       opacity: .95;
     }
+    .header-contact-group{
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: .35rem;
+    }
+    .header-contact-note{
+      font-size: .72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      text-align: right;
+      max-width: 240px;
+    }
 
     .section-title {
       text-align: center;
@@ -305,6 +318,27 @@
         background-position: center;
         background-size: 28px;
       }
+      .header-contact-group{
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 70;
+        align-items: flex-end;
+      }
+      .header-contact-group .header-contact{
+        position: static;
+      }
+      .header-contact-note{
+        position: fixed;
+        right: 18px;
+        bottom: 80px;
+        max-width: 220px;
+        background: rgba(255,255,255,0.95);
+        padding: .4rem .55rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+        box-shadow: var(--shadow-sm);
+      }
       .header-contact:hover {
         transform: none;
         box-shadow: 0 10px 24px rgba(37,211,102,.35);
@@ -371,15 +405,20 @@
         <a href="index.html#evaluamos">Qué revisar</a>
         <a href="index.html#faq">Preguntas</a>
       </nav>
-      <a
-        href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
-        class="header-contact"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Contactar"
-      >
-        Contactar
-      </a>
+      <div class="header-contact-group">
+        <a
+          href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+          class="header-contact"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contactar"
+        >
+          Contactar
+        </a>
+        <p class="header-contact-note">
+          Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+        </p>
+      </div>
 
       <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
         Blog
@@ -393,6 +432,7 @@
         <div class="section-title">
           <h1>Fernando Aringhieri</h1>
           <p>Asesor de Seguridad · Evaluación de riesgo y exposición a intrusión</p>
+          <p class="fineprint">La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada.</p>
         </div>
 
         <div class="card">

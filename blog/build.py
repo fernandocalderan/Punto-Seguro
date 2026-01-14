@@ -33,6 +33,13 @@ MONTHS_ES = {
     12: "dic",
 }
 
+LEGAL_PRE_ENCUADRE = (
+    "La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada."
+)
+WHATSAPP_PRENOTE = (
+    "Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable."
+)
+
 
 @dataclass(frozen=True)
 class Post:
@@ -428,6 +435,36 @@ def build_page(content_html: str, *, path_prefix: str = "") -> str:
     )
 
 
+def how_it_works_block() -> str:
+    return f"""
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Cómo funciona Punto Seguro</h2>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <h3>Paso 1 – Información y criterio</h3>
+            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <h3>Paso 2 – Consulta voluntaria</h3>
+            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
+            <p>Si se solicita una evaluación profesional personalizada, esta se realiza bajo el marco legal correspondiente, con registro de datos conforme a la normativa de seguridad privada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    """.strip()
+
+
 def expert_invite_block(asset_prefix: str = "") -> str:
     return f"""
     <section class="expert-invite">
@@ -447,6 +484,10 @@ def expert_invite_block(asset_prefix: str = "") -> str:
         <img src="{asset_prefix}logo_whatsapp.png" alt="WhatsApp">
         <span>Hablar por WhatsApp</span>
       </a>
+
+      <p class="expert-invite-note">
+        {WHATSAPP_PRENOTE}
+      </p>
 
       <p class="expert-invite-note">
         Conversación directa · Sin formularios · Sin compromiso<br>
@@ -475,6 +516,7 @@ def render_post_content(post: Post, asset_prefix: str = "") -> str:
         <div>
           <h1>{html.escape(post.title)}</h1>
           <p class="hero-subtitle">{html.escape(post.excerpt)}</p>
+          <p class="fineprint">{html.escape(LEGAL_PRE_ENCUADRE)}</p>
           <p class="fineprint">{html.escape(post.tag)} · {html.escape(post.date_human)} · {post.read_time} min</p>
         </div>
       </div>
@@ -489,6 +531,8 @@ def render_post_content(post: Post, asset_prefix: str = "") -> str:
         </div>
       </div>
     </section>
+
+    {how_it_works_block()}
 
     {expert_invite_block(asset_prefix)}
     """.strip()
@@ -529,6 +573,7 @@ def render_blog_content(posts_sorted: List[Post]) -> str:
         <div>
           <h1>Blog Punto Seguro</h1>
           <p class=\"hero-subtitle\">{html.escape(intro)}</p>
+          <p class=\"fineprint\">{html.escape(LEGAL_PRE_ENCUADRE)}</p>
         </div>
       </div>
     </section>
@@ -544,6 +589,8 @@ def render_blog_content(posts_sorted: List[Post]) -> str:
         </div>
       </div>
     </section>
+
+    {how_it_works_block()}
 
     {expert_invite_block()}
     """.strip()

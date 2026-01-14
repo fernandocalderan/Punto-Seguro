@@ -268,6 +268,47 @@ def md_to_html(md: str) -> str:
 def read_post(md_path: Path) -> Post:
     raw = md_path.read_text(encoding="utf-8")
     meta, body = parse_front_matter(raw)
+    title = (meta.get("title") or "").strip()
+
+    # ------------------------------------------------------
+    # 🔥 OPTIMIZADOR AUTOMÁTICO SEO + COPYWRITING PUNTO SEGURO
+    # ------------------------------------------------------
+
+    # 1. Asegurar que el artículo tiene H1 correcto
+    if not body.lstrip().startswith("#"):
+        body = f"# {title}\n\n" + body
+
+    # 2. Keywords SEO obligatorias
+    mandatory_keywords = [
+        "riesgo real",
+        "accesos secundarios",
+        "rutinas previsibles",
+        "evaluación profesional",
+        "intrusión",
+        "exposición"
+    ]
+    # Añade un bloque SEO si faltan keywords importantes
+    if not any(kw in body.lower() for kw in mandatory_keywords):
+        body += (
+            "\n\n## Evaluación del riesgo real\n\n"
+            "Muchos inmuebles parecen seguros porque se observan desde la rutina "
+            "y no desde la exposición real. Esta diferencia cambia por completo "
+            "cómo se percibe el riesgo.\n"
+        )
+
+    # 3. CTA suave automático si falta
+    if "Hablar por WhatsApp" not in body and "WhatsApp" not in body:
+        body += (
+            "\n\n## Hablar con un experto\n\n"
+            "Si quieres contrastar tu caso, reviso tu vivienda o negocio por WhatsApp sin compromiso.\n\n"
+            "👉 Una evaluación profesional no añade sistemas. Revela exposición real.\n"
+        )
+
+    # 4. Reescritura de conclusión breve automática
+    conclusion = compute_conclusion(body)
+
+    # 5. Reasigna contenido modificado al post
+    body_md = body
     title_from_body, body = extract_title_from_md(body)
 
     if meta.get("draft", "").strip().lower() in {"1", "true", "yes", "y"}:

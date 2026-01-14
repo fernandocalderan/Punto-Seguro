@@ -12,84 +12,62 @@ quick_summary: El intruso no piensa como el propietario. Evalúa accesos, tiempo
 conclusion: Reducir la oportunidad reduce el riesgo.
 ---
 
-Existe una creencia muy extendida:
-“Han entrado porque había cosas de valor”.
+# El intruso no busca valor, busca oportunidad
 
-En la mayoría de los casos, **no es cierto**.
+La percepción dice que entran por lo valioso. La realidad es más fría: entran por lo fácil. El riesgo real no se mide por lo que hay dentro, sino por la exposición y la reacción que se perciben desde fuera.
 
-El intruso no conoce tu vida, ni tus bienes, ni tu historia.
-No sabe qué hay dentro… ni le importa demasiado.
+La intrusión silenciosa no necesita saber qué guardas. Solo necesita saber que puede entrar y salir sin consecuencias.
 
-## Cómo piensa realmente quien roba
+## Percepción vs realidad: oportunidad por encima de valor
+Muchos propietarios protegen lo que estiman valioso. Ese enfoque es lógico, pero incompleto. El intruso no piensa en tus objetos; piensa en tu contexto, tus horarios y tus accesos secundarios.
 
-El proceso mental es simple y frío:
+Si puede entrar sin ser visto, el valor se vuelve secundario. La oportunidad manda.
 
-- ¿Puedo entrar sin ser visto?
-- ¿Cuánto tiempo tengo?
-- ¿Qué pasa si alguien me detecta?
-- ¿Puedo salir rápido?
+Por eso la prevención no empieza en el interior, sino en el recorrido externo. Ahí es donde se decide si hay oportunidad o no. Y suele decidirse rápido.
 
-Si las respuestas son favorables, **la oportunidad existe**.
-Y cuando existe, el valor pasa a segundo plano.
+## Cómo se construye la oportunidad
+La oportunidad no aparece de golpe. Se construye con señales repetidas: una persiana que siempre baja a la misma hora, un patio sin luz, un pasillo que nadie cruza. Cada señal reduce la incertidumbre del intruso.
 
-## El error de proteger solo lo “valioso”
+Cuando la exposición se mantiene estable durante semanas, la prueba se convierte en decisión. La intrusión silenciosa se apoya en la rutina, no en el azar. Por eso el contexto importa tanto como el acceso.
 
-Muchos sistemas se diseñan pensando en proteger:
+Cambios pequeños pueden dispararla: un vecino que se muda, una farola apagada, un negocio cercano cerrado. El tiempo disponible aumenta y la reacción baja.
 
-- Objetos caros  
-- Zonas principales  
-- Espacios “importantes”  
+## El criterio profesional del intruso
+Aunque no lo llame así, aplica un criterio profesional constante:
 
-Mientras tanto, se descuidan:
+### Acceso discreto
+Busca una ruta poco observada. Un acceso lateral, un patio, un pasillo. Si hay accesos secundarios sin control, son el punto de entrada natural.
 
-- Accesos secundarios  
-- Zonas de paso  
-- Recorridos de entrada y salida  
+### Tiempo suficiente
+Observa las rutinas previsibles. Sabe cuándo hay movimiento y cuándo no. Los horarios marcan la ventana de acción.
 
-El intruso no entra por donde está lo valioso.
-Entra por donde **nadie está mirando**.
+### Reacción clara
+Prueba. Si no hay reacción, la intrusión silenciosa se vuelve viable. La oportunidad se confirma.
 
-## Tiempo y reacción: las dos variables clave
+## Checklist de riesgo: oportunidades que no se ven
+Si estas condiciones existen, la oportunidad aumenta:
 
-Para quien roba, hay dos factores decisivos:
+- Accesos secundarios con poca visibilidad o cierres débiles.
+- Rutinas previsibles de apertura, cierre o ausencias.
+- Horarios con baja presencia en el entorno.
+- Zonas comunes sin supervisión ni iluminación estable.
+- Falta de reacción ante pruebas pequeñas o señales extrañas.
+- Confianza basada en “aquí no pasa nada”.
 
-**Tiempo**
-- Cuánto tarda en acceder
-- Cuánto puede permanecer dentro
+## Viviendas vs negocios: la oportunidad se repite
+En viviendas, la oportunidad aparece con la costumbre. Se repiten horarios y se deja todo igual. La exposición crece cuando el entorno observa lo mismo cada día.
 
-**Reacción**
-- Qué ocurre si alguien prueba
-- Si hay respuesta clara o no
+En negocios, la oportunidad aparece con los cierres. Las horas muertas dan margen. Los accesos secundarios se olvidan tras la jornada. La reacción baja y el riesgo real sube.
 
-Cuando el tiempo es corto y la reacción es inmediata, la oportunidad desaparece.
-Y con ella, el intento.
+La conclusión es la misma: no entra por valor, entra por facilidad.
 
-## Viviendas y negocios: mismo principio
+## Qué cambia con una evaluación profesional
+Una evaluación profesional no adivina. Observa. Mide exposición, analiza contexto, revisa accesos y hábitos. Te muestra dónde está la oportunidad y qué reacción genera tu inmueble hoy, no hace años.
 
-Da igual el contexto.
+Cuando entiendes esa oportunidad, puedes reducirla. No necesitas más dispositivos. Necesitas decisiones alineadas con el riesgo real.
 
-**En viviendas**:
-- Ausencias prolongadas
-- Rutinas previsibles
-- Falta de respuesta visible
+Una evaluación profesional permite detectar microoportunidades antes de que se conviertan en intentos. Ajusta rutinas previsibles, corrige accesos secundarios olvidados y mejora la reacción. No añade complejidad: añade claridad sobre la exposición.
 
-**En negocios**:
-- Horarios muertos
-- Cierres sin supervisión
-- Accesos traseros olvidados
+El valor se protege cuando la oportunidad desaparece.
 
-En ambos casos, el intruso no ve un lugar.
-Ve una **oportunidad**.
-
-## Seguridad inteligente = eliminar oportunidades
-
-La seguridad eficaz no consiste en blindarlo todo.
-Consiste en **hacer que no merezca la pena intentarlo**.
-
-Reducir accesos fáciles.  
-Aumentar percepción de control.  
-Provocar reacción inmediata.
-
-👉 El intruso no busca valor.  
-Busca oportunidad.  
-Y cuando la oportunidad desaparece, también lo hace el riesgo.
+👉 Una evaluación profesional no añade sistemas. Revela exposición real.

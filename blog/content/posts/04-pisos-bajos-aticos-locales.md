@@ -12,68 +12,55 @@ quick_summary: El riesgo no depende del inmueble, sino de cómo se accede, cuán
 conclusion: El riesgo no se presupone. Se analiza con método.
 ---
 
-A simple vista no se parecen en nada.  
-Un piso bajo, un ático y un local comercial parecen mundos distintos.
+# Pisos bajos, áticos y locales: por qué comparten más riesgo del que parece
 
-En la práctica, **comparten patrones de riesgo sorprendentemente similares**.
+La percepción dice que son inmuebles distintos y, por tanto, riesgos distintos. La realidad es más simple: el riesgo real se parece cuando la exposición se parece. La altura o el uso cambian, pero el criterio del intruso no.
 
-No por lo que son, sino por **cómo se usan y cómo se accede a ellos**.
+En muchos casos, el riesgo no depende del tipo de inmueble, sino de cómo se accede, cuándo queda expuesto y qué reacción genera.
 
-## El verdadero factor común: la accesibilidad
+## Percepción vs realidad: la accesibilidad manda
+Un piso bajo tiene acceso directo. Un ático tiene terrazas y recorridos poco vigilados. Un local tiene escaparates y accesos traseros. Diferentes escenarios, misma lógica: accesos secundarios, rutas discretas y horarios con baja observación.
 
-Para un intruso, el tipo de inmueble es secundario.  
-Lo que importa es **la facilidad para entrar y salir sin ser visto**.
+La exposición no se ve desde dentro. Se ve desde fuera. Y desde fuera, el mapa es más parecido de lo que parece.
 
-- **Pisos bajos**: acceso directo desde calle, patios o zonas poco transitadas  
-- **Áticos**: terrazas, cubiertas, trasteros y zonas comunes mal supervisadas  
-- **Locales**: escaparates, persianas, accesos traseros y horarios muertos  
+Un ático con terraza abierta puede ser tan accesible como un bajo con patio. Un local con persiana robusta puede quedar expuesto por la puerta de servicio. Cuando el acceso se vuelve discreto, la altura deja de proteger.
 
-El intruso no busca lujo ni valor emocional.  
-Busca **recorridos simples, poca exposición y margen de error**.
+No se trata de miedo, sino de lectura objetiva del entorno. Y esa lectura se hace mejor con método.
 
-## El error habitual al evaluar el riesgo
+## El criterio profesional del intruso
+El intruso no categoriza por tipologías. Evalúa oportunidades. Su criterio profesional se sostiene en tres pilares:
 
-La mayoría de evaluaciones fallan por lo mismo:  
-**mirar solo lo evidente**.
+### Acceso
+Busca la entrada más simple y discreta. En pisos bajos, la cercanía a la calle. En áticos, la conexión por azoteas o trasteros. En locales, la parte trasera o lateral.
 
-Se analiza:
-- La puerta principal  
-- El acceso más visible  
-- El punto que “todo el mundo ve”  
+### Tiempo
+Los horarios definen el margen. Las rutinas previsibles de apertura, cierre y ausencias son una guía. La oportunidad se mide en minutos.
 
-Y se ignora:
-- Alturas y recorridos alternativos  
-- Zonas compartidas  
-- Horarios de baja actividad  
-- Cambios de uso del espacio  
+### Reacción
+Si prueba un acceso y no hay respuesta, la intrusión silenciosa toma forma. Sin reacción, el acceso se valida.
 
-El riesgo rara vez entra por donde todo el mundo mira.
+## Checklist de riesgo compartido
+Si estas señales aparecen, la exposición es más alta de lo que parece:
 
-## La falsa diferenciación que tranquiliza
+- Accesos secundarios con poca visibilidad o iluminación irregular.
+- Rutinas previsibles que se repiten a la misma hora cada día.
+- Zonas comunes sin control (patios, terrazas, pasillos, azoteas).
+- Horarios con poca actividad en la calle o en el edificio.
+- Cerramientos aparentes que no resisten una prueba básica.
+- Ausencia de reacción ante pequeños intentos o ruidos.
 
-“Esto no es un local.”  
-“Esto no es un piso bajo.”  
-“Esto es distinto.”
+## Viviendas vs negocios: distinto uso, misma lógica
+En viviendas, el riesgo se concentra en la costumbre: persianas que siempre quedan igual, balcones con acceso fácil, accesos secundarios sin revisión. El entorno residencial puede ser silencioso, pero también más predecible.
 
-Pensar así suele impedir ver lo esencial.
+En negocios, el riesgo se amplifica por los horarios. El cierre deja horas muertas. El movimiento se reduce. Los accesos secundarios se utilizan para cargas y descargas y luego se olvidan. La exposición crece fuera del horario comercial.
 
-El riesgo no depende del tipo de inmueble, sino de tres variables clave:
+En ambos, la oportunidad nace cuando el acceso es fácil y la reacción es lenta.
 
-- **Cómo se accede**  
-- **Cuándo queda expuesto**  
-- **Qué reacción provoca si alguien prueba**  
+## Qué cambia con una evaluación profesional
+Una evaluación profesional no etiqueta inmuebles. Evalúa exposición real. Mira accesos, contexto, rutinas y horarios. Revisa cómo se comporta el entorno cuando el inmueble no está en uso.
 
-Cuando esas variables coinciden, el riesgo también.
+Cuando esa evaluación existe, se dejan de tomar decisiones por intuición. Se prioriza lo crítico, se corrige lo que realmente permite la entrada y se reduce la oportunidad.
 
-## La seguridad no va de etiquetas
+El riesgo no es un rasgo del inmueble. Es una condición del contexto. Y se puede medir.
 
-Va de análisis.
-
-Da igual si es una vivienda o un negocio.  
-Da igual si está arriba o abajo.
-
-Si el acceso es fácil, la observación es baja y la reacción es lenta,  
-el riesgo existe.
-
-👉 El riesgo no se intuye. Se analiza.  
-Y cuando se analiza bien, deja de sorprender.
+👉 Una evaluación profesional no añade sistemas. Revela exposición real.

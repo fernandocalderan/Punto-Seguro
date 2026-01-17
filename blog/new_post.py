@@ -10,6 +10,16 @@ import unicodedata
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = ROOT / "blog" / "content" / "posts"
+GOOGLE_TAG_SNIPPET = """  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-4665672QWS');
+  </script>
+"""
 
 
 def slugify(text: str) -> str:
@@ -20,6 +30,21 @@ def slugify(text: str) -> str:
     text = re.sub(r"[\s_-]+", "-", text)
     text = re.sub(r"^-+|-+$", "", text)
     return text or "articulo"
+
+
+def ensure_google_tag(path: Path) -> None:
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    if "googletagmanager.com/gtag/js?id=G-4665672QWS" in text:
+        return
+    marker = "<head>"
+    idx = text.find(marker)
+    if idx == -1:
+        return
+    insert_at = idx + len(marker)
+    updated = text[:insert_at] + "\n" + GOOGLE_TAG_SNIPPET + text[insert_at:]
+    path.write_text(updated, encoding="utf-8")
 
 
 def main() -> None:
@@ -77,6 +102,9 @@ def main() -> None:
         ),
         encoding="utf-8",
     )
+
+    ensure_google_tag(ROOT / "index.html")
+    ensure_google_tag(ROOT / "blog" / "templates" / "post.html")
 
     print("OK")
     print(f"- Creado: {path}")

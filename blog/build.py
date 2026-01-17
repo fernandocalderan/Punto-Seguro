@@ -39,6 +39,16 @@ LEGAL_PRE_ENCUADRE = (
 WHATSAPP_PRENOTE = (
     "Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable."
 )
+GOOGLE_TAG_SNIPPET = """  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-4665672QWS');
+  </script>
+"""
 
 
 @dataclass(frozen=True)
@@ -422,8 +432,20 @@ def prefix_relative_urls(base_html: str, prefix: str) -> str:
     return attr_re.sub(repl, base_html)
 
 
+def ensure_google_tag(base_html: str) -> str:
+    if "googletagmanager.com/gtag/js?id=G-4665672QWS" in base_html:
+        return base_html
+    marker = "<head>"
+    idx = base_html.find(marker)
+    if idx == -1:
+        return base_html
+    insert_at = idx + len(marker)
+    return base_html[:insert_at] + "\n" + GOOGLE_TAG_SNIPPET + base_html[insert_at:]
+
+
 def build_page(content_html: str, *, path_prefix: str = "") -> str:
     base = INDEX_PATH.read_text(encoding="utf-8")
+    base = ensure_google_tag(base)
     base = prefix_relative_urls(base, path_prefix)
     pattern = re.compile(r"(<main id=\"main\">)(.*?)(</main>)", re.DOTALL)
     if not pattern.search(base):

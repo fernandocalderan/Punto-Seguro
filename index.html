@@ -284,11 +284,19 @@
       letter-spacing: -0.03em;
       max-width: 900px;
     }
+    .hero-title-mobile { display: none; }
     .hero-subtitle {
       font-size: 1.12rem;
       color: var(--text-muted);
       max-width: 760px;
       margin-bottom: 1.45rem;
+    }
+    .hero-subtitle-mobile {
+      display: none;
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin-bottom: 1.1rem;
     }
     .hero-claim {
       background: rgba(255,255,255,0.85);
@@ -711,9 +719,17 @@
         margin-top: 12px;
         margin-bottom: 16px;
       }
+      .hero-title-desktop { display: none; }
+      .hero-title-mobile { display: inline; }
+      .hero-subtitle-mobile {
+        display: block;
+        order: 3;
+        font-size: .98rem;
+        margin-bottom: .55rem;
+      }
       .hero-subtitle {
-        order: 5;
-        font-size: 1rem;
+        order: 6;
+        font-size: .97rem;
         margin-bottom: 0;
       }
       .advisor {
@@ -739,7 +755,7 @@
       .advisor-desc { font-size: .9rem; line-height: 1.45; }
 
       .hero-mobile-cta {
-        order: 3;
+        order: 4;
         display: flex;
         flex-direction: column;
         gap: .55rem;
@@ -909,10 +925,14 @@
     <section class="hero">
       <div class="container hero-grid mobile-container">
         <div>
-          <p class="hero-eyebrow">Evaluación independiente de riesgo</p>
+          <p class="hero-eyebrow">Evaluación independiente de protección</p>
           <h1>
-            Evalúa tu exposición a intrusión en 2 minutos (hogar o negocio).
+            <span class="hero-title-desktop">Evalúa tu exposición a intrusión en 2 minutos (hogar o negocio).</span>
+            <span class="hero-title-mobile">Evalúa el nivel de protección de tu hogar o negocio en 2 minutos</span>
           </h1>
+          <p class="hero-subtitle-mobile">
+            Diagnóstico neutral basado en criterios profesionales. Obtén tu nivel de riesgo y recomendaciones generales.
+          </p>
 
           <p class="hero-subtitle hero-description">
             Diagnóstico neutral. No pedimos teléfono al empezar. Solo compartimos tus datos si solicitas propuestas (hasta 2 proveedores).

@@ -228,6 +228,11 @@ a.ps-cta-secondary {
     max-height: 34px !important;
   }
 
+  .home-page .ps-logo {
+    max-height: 48px !important;
+    margin-bottom: 6px;
+  }
+
   .ps-brand .brand-text {
     display: none !important;
   }

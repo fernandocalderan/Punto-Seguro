@@ -7,7 +7,8 @@
     "dev": "node --watch server.js",
     "start": "node server.js",
     "seed": "node scripts/seed-demo.js",
-    "db:schema": "node db/apply-schema.js"
+    "db:schema": "node db/apply-schema.js",
+    "db:migrate": "node db/apply-migration.js migrations/20260211_01_leads_decision_fields.sql"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

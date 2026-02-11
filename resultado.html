@@ -37,29 +37,57 @@
         <h1>Resultado de evaluación</h1>
         <p class="lead">Análisis orientativo basado en exposición, oportunidad y atractivo del inmueble.</p>
 
-        <div class="grid" style="align-items:start;">
-          <div class="card" style="padding:1rem;">
-            <p class="muted">Nivel estimado</p>
-            <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
-              <strong id="risk-score" style="font-size:2rem;line-height:1;">-- / 100</strong>
-              <span id="risk-level-badge" class="badge">--</span>
-            </div>
-            <p id="risk-explanation" class="muted" style="margin-top:0.65rem;">Completa el diagnóstico para generar tu resultado.</p>
+        <div class="card stack" style="padding:1rem;">
+          <p class="muted">Resultado técnico</p>
+          <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
+            <strong id="risk-score" style="font-size:2rem;line-height:1;">-- / 100</strong>
+            <span id="risk-level-badge" class="badge">--</span>
           </div>
+          <p id="risk-explanation" class="muted" style="margin-top:0.65rem;">Completa el diagnóstico para generar tu resultado.</p>
+          <div>
+            <h2 style="font-size:1.05rem;margin-top:0.2rem;">Factores principales detectados</h2>
+            <ul class="list" id="top-factors-list"></ul>
+          </div>
+        </div>
 
-          <div class="card" style="padding:1rem;">
-            <h2 style="font-size:1.05rem;">Qué hacer ahora</h2>
-            <ul class="list" id="recommendations-list"></ul>
-            <p class="muted" style="margin-top:0.7rem;">Recomendaciones generales, no constituyen un plan técnico ejecutable.</p>
-          </div>
+        <div class="card stack" style="padding:1rem;">
+          <h2 style="font-size:1.05rem;">Traducción humana del resultado</h2>
+          <p id="risk-human-text" class="muted"></p>
+          <h2 style="font-size:1.05rem;">Qué hacer ahora</h2>
+          <ul class="list" id="recommendations-list"></ul>
+          <p class="muted">Recomendaciones generales, no constituyen un plan técnico ejecutable.</p>
         </div>
 
         <div class="notice">
-          Punto Seguro comparte tu solicitud con hasta 2 proveedores seleccionados por zona y disponibilidad diaria.
+          En niveles MEDIO/ALTO, muchas personas piden una confirmación técnica para decidir si actuar o ajustar medidas.
+        </div>
+
+        <div class="notice">
+          Las solicitudes se gestionan por orden de entrada y zona.
         </div>
 
         <div class="actions">
-          <a class="btn btn-primary" href="/solicitar-propuesta" id="cta-request">Solicitar propuestas adaptadas</a>
+          <button class="btn btn-primary" type="button" id="cta-request">Recibir propuestas</button>
+          <button class="btn btn-secondary" type="button" id="cta-keep">Mantener solo resultado</button>
+        </div>
+
+        <section id="intent-block" class="card stack" style="padding:1rem;display:none;">
+          <h2 style="font-size:1.05rem;">Antes de continuar</h2>
+          <p class="muted">Indica tu plazo de instalación para priorizar mejor tu solicitud.</p>
+          <label for="intent-plazo"><b>Plazo de instalación</b></label>
+          <select id="intent-plazo">
+            <option value="esta_semana">Esta semana</option>
+            <option value="1_3_meses">1–3 meses</option>
+            <option value="informativo">Solo informativo</option>
+          </select>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" id="intent-confirm">Continuar a solicitud</button>
+          </div>
+        </section>
+
+        <div id="decision-feedback" class="notice" style="display:none;"></div>
+
+        <div class="actions">
           <a class="btn btn-secondary" href="/diagnostico">Repetir evaluación</a>
         </div>
       </section>

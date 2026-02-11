@@ -40,6 +40,10 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cambia-esta-clave";
 const ADMIN_COOKIE = "ps_admin_session";
 const ADMIN_TOKEN = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
 
+if (process.env.VERCEL && !process.env.DATABASE_URL) {
+  console.warn("[punto-seguro] WARNING: DATABASE_URL no está definido en Vercel. La persistencia será efímera.");
+}
+
 const repositories = createRepositories(DATA_DIR);
 const emailService = createEmailService({
   env: process.env,
@@ -47,6 +51,9 @@ const emailService = createEmailService({
 });
 
 const app = express();
+if (process.env.VERCEL) {
+  app.set("trust proxy", 1);
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -78,6 +85,12 @@ function requesterIp(req) {
 
 function isAdminAuthenticated(req) {
   return req.cookies?.[ADMIN_COOKIE] === ADMIN_TOKEN;
+}
+
+function isSecureRequest(req) {
+  if (process.env.VERCEL === "1") return true;
+  if (req.secure) return true;
+  return req.headers["x-forwarded-proto"] === "https";
 }
 
 function requireAdminPage(req, res, next) {
@@ -163,6 +176,7 @@ app.post("/api/leads", async (req, res) => {
         risk_level: req.body.risk_level,
         urgency: req.body.urgency,
         budget_range: req.body.budget_range,
+        intent_plazo: req.body.intent_plazo,
         notes: req.body.notes,
         consent: req.body.consent,
         consent_timestamp: req.body.consent_timestamp,
@@ -197,15 +211,19 @@ app.post("/api/admin/login", (req, res) => {
   res.cookie(ADMIN_COOKIE, ADMIN_TOKEN, {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: isSecureRequest(req),
     maxAge: 1000 * 60 * 60 * 8,
   });
 
   return res.json({ ok: true });
 });
 
-app.post("/api/admin/logout", requireAdminApi, (_req, res) => {
-  res.clearCookie(ADMIN_COOKIE);
+app.post("/api/admin/logout", requireAdminApi, (req, res) => {
+  res.clearCookie(ADMIN_COOKIE, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+  });
   return res.json({ ok: true });
 });
 

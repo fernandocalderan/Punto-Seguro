@@ -51,6 +51,16 @@
     ];
   }
 
+  function humanTranslation(level) {
+    if (level === "ALTO") {
+      return "El patrón coincide con escenarios de intrusión cuando el inmueble queda sin presencia.";
+    }
+    if (level === "MEDIO") {
+      return "Hay varios puntos típicos de acceso oportunista que conviene revisar con criterio técnico.";
+    }
+    return "No se detecta exposición relevante actualmente, aunque conviene mantener revisión periódica.";
+  }
+
   const evaluation = readEvaluation();
   if (!evaluation) {
     window.location.href = "/diagnostico";
@@ -64,15 +74,29 @@
   const levelNode = document.getElementById("risk-level-badge");
   const explanationNode = document.getElementById("risk-explanation");
   const recommendationsNode = document.getElementById("recommendations-list");
+  const topFactorsNode = document.getElementById("top-factors-list");
+  const humanTextNode = document.getElementById("risk-human-text");
+  const intentBlockNode = document.getElementById("intent-block");
+  const intentSelectNode = document.getElementById("intent-plazo");
+  const intentConfirmNode = document.getElementById("intent-confirm");
+  const ctaRequestNode = document.getElementById("cta-request");
+  const ctaKeepNode = document.getElementById("cta-keep");
+  const decisionFeedbackNode = document.getElementById("decision-feedback");
 
   scoreNode.textContent = `${score} / 100`;
   levelNode.textContent = level;
   levelNode.className = badgeClass(level);
   explanationNode.textContent = explanation(level);
+  humanTextNode.textContent = humanTranslation(level);
 
   recommendationsNode.innerHTML = recommendations(level)
     .map((item) => `<li>${item}</li>`)
     .join("");
+
+  const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
+  topFactorsNode.innerHTML = factorsTop.length > 0
+    ? factorsTop.map((factor) => `<li>${factor.texto || "Factor de riesgo detectado"}</li>`).join("")
+    : "<li>No se detectaron factores destacados en esta simulación.</li>";
 
   const resumen = (evaluation.factores_top || [])
     .map((factor) => factor.texto)
@@ -86,11 +110,63 @@
       risk_score: score,
       summary: resumen,
       tipo_inmueble: evaluation.tipo_inmueble,
+      factores_top: factorsTop,
+      generated_at: evaluation.generated_at || new Date().toISOString(),
     })
   );
 
   window.PuntoSeguroAnalytics?.trackEvent("result_viewed", {
     risk_level: level,
     risk_score: score,
+  });
+
+  try {
+    const rawIntent = window.sessionStorage.getItem("puntoSeguro.intent");
+    if (rawIntent) {
+      const parsedIntent = JSON.parse(rawIntent);
+      if (parsedIntent?.plazo && intentSelectNode) {
+        intentSelectNode.value = parsedIntent.plazo;
+      }
+    }
+  } catch (_error) {
+    // Ignore stale/invalid intent state in sessionStorage.
+  }
+
+  ctaRequestNode?.addEventListener("click", () => {
+    if (!intentBlockNode) return;
+    intentBlockNode.style.display = "block";
+    intentBlockNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  ctaKeepNode?.addEventListener("click", () => {
+    if (decisionFeedbackNode) {
+      decisionFeedbackNode.style.display = "block";
+      decisionFeedbackNode.textContent = "Puedes mantener solo el resultado. Si más adelante cambias de idea, podrás pedir propuestas desde esta misma pantalla.";
+    }
+    window.PuntoSeguroAnalytics?.trackEvent("lead_declined", {
+      risk_level: level,
+      risk_score: score,
+    });
+  });
+
+  intentConfirmNode?.addEventListener("click", () => {
+    const plazo = String(intentSelectNode?.value || "").trim();
+    if (!plazo) return;
+
+    window.sessionStorage.setItem(
+      "puntoSeguro.intent",
+      JSON.stringify({
+        plazo,
+        selected_at: new Date().toISOString(),
+      })
+    );
+
+    window.PuntoSeguroAnalytics?.trackEvent("lead_intent_selected", {
+      plazo,
+      risk_level: level,
+      risk_score: score,
+    });
+
+    window.location.href = "/solicitar-propuesta";
   });
 })();

@@ -272,6 +272,38 @@ a.ps-cta-secondary {
     text-align: center;
     font-size: 0.71rem;
   }
+
+  body.home-page.ps-has-sticky {
+    padding-bottom: 72px;
+  }
+
+  .home-page .ps-sticky-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    padding: 6px 12px;
+    border-radius: 0;
+    background: #ffffff;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: none;
+  }
+
+  .home-page .ps-sticky-cta {
+    min-height: 40px;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .home-page .ps-sticky-bar .ps-trustline {
+    display: none;
+  }
 }
 
 .ps-cta-primary,

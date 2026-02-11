@@ -55,6 +55,10 @@
       margin: 0 auto;
       padding: 0 2rem;
     }
+    .mobile-container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
 
     /* Skip link */
     .skip-link {
@@ -604,6 +608,12 @@
     }
     @media (max-width: 768px) {
       .container { padding: 0 1.1rem; }
+      .mobile-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
 
       header {
         position: static;
@@ -672,12 +682,20 @@
 
       main { padding-bottom: 90px; }
 
-      .hero { padding: 2.8rem 0 3.2rem; }
+      .hero {
+        padding: 2.2rem 0 2.4rem;
+        background: #ffffff;
+        border-radius: 0;
+      }
       .hero::before { display: none; }
-      .hero-grid { gap: 1.8rem; }
+      .hero-grid {
+        gap: 1rem;
+        border-radius: 0;
+      }
       .hero-grid > div {
         display: flex;
         flex-direction: column;
+        border-radius: 0;
       }
       .hero-eyebrow {
         order: 1;
@@ -690,12 +708,13 @@
         order: 2;
         font-size: 2.05rem;
         line-height: 1.15;
-        margin-bottom: 1.2rem;
+        margin-top: 12px;
+        margin-bottom: 16px;
       }
       .hero-subtitle {
-        order: 3;
+        order: 5;
         font-size: 1rem;
-        margin-bottom: 1.4rem;
+        margin-bottom: 0;
       }
       .advisor {
         order: 4;
@@ -720,10 +739,15 @@
       .advisor-desc { font-size: .9rem; line-height: 1.45; }
 
       .hero-mobile-cta {
-        order: 5;
+        order: 3;
         display: flex;
         flex-direction: column;
         gap: .55rem;
+      }
+      .hero-mobile-cta .ps-cta-primary {
+        margin-top: 12px;
+        margin-bottom: 20px;
+        width: 100%;
       }
       .hero-cta {
         display: inline-flex;
@@ -744,6 +768,9 @@
         color: rgba(15,23,42,.65);
         line-height: 1.4;
         text-align: center;
+      }
+      .how-it-works {
+        margin-top: 32px;
       }
 
       section { padding: 3.9rem 0; }
@@ -837,7 +864,7 @@
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>
 
-<body class="ps-has-sticky">
+<body class="ps-has-sticky home-page">
   <!-- Basado en tu index de referencia (colores + logo + tipografía). -->
   <!-- Fuente: archivo adjunto index.html -->
   <!-- :contentReference[oaicite:0]{index=0} -->
@@ -880,14 +907,14 @@
   <main id="main">
     <!-- HERO -->
     <section class="hero">
-      <div class="container hero-grid">
+      <div class="container hero-grid mobile-container">
         <div>
           <p class="hero-eyebrow">Evaluación independiente de riesgo</p>
           <h1>
             Evalúa tu exposición a intrusión en 2 minutos (hogar o negocio).
           </h1>
 
-          <p class="hero-subtitle">
+          <p class="hero-subtitle hero-description">
             Diagnóstico neutral. No pedimos teléfono al empezar. Solo compartimos tus datos si solicitas propuestas (hasta 2 proveedores).
           </p>
 
@@ -908,8 +935,8 @@
 	      </div>
 	    </section>
 
-    <section>
-      <div class="container">
+    <section class="how-it-works">
+      <div class="container mobile-container">
         <div class="section-title">
           <h2>Cómo funciona Punto Seguro</h2>
         </div>

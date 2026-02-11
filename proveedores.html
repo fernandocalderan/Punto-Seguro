@@ -18,6 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/leads.css" />
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
 <body>
   <header class="header">
@@ -28,6 +29,10 @@
         <a href="/solicitar-propuesta">Solicitudes</a>
         <a href="/admin">Admin</a>
       </nav>
+      <div class="header-cta-group">
+        <a class="header-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+        <span class="header-cta-note">Sin llamadas. Solo compartimos datos si tú lo decides.</span>
+      </div>
     </div>
   </header>
 
@@ -35,7 +40,17 @@
     <div class="container stack">
       <section class="card stack">
         <h1>Programa proveedores Punto Seguro</h1>
-        <p class="lead">Modelo piloto <b>pay-per-lead</b> para instaladores y centrales receptoras con cobertura local.</p>
+        <p class="lead">Modelo piloto pay-per-lead para instaladores y centrales con cobertura local verificada.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="mailto:partners@puntoseguro.local?subject=Solicitud%20acceso%20piloto">Solicitar acceso al piloto</a>
+          <a class="btn btn-secondary" href="/diagnostico">Ver diagnóstico</a>
+        </div>
+        <p class="cta-primary-note">Puedes revisar el recorrido real del usuario antes de entrar al piloto.</p>
+      </section>
+
+      <section class="card stack">
+        <h2>Cómo funciona el modelo</h2>
+        <p class="lead">El usuario recibe primero un diagnóstico neutral y, solo si decide avanzar, se envía su solicitud a proveedores de zona.</p>
 
         <div class="grid-3">
           <div class="card" style="padding:1rem;">
@@ -72,5 +87,9 @@
   <footer class="footer">
     © 2026 <b>Punto Seguro</b>
   </footer>
+
+  <a class="mobile-flow-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

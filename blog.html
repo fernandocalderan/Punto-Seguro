@@ -637,22 +637,16 @@
         position: fixed;
         right: 18px;
         bottom: 18px;
-        width: 56px;
-        height: 56px;
-        padding: 0;
-        border-radius: 50%;
-        background: #25D366;
+        height: 48px;
+        padding: 0 1rem;
+        border-radius: 999px;
+        background: var(--brand-primary);
         border: none;
-        box-shadow: 0 10px 24px rgba(37,211,102,.35);
-        text-indent: -9999px;
-        overflow: hidden;
-        color: transparent;
-        font-size: 0;
+        box-shadow: 0 10px 24px rgba(43,92,255,.35);
+        color: #ffffff;
+        font-size: .86rem;
+        font-weight: 800;
         z-index: 70;
-        background-image: url('logo_whatsapp.png');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 28px;
       }
       .header-contact-group{
         position: fixed;
@@ -677,7 +671,7 @@
       }
       .header-contact:hover {
         transform: none;
-        box-shadow: 0 10px 24px rgba(37,211,102,.35);
+        box-shadow: 0 10px 24px rgba(43,92,255,.35);
       }
 
       main { padding-bottom: 90px; }
@@ -826,31 +820,19 @@
         display: none;
       }
       .header-contact {
-        background: #25D366;
+        background: var(--brand-primary);
         color: #ffffff;
         border: none;
-        box-shadow: 0 6px 18px rgba(37,211,102,.28);
-        padding: 0 .9rem 0 .7rem;
+        box-shadow: 0 6px 18px rgba(43,92,255,0.28);
+        padding: 0 .95rem;
         gap: .45rem;
         font-weight: 800;
-        font-size: 0;
-      }
-      .header-contact::before {
-        content: "";
-        width: 18px;
-        height: 18px;
-        display: inline-block;
-        background: url('logo_whatsapp.png') center/contain no-repeat;
-      }
-      .header-contact::after {
-        content: "Diagnóstico";
         font-size: .88rem;
-        line-height: 1;
       }
       .header-contact:hover {
-        background: #25D366;
+        background: var(--brand-primary);
         transform: translateY(-1px);
-        box-shadow: 0 10px 28px rgba(37,211,102,.38);
+        box-shadow: 0 10px 28px rgba(43,92,255,0.38);
       }
       .header-contact:active {
         transform: translateY(0);
@@ -858,6 +840,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
 
 <body>
@@ -892,13 +875,12 @@
         <a
           href="/diagnostico"
           class="header-contact"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Contactar"
+          aria-label="Hacer diagnóstico en 2 minutos"
         >
-          Contactar
+          Hacer diagnóstico en 2 minutos
         </a>
         <p class="header-contact-note">
+          Sin llamadas. Solo compartimos datos si tú lo decides.
         </p>
       </div>
 
@@ -914,8 +896,23 @@
         <div>
           <p class="fineprint"><a href="index.html">Volver a Punto Seguro</a></p>
           <h1>Blog Punto Seguro</h1>
-          <p class="hero-subtitle">Criterio aplicado a casos reales para entender exposición, rutina y puntos ignorados.</p>
-          <p class="fineprint">La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada.</p>
+          <p class="hero-subtitle">Diagnóstico técnico neutral para entender exposición, rutina y puntos ignorados antes de decidir.</p>
+          <p class="fineprint">Primero diagnóstico orientativo. Después, si quieres, solicitas propuestas adaptadas.</p>
+          <div style="margin-top: 1.1rem;">
+            <a class="btn" href="/diagnostico">Hacer diagnóstico en 2 minutos</a>
+            <p class="hero-cta-note" style="margin-top: .6rem; text-align: left;">Sin llamadas. Solo compartimos datos si tú lo decides.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container" style="max-width: 860px;">
+        <div class="card" style="text-align: center;">
+          <h2 style="font-size: 1.45rem; color: var(--brand-secondary); margin-bottom: .65rem;">Evalúa primero tu riesgo real</h2>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Antes de leer más casos, puedes ver tu nivel de exposición en 2 minutos.</p>
+          <a class="btn" href="/diagnostico">Hacer diagnóstico en 2 minutos</a>
+          <p class="fineprint" style="margin-top: .7rem;">Sin llamadas. Solo compartimos datos si tú lo decides.</p>
         </div>
       </div>
     </section>
@@ -976,18 +973,18 @@
         <div class="steps">
           <div class="step">
             <div class="n">1</div>
-            <h3>Paso 1 – Información y criterio</h3>
-            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+            <h3>Responde 6-10 preguntas</h3>
+            <p>Completa el diagnóstico para medir exposición del inmueble con criterios técnicos claros.</p>
           </div>
           <div class="step">
             <div class="n">2</div>
-            <h3>Paso 2 – Consulta voluntaria</h3>
-            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+            <h3>Recibe tu nivel de riesgo y recomendaciones generales</h3>
+            <p>Obtén una lectura neutral de vulnerabilidad, oportunidad y atractivo.</p>
           </div>
           <div class="step">
             <div class="n">3</div>
-            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
-            <p>Si se solicita una evaluación profesional personalizada, esta se realiza bajo el marco legal correspondiente, con registro de datos conforme a la normativa de seguridad privada.</p>
+            <h3>Opcional: solicita propuestas adaptadas</h3>
+            <p>Si quieres avanzar, Punto Seguro comparte tus datos con hasta 2 proveedores de tu zona.</p>
           </div>
         </div>
       </div>
@@ -996,23 +993,18 @@
     <section class="expert-invite">
 
       <p class="expert-invite-intro">
-        Si necesitas contrastar si tu vivienda, local u oficina
-        está correctamente protegida,
-        puedes hablar directamente conmigo.
+        Cuando termines de revisar el contenido, puedes pasar al diagnóstico y decidir con datos.
       </p>
 
       <a
         href="/diagnostico"
         class="expert-invite-action"
-        target="_blank"
-        rel="noopener noreferrer"
       >
-        <img src="logo_whatsapp.png" alt="Diagnóstico">
-        <span>Ver mi nivel de riesgo</span>
+        <span>Hacer diagnóstico en 2 minutos</span>
       </a>
 
       <p class="expert-invite-note">
-        Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+        Sin llamadas. Solo compartimos datos si tú lo decides.
       </p>
 
       <p class="expert-invite-note">
@@ -1114,5 +1106,7 @@
   }
   </script>
 
+  <script src="/js/analytics.js"></script>
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

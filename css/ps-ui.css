@@ -1,4 +1,5 @@
 :root {
+  --primary-color: #2563eb;
   --ps-primary: #2b5cff;
   --ps-primary-hover: #1f4df2;
   --ps-text-on-primary: #ffffff;
@@ -12,28 +13,24 @@
 
 .ps-cta-primary,
 a.ps-cta-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.72rem 1.1rem;
-  border: 0;
-  border-radius: var(--ps-radius-pill);
-  background: var(--ps-primary);
-  color: var(--ps-text-on-primary);
-  font-size: 0.92rem;
-  font-weight: 800;
-  line-height: 1.1;
+  display: inline-block;
+  background-color: var(--primary-color, #2563eb);
+  color: #ffffff;
+  padding: 14px 22px;
+  font-weight: 600;
+  font-size: 16px;
   text-decoration: none;
-  box-shadow: var(--ps-shadow);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+  border: none;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .ps-cta-primary:hover,
 a.ps-cta-primary:hover {
-  background: var(--ps-primary-hover);
-  box-shadow: var(--ps-shadow-hover);
+  background-color: #1e4fd1;
   transform: translateY(-1px);
 }
 
@@ -46,8 +43,15 @@ a.ps-cta-primary:active {
 .ps-cta-primary:focus-visible,
 .ps-cta-secondary:focus-visible,
 .ps-sticky-cta:focus-visible {
-  outline: 3px solid rgba(43, 92, 255, 0.35);
+  outline: 3px solid rgba(37, 99, 235, 0.4);
   outline-offset: 2px;
+}
+
+.ps-cta-primary,
+.ps-cta-primary:hover,
+.ps-cta-primary:visited {
+  text-decoration: none !important;
+  color: #ffffff !important;
 }
 
 .ps-cta-secondary,
@@ -82,6 +86,7 @@ a.ps-cta-secondary {
 
 .ps-header-cta {
   min-width: 245px;
+  text-align: center;
 }
 
 .ps-cta-inline-block {
@@ -121,9 +126,11 @@ a.ps-cta-secondary {
   }
 
   .ps-sticky-cta {
+    display: block;
     width: 100%;
     min-height: 48px;
     font-size: 0.92rem;
+    text-align: center;
   }
 
   .ps-sticky-bar .ps-trustline {

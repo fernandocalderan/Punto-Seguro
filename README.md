@@ -31,27 +31,41 @@ cp .env.example .env
 3. Define al menos:
 
 - `ADMIN_PASSWORD`
+- `DATABASE_URL` en producción (obligatorio para persistencia real en Vercel)
 
-4. Persistencia (elige una):
+4. Persistencia:
 
 - Sin `DATABASE_URL`: usa JSON local en `data/`.
 - Con `DATABASE_URL`: usa Postgres para `providers`, `leads` y `events`.
+- En producción (Vercel) debes definir `DATABASE_URL`; sin esta variable la persistencia será efímera.
 
 SMTP es opcional. Si no se configura, los correos se guardan en `data/email-outbox.log`.
 
 ## Postgres (persistencia permanente)
 
 1. Define `DATABASE_URL` en `.env` o variables de entorno.
-2. Aplica esquema:
+2. Aplica esquema completo (instalación nueva):
 
 ```bash
 npm run db:schema
+```
+
+3. Aplica migración incremental (base ya existente):
+
+```bash
+npm run db:migrate
 ```
 
 Alternativa con `psql`:
 
 ```bash
 psql "$DATABASE_URL" -f db/schema.sql
+```
+
+Incremental con `psql`:
+
+```bash
+psql "$DATABASE_URL" -f migrations/20260211_01_leads_decision_fields.sql
 ```
 
 Esto crea tablas desde `db/schema.sql`:
@@ -69,7 +83,7 @@ Nota SSL:
 
 - El proyecto incluye `vercel.json` para enrutar todas las rutas y API a Express.
 - En Vercel define `ADMIN_PASSWORD`.
-- Para persistencia permanente, define `DATABASE_URL` (Postgres administrado).
+- `DATABASE_URL` es obligatorio en Vercel para persistencia permanente de leads/proveedores/eventos.
 - Variables opcionales: SMTP y `PG_SSL_DISABLE` (solo si tu proveedor lo requiere).
 - Con `DATABASE_URL` activo, los leads/proveedores/eventos permanecen tras redeploys.
 

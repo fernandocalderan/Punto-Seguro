@@ -1,0 +1,17 @@
+{
+  "name": "punto-seguro-leads",
+  "version": "1.0.0",
+  "description": "Motor de captura y distribución de leads para Punto Seguro",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "seed": "node scripts/seed-demo.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "nodemailer": "^7.0.10"
+  }
+}

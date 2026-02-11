@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
 const express = require("express");
@@ -11,7 +12,24 @@ const { createLeadAndDispatch } = require("./lib/leadService");
 const { LEAD_STATUSES } = require("./lib/models");
 const { trackEvent } = require("./lib/events");
 
-const ROOT_DIR = __dirname;
+function resolveRootDir() {
+  const candidates = [
+    __dirname,
+    process.cwd(),
+    path.resolve(__dirname, ".."),
+  ];
+
+  for (const candidate of candidates) {
+    const hasCoreFiles =
+      fs.existsSync(path.join(candidate, "index.html")) &&
+      fs.existsSync(path.join(candidate, "evaluador.html"));
+    if (hasCoreFiles) return candidate;
+  }
+
+  return __dirname;
+}
+
+const ROOT_DIR = resolveRootDir();
 const DATA_DIR =
   process.env.DATA_DIR ||
   (process.env.VERCEL ? "/tmp/punto-seguro-data" : path.join(ROOT_DIR, "data"));

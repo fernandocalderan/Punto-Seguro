@@ -34,6 +34,12 @@ cp .env.example .env
 
 SMTP es opcional. Si no se configura, los correos se guardan en `data/email-outbox.log`.
 
+### Despliegue en Vercel
+
+- El proyecto incluye `vercel.json` para enrutar todas las rutas y API a Express.
+- En Vercel define `ADMIN_PASSWORD` y, si quieres, variables SMTP.
+- Para persistencia real en producción, define `DATA_DIR` apuntando a almacenamiento persistente o migra a una DB (en Vercel, `/tmp` es efímero).
+
 ## Seed demo
 
 Carga 5 proveedores demo (Barcelona/Castelldefels/Gavà/Viladecans) y 1 lead demo:

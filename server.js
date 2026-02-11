@@ -12,7 +12,9 @@ const { LEAD_STATUSES } = require("./lib/models");
 const { trackEvent } = require("./lib/events");
 
 const ROOT_DIR = __dirname;
-const DATA_DIR = path.join(ROOT_DIR, "data");
+const DATA_DIR =
+  process.env.DATA_DIR ||
+  (process.env.VERCEL ? "/tmp/punto-seguro-data" : path.join(ROOT_DIR, "data"));
 
 const PORT = Number(process.env.PORT || 3000);
 const MAX_PROVIDERS_PER_LEAD = Math.max(1, Number(process.env.MAX_PROVIDERS_PER_LEAD || 2));
@@ -310,9 +312,13 @@ app.use((_req, res) => {
   res.status(404).send("Not Found");
 });
 
-app.listen(PORT, () => {
-  if (!process.env.ADMIN_PASSWORD) {
-    console.warn("[punto-seguro] ADMIN_PASSWORD no esta definido. Usando valor por defecto inseguro.");
-  }
-  console.log(`[punto-seguro] servidor iniciado en http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    if (!process.env.ADMIN_PASSWORD) {
+      console.warn("[punto-seguro] ADMIN_PASSWORD no esta definido. Usando valor por defecto inseguro.");
+    }
+    console.log(`[punto-seguro] servidor iniciado en http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

@@ -68,15 +68,15 @@ const DEMO_PROVIDERS = [
   },
 ];
 
-function upsertProviders() {
-  const existing = repositories.providers.list();
+async function upsertProviders() {
+  const existing = await repositories.providers.list();
 
   for (const providerData of DEMO_PROVIDERS) {
     const found = existing.find((provider) => provider.email === providerData.email);
     if (found) {
-      repositories.providers.update(found.id, providerData);
+      await repositories.providers.update(found.id, providerData);
     } else {
-      repositories.providers.create(providerData);
+      await repositories.providers.create(providerData);
     }
   }
 }
@@ -107,13 +107,19 @@ async function seedLead() {
 }
 
 async function main() {
-  upsertProviders();
-  const result = await seedLead();
+  await upsertProviders();
+  const providers = await repositories.providers.list();
+  const shouldSeedLead = process.env.SEED_SKIP_LEAD !== "true";
+  const result = shouldSeedLead ? await seedLead() : null;
 
   console.log("Seed completado");
-  console.log(`Providers totales: ${repositories.providers.list().length}`);
-  console.log(`Lead demo creado: ${result.lead.id}`);
-  console.log(`Providers asignados al demo: ${result.assignedProviders.length}`);
+  console.log(`Providers totales: ${providers.length}`);
+  if (result) {
+    console.log(`Lead demo creado: ${result.lead.id}`);
+    console.log(`Providers asignados al demo: ${result.assignedProviders.length}`);
+  } else {
+    console.log("Lead demo omitido (SEED_SKIP_LEAD=true)");
+  }
   console.log(`Modo email: ${emailService.mode}`);
 }
 

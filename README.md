@@ -8,7 +8,7 @@ Implementación local end-to-end para captura y distribución de leads:
 - Asignación automática a hasta 2 proveedores por zona/tipo/rotación/cupo.
 - Envío de emails a proveedores y confirmación a usuario.
 - Panel mínimo (`/admin`) para proveedores y leads.
-- Eventos y métricas persistidas en `data/events.json`.
+- Eventos y métricas persistidas en JSON o Postgres (según configuración).
 
 ## Requisitos
 
@@ -32,13 +32,46 @@ cp .env.example .env
 
 - `ADMIN_PASSWORD`
 
+4. Persistencia (elige una):
+
+- Sin `DATABASE_URL`: usa JSON local en `data/`.
+- Con `DATABASE_URL`: usa Postgres para `providers`, `leads` y `events`.
+
 SMTP es opcional. Si no se configura, los correos se guardan en `data/email-outbox.log`.
+
+## Postgres (persistencia permanente)
+
+1. Define `DATABASE_URL` en `.env` o variables de entorno.
+2. Aplica esquema:
+
+```bash
+npm run db:schema
+```
+
+Alternativa con `psql`:
+
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+```
+
+Esto crea tablas desde `db/schema.sql`:
+
+- `providers`
+- `leads`
+- `events`
+
+Nota SSL:
+
+- Por defecto el cliente usa SSL con `rejectUnauthorized: false`.
+- Si tu Postgres local no usa SSL, define `PG_SSL_DISABLE=true`.
 
 ### Despliegue en Vercel
 
 - El proyecto incluye `vercel.json` para enrutar todas las rutas y API a Express.
-- En Vercel define `ADMIN_PASSWORD` y, si quieres, variables SMTP.
-- Para persistencia real en producción, define `DATA_DIR` apuntando a almacenamiento persistente o migra a una DB (en Vercel, `/tmp` es efímero).
+- En Vercel define `ADMIN_PASSWORD`.
+- Para persistencia permanente, define `DATABASE_URL` (Postgres administrado).
+- Variables opcionales: SMTP y `PG_SSL_DISABLE` (solo si tu proveedor lo requiere).
+- Con `DATABASE_URL` activo, los leads/proveedores/eventos permanecen tras redeploys.
 
 ## Seed demo
 
@@ -46,6 +79,12 @@ Carga 5 proveedores demo (Barcelona/Castelldefels/Gavà/Viladecans) y 1 lead dem
 
 ```bash
 npm run seed
+```
+
+Si quieres cargar solo proveedores (sin lead demo):
+
+```bash
+SEED_SKIP_LEAD=true npm run seed
 ```
 
 ## Ejecutar local
@@ -71,7 +110,14 @@ Servidor: `http://localhost:3000`
 
 ## Datos persistentes
 
+Modo JSON (sin `DATABASE_URL`):
+
 - `data/providers.json`
 - `data/leads.json`
 - `data/events.json`
 - `data/email-outbox.log`
+
+Modo Postgres (con `DATABASE_URL`):
+
+- tablas `providers`, `leads`, `events`
+- `data/email-outbox.log` para trazas de correo en local

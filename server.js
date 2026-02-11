@@ -90,6 +90,12 @@ function requireAdminApi(req, res, next) {
   return res.status(401).json({ error: "Unauthorized" });
 }
 
+function asyncHandler(handler) {
+  return (req, res, next) => {
+    Promise.resolve(handler(req, res, next)).catch(next);
+  };
+}
+
 function routeToFile(routePath, filePath) {
   app.get(routePath, (_req, res) => {
     res.sendFile(file(filePath));
@@ -124,13 +130,13 @@ app.get("/admin/leads", requireAdminPage, (_req, res) => {
   res.sendFile(file("admin/leads.html"));
 });
 
-app.post("/api/events", (req, res) => {
+app.post("/api/events", asyncHandler(async (req, res) => {
   const eventName = String(req.body.event_name || "").trim();
   if (!eventName) {
     return res.status(400).json({ error: "event_name is required" });
   }
 
-  const event = trackEvent(
+  const event = await trackEvent(
     repositories.events,
     eventName,
     req.body.payload || {},
@@ -142,7 +148,7 @@ app.post("/api/events", (req, res) => {
   );
 
   return res.status(201).json({ ok: true, event_id: event.id });
-});
+}));
 
 app.post("/api/leads", async (req, res) => {
   try {
@@ -203,15 +209,15 @@ app.post("/api/admin/logout", requireAdminApi, (_req, res) => {
   return res.json({ ok: true });
 });
 
-app.get("/api/admin/providers", requireAdminApi, (_req, res) => {
+app.get("/api/admin/providers", requireAdminApi, asyncHandler(async (_req, res) => {
   return res.json({
-    providers: repositories.providers.list(),
+    providers: await repositories.providers.list(),
   });
-});
+}));
 
-app.post("/api/admin/providers", requireAdminApi, (req, res) => {
+app.post("/api/admin/providers", requireAdminApi, asyncHandler(async (req, res) => {
   try {
-    const provider = repositories.providers.create({
+    const provider = await repositories.providers.create({
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
@@ -227,11 +233,11 @@ app.post("/api/admin/providers", requireAdminApi, (req, res) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-});
+}));
 
-app.put("/api/admin/providers/:id", requireAdminApi, (req, res) => {
+app.put("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, res) => {
   try {
-    const provider = repositories.providers.update(req.params.id, {
+    const provider = await repositories.providers.update(req.params.id, {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
@@ -251,24 +257,24 @@ app.put("/api/admin/providers/:id", requireAdminApi, (req, res) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-});
+}));
 
-app.get("/api/admin/leads", requireAdminApi, (_req, res) => {
+app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (_req, res) => {
   return res.json({
-    leads: repositories.leads.list(),
+    leads: await repositories.leads.list(),
   });
-});
+}));
 
-app.get("/api/admin/leads/:id", requireAdminApi, (req, res) => {
-  const lead = repositories.leads.getById(req.params.id);
+app.get("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const lead = await repositories.leads.getById(req.params.id);
   if (!lead) {
     return res.status(404).json({ error: "Lead not found" });
   }
   return res.json({ lead });
-});
+}));
 
-app.patch("/api/admin/leads/:id", requireAdminApi, (req, res) => {
-  const lead = repositories.leads.getById(req.params.id);
+app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const lead = await repositories.leads.getById(req.params.id);
   if (!lead) {
     return res.status(404).json({ error: "Lead not found" });
   }
@@ -287,23 +293,24 @@ app.patch("/api/admin/leads/:id", requireAdminApi, (req, res) => {
   }
 
   try {
-    const updatedLead = repositories.leads.update(req.params.id, patch);
+    const updatedLead = await repositories.leads.update(req.params.id, patch);
     return res.json({ lead: updatedLead });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-});
+}));
 
-app.get("/api/admin/events", requireAdminApi, (req, res) => {
+app.get("/api/admin/events", requireAdminApi, asyncHandler(async (req, res) => {
   const limit = Number(req.query.limit || 100);
   return res.json({
-    events: repositories.events.list(limit),
+    events: await repositories.events.list(limit),
   });
-});
+}));
 
-app.get("/api/admin/metrics", requireAdminApi, (_req, res) => {
-  const leads = repositories.leads.list();
-  const events = repositories.events.list(1000);
+app.get("/api/admin/metrics", requireAdminApi, asyncHandler(async (_req, res) => {
+  const leads = await repositories.leads.list();
+  const events = await repositories.events.list(1000);
+  const providers = await repositories.providers.list();
 
   const leadsByStatus = leads.reduce((acc, lead) => {
     acc[lead.status] = (acc[lead.status] || 0) + 1;
@@ -318,12 +325,20 @@ app.get("/api/admin/metrics", requireAdminApi, (_req, res) => {
   return res.json({
     totals: {
       leads: leads.length,
-      providers: repositories.providers.list().length,
+      providers: providers.length,
       events: events.length,
     },
     leads_by_status: leadsByStatus,
     events_by_name: eventsByName,
   });
+}));
+
+app.use((error, req, res, _next) => {
+  console.error("[punto-seguro] request error", error);
+  if (req.path.startsWith("/api/")) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+  return res.status(500).send("Internal server error");
 });
 
 app.use((_req, res) => {

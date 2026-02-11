@@ -503,7 +503,7 @@ def expert_invite_block(asset_prefix: str = "") -> str:
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="{asset_prefix}logo_whatsapp.png" alt="Diagnóstico">
+        <img src="{asset_prefix}/logo-punto-seguro.png" alt="Diagnóstico">
         <span>Ver mi nivel de riesgo</span>
       </a>
 

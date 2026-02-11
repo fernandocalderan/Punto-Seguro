@@ -18,16 +18,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/leads.css" />
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
-<body>
+<body data-ps-sticky="off">
   <header class="header">
     <div class="container header-inner">
       <a class="brand" href="/">Punto Seguro</a>
       <nav class="nav" aria-label="Navegación principal">
         <a href="/diagnostico">Diagnóstico</a>
         <a href="/resultado">Resultado</a>
-        <a href="/proveedores">Proveedores</a>
       </nav>
+      <div class="header-cta-group">
+        <a class="header-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+        <span class="header-cta-note">Sin llamadas. Solo compartimos datos si tú lo decides.</span>
+      </div>
     </div>
   </header>
 
@@ -123,7 +127,8 @@
     © 2026 <b>Punto Seguro</b> · Transparencia: cesión de datos limitada a hasta 2 proveedores.
   </footer>
 
-  <script src="js/analytics.js"></script>
+  <script src="/js/analytics.js"></script>
   <script src="js/lead-form.js"></script>
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

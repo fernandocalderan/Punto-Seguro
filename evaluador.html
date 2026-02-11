@@ -392,8 +392,7 @@
       color: var(--brand-secondary);
     }
     .evaluador-field select:focus-visible,
-    .btn-evaluador:focus-visible,
-    .btn-whatsapp-evaluador:focus-visible {
+    .btn-evaluador:focus-visible {
       outline: 2px solid rgba(43,92,255,0.35);
       outline-offset: 2px;
     }
@@ -405,19 +404,19 @@
     }
     .btn-evaluador {
       margin-top: 1.4rem;
-      background-color: #25D366;
+      background-color: var(--brand-primary);
       color: #ffffff;
       font-weight: 800;
       padding: .85rem 1.4rem;
       border-radius: 10px;
       border: none;
       cursor: pointer;
-      box-shadow: 0 12px 30px rgba(37,211,102,.25);
+      box-shadow: 0 12px 30px rgba(43,92,255,.25);
       transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
     }
     .btn-evaluador:hover {
       transform: translateY(-1px);
-      box-shadow: 0 16px 36px rgba(37,211,102,.32);
+      box-shadow: 0 16px 36px rgba(43,92,255,.32);
     }
     .btn-evaluador:active { transform: translateY(0); opacity: .95; }
     #resultado {
@@ -484,18 +483,16 @@
       color: var(--text-muted);
       font-size: .95rem;
     }
-    .btn-whatsapp-evaluador {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #25D366;
-      color: white;
-      font-weight: bold;
-      padding: 12px 20px;
-      border-radius: 8px;
-      margin-top: 10px;
+    .flow-stepbar {
+      margin-bottom: 1.2rem;
+      padding: .55rem .8rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: #ffffff;
+      color: var(--brand-secondary);
+      font-weight: 700;
+      font-size: .9rem;
       text-align: center;
-      text-decoration: none;
     }
     @keyframes panelFade {
       from { opacity: 0; transform: translateY(10px); }
@@ -849,22 +846,16 @@
         position: fixed;
         right: 18px;
         bottom: 18px;
-        width: 56px;
-        height: 56px;
-        padding: 0;
-        border-radius: 50%;
-        background: #25D366;
+        height: 48px;
+        padding: 0 1rem;
+        border-radius: 999px;
+        background: var(--brand-primary);
         border: none;
-        box-shadow: 0 10px 24px rgba(37,211,102,.35);
-        text-indent: -9999px;
-        overflow: hidden;
-        color: transparent;
-        font-size: 0;
+        box-shadow: 0 10px 24px rgba(43,92,255,.35);
+        color: #ffffff;
+        font-size: .86rem;
+        font-weight: 800;
         z-index: 70;
-        background-image: url('logo_whatsapp.png');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 28px;
       }
       .header-contact-group{
         position: fixed;
@@ -889,38 +880,26 @@
       }
       .header-contact:hover {
         transform: none;
-        box-shadow: 0 10px 24px rgba(37,211,102,.35);
+        box-shadow: 0 10px 24px rgba(43,92,255,.35);
       }
 
       main { padding-bottom: 90px; }
     }
     @media (min-width: 769px) {
       .header-contact {
-        background: #25D366;
+        background: var(--brand-primary);
         color: #ffffff;
         border: none;
-        box-shadow: 0 6px 18px rgba(37,211,102,.28);
-        padding: 0 .9rem 0 .7rem;
+        box-shadow: 0 6px 18px rgba(43,92,255,0.28);
+        padding: 0 .95rem;
         gap: .45rem;
         font-weight: 800;
-        font-size: 0;
-      }
-      .header-contact::before {
-        content: "";
-        width: 18px;
-        height: 18px;
-        display: inline-block;
-        background: url('logo_whatsapp.png') center/contain no-repeat;
-      }
-      .header-contact::after {
-        content: "Diagnóstico";
         font-size: .88rem;
-        line-height: 1;
       }
       .header-contact:hover {
-        background: #25D366;
+        background: var(--brand-primary);
         transform: translateY(-1px);
-        box-shadow: 0 10px 28px rgba(37,211,102,.38);
+        box-shadow: 0 10px 28px rgba(43,92,255,0.38);
       }
       .header-contact:active {
         transform: translateY(0);
@@ -929,6 +908,7 @@
     }
 
   </style>
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
 
 <body>
@@ -955,36 +935,33 @@
 	        </div>
 
       <nav aria-label="Navegación principal">
-        <a href="index.html#criterio">Criterio</a>
-        <a href="index.html#evaluamos">Qué revisar</a>
-        <a href="index.html#faq">Preguntas</a>
+        <a href="/">Inicio</a>
+        <a href="/resultado">Resultado</a>
       </nav>
       <div class="header-contact-group">
         <a
-          href="/resultado"
+          href="/diagnostico"
           class="header-contact"
-          aria-label="Ver resultado"
+          aria-label="Hacer diagnóstico en 2 minutos"
         >
-          Ver resultado
+          Hacer diagnóstico en 2 minutos
         </a>
         <p class="header-contact-note">
-          Completa la evaluación para ver tu nivel de riesgo y solicitar propuestas.
+          Sin llamadas. Solo compartimos datos si tú lo decides.
         </p>
       </div>
 
-      <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
-        Blog
-      </a>
     </div>
   </header>
 
     <main id="main">
     <section id="evaluador-punto-seguro">
       <div class="container">
+        <div class="flow-stepbar">Paso 1 de 3 - Diagnóstico</div>
         <div class="section-title">
           <h2>Evaluador Punto Seguro</h2>
-          <p>Calcula en 30 segundos el riesgo real de robo en tu vivienda o comercio</p>
-          <p class="fineprint">La evaluación personalizada, si se solicita, se realiza bajo el marco legal de una empresa de seguridad homologada.</p>
+          <p>Calcula en 2 minutos el nivel de exposición a intrusión en tu vivienda o comercio.</p>
+          <p class="fineprint">Diagnóstico orientativo e independiente. Solo compartimos datos si solicitas propuestas.</p>
         </div>
 
         <div class="section-title">
@@ -994,18 +971,18 @@
         <div class="steps">
           <div class="step">
             <div class="n">1</div>
-            <h3>Paso 1 – Información y criterio</h3>
-            <p>Contenido preventivo para comprender la exposición real a intrusión. El diagnóstico es orientativo y no requiere datos de contacto.</p>
+            <h3>Responde 6-10 preguntas</h3>
+            <p>Evaluamos accesos, rutinas y exposición del inmueble sin pedir datos de contacto al iniciar.</p>
           </div>
           <div class="step">
             <div class="n">2</div>
-            <h3>Paso 2 – Consulta voluntaria</h3>
-            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+            <h3>Recibe tu nivel de riesgo y recomendaciones generales</h3>
+            <p>Obtén un resultado claro para decidir con criterio técnico neutral.</p>
           </div>
           <div class="step">
             <div class="n">3</div>
-            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
-            <p>Si solicitas propuestas, compartimos tus datos con hasta 2 proveedores de tu zona, siempre con consentimiento explícito.</p>
+            <h3>Opcional: solicita propuestas adaptadas</h3>
+            <p>Si quieres avanzar, compartimos tus datos con hasta 2 proveedores de tu zona con tu consentimiento.</p>
           </div>
         </div>
 
@@ -1222,7 +1199,7 @@
     </p>
   </footer>
 
-  <script src="js/analytics.js"></script>
+  <script src="/js/analytics.js"></script>
   <script>
     const alertaEvaluador = document.getElementById("form-alerta");
     let quizStartedTracked = false;
@@ -1541,5 +1518,6 @@
   }
   </script>
 
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

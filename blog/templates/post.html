@@ -671,7 +671,7 @@
         color: transparent;
         font-size: 0;
         z-index: 70;
-        background-image: url('../../logo_whatsapp.png');
+        background-image: url('/logo-punto-seguro.png');
         background-repeat: no-repeat;
         background-position: center;
         background-size: 28px;
@@ -720,7 +720,7 @@
         width: 18px;
         height: 18px;
         display: inline-block;
-        background: url('../../logo_whatsapp.png') center/contain no-repeat;
+        background: url('/logo-punto-seguro.png') center/contain no-repeat;
       }
       .header-contact::after {
         content: "Diagnóstico";
@@ -739,6 +739,7 @@
     }
 
   </style>
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
 
 <body>
@@ -775,9 +776,9 @@
           class="header-contact"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Contactar"
+          aria-label="Hacer diagnóstico en 2 minutos"
         >
-          Contactar
+          Hacer diagnóstico en 2 minutos
         </a>
         <p class="header-contact-note">
           Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
@@ -825,5 +826,7 @@
   }
   </script>
 
+  <script src="/js/analytics.js"></script>
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

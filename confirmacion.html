@@ -17,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/leads.css" />
+  <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
 <body>
   <header class="header">
@@ -26,6 +27,10 @@
         <a href="/diagnostico">Diagnóstico</a>
         <a href="/proveedores">Proveedores</a>
       </nav>
+      <div class="header-cta-group">
+        <a class="header-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+        <span class="header-cta-note">Sin llamadas. Solo compartimos datos si tú lo decides.</span>
+      </div>
     </div>
   </header>
 
@@ -47,6 +52,8 @@
     © 2026 <b>Punto Seguro</b>
   </footer>
 
+  <a class="mobile-flow-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+
   <script>
     (function () {
       const node = document.getElementById("confirmation-message");
@@ -62,5 +69,7 @@
       }
     })();
   </script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/ps-cta.js"></script>
 </body>
 </html>

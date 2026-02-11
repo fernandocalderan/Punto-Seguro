@@ -5,12 +5,14 @@
   const updateForm = document.getElementById("lead-update-form");
   const alertNode = document.getElementById("lead-alert");
   const metricsNode = document.getElementById("metrics");
+  const statusFilter = document.getElementById("status-filter");
 
   const leadIdInput = document.getElementById("lead-id");
   const statusInput = document.getElementById("lead-status");
   const notesInput = document.getElementById("lead-notes");
 
   let leadsCache = [];
+  let activeStatusFilter = "all";
 
   function showAlert(message, isError) {
     if (!message) {
@@ -40,6 +42,34 @@
     return data;
   }
 
+  function intentLabel(value) {
+    if (value === "esta_semana") return "Esta semana";
+    if (value === "1_3_meses") return "1-3 meses";
+    if (value === "informativo") return "Informativo";
+    return "-";
+  }
+
+  function toCurrency(value) {
+    if (value === null || value === undefined || value === "") return "-";
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return "-";
+    return `${parsed} EUR`;
+  }
+
+  function getVisibleLeads() {
+    if (!activeStatusFilter || activeStatusFilter === "all") return leadsCache;
+    return leadsCache.filter((lead) => lead.status === activeStatusFilter);
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
   function renderMetrics(metrics) {
     const totals = metrics.totals || {};
     const status = metrics.leads_by_status || {};
@@ -61,27 +91,59 @@
   }
 
   function renderTable() {
-    if (leadsCache.length === 0) {
-      tableBody.innerHTML = "<tr><td colspan=\"7\">No hay leads todavía.</td></tr>";
+    const visibleLeads = getVisibleLeads();
+    if (visibleLeads.length === 0) {
+      tableBody.innerHTML = "<tr><td colspan=\"11\">No hay leads para el filtro seleccionado.</td></tr>";
       return;
     }
 
-    tableBody.innerHTML = leadsCache
+    tableBody.innerHTML = visibleLeads
       .map((lead) => {
-        const assigned = Array.isArray(lead.provider_ids) ? lead.provider_ids.length : 0;
         return `
           <tr>
             <td>${new Date(lead.created_at).toLocaleString("es-ES")}</td>
             <td>${lead.name}<br><span class="muted">${lead.email}</span></td>
             <td>${lead.city} (${lead.postal_code})</td>
             <td>${lead.risk_level}</td>
+            <td>${lead.lead_score ?? "-"}</td>
+            <td>${toCurrency(lead.ticket_estimated_eur)}</td>
+            <td>${intentLabel(lead.intent_plazo)}</td>
             <td>${lead.status}</td>
-            <td>${assigned}/2</td>
+            <td>${lead.assigned_provider_id || "-"}</td>
+            <td>${toCurrency(lead.price_eur)}</td>
             <td><button type="button" class="btn btn-secondary" style="min-height:34px;padding:0.3rem 0.7rem;" data-open="${lead.id}">Ver</button></td>
           </tr>
         `;
       })
       .join("");
+  }
+
+  function formatEvaluationSummary(lead) {
+    if (!lead.evaluation_summary) {
+      return "<div class=\"notice\">Resumen evaluación: No disponible</div>";
+    }
+
+    if (typeof lead.evaluation_summary === "string") {
+      return `<div class="notice">Resumen evaluación: ${escapeHtml(lead.evaluation_summary)}</div>`;
+    }
+
+    const summaryJson = JSON.stringify(lead.evaluation_summary, null, 2);
+    const factors = Array.isArray(lead.evaluation_summary.factores_top)
+      ? lead.evaluation_summary.factores_top
+      : [];
+    const factorsHtml = factors.length > 0
+      ? `<ul class="list">${factors
+        .map((factor) => `<li>${escapeHtml(factor.texto || "Factor")}</li>`)
+        .join("")}</ul>`
+      : "<p class=\"muted\">Sin factores destacados guardados.</p>";
+
+    return `
+      <div class="notice">
+        <p><b>Top factores</b></p>
+        ${factorsHtml}
+      </div>
+      <pre style="white-space:pre-wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.75rem;overflow:auto;">${escapeHtml(summaryJson)}</pre>
+    `;
   }
 
   function openLeadDetail(lead) {
@@ -103,15 +165,21 @@
         <div>
           <p><b>Tipo:</b> ${lead.business_type}</p>
           <p><b>Riesgo:</b> ${lead.risk_level}</p>
+          <p><b>Lead score:</b> ${lead.lead_score ?? "-"}</p>
+          <p><b>Ticket estimado:</b> ${toCurrency(lead.ticket_estimated_eur)}</p>
+          <p><b>Precio:</b> ${toCurrency(lead.price_eur)}</p>
+          <p><b>Plazo intención:</b> ${intentLabel(lead.intent_plazo)}</p>
           <p><b>Urgencia:</b> ${lead.urgency}</p>
           <p><b>Presupuesto:</b> ${lead.budget_range}</p>
           <p><b>Consentimiento:</b> ${lead.consent ? "Sí" : "No"}</p>
           <p><b>Fecha consentimiento:</b> ${lead.consent_timestamp || "-"}</p>
           <p><b>IP consentimiento:</b> ${lead.consent_ip || "-"}</p>
+          <p><b>Assigned provider ID:</b> ${lead.assigned_provider_id || "-"}</p>
+          <p><b>Assigned at:</b> ${lead.assigned_at || "-"}</p>
           <p><b>Provider IDs:</b> ${(lead.provider_ids || []).join(", ") || "Sin asignación"}</p>
         </div>
       </div>
-      <div class="notice">Resumen evaluación: ${lead.evaluation_summary || "No disponible"}</div>
+      ${formatEvaluationSummary(lead)}
     `;
   }
 
@@ -165,6 +233,11 @@
     } catch (error) {
       showAlert(error.message, true);
     }
+  });
+
+  statusFilter?.addEventListener("change", (event) => {
+    activeStatusFilter = String(event.target.value || "all");
+    renderTable();
   });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {

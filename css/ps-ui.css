@@ -138,3 +138,28 @@ a.ps-cta-secondary {
     font-size: 0.71rem;
   }
 }
+
+.ps-cta-primary,
+.ps-cta-primary:visited,
+.ps-cta-primary:hover,
+.ps-cta-primary:active {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #2563eb !important;
+  color: #ffffff !important;
+  padding: 14px 22px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
+}
+
+.ps-cta-primary:hover {
+  background: #1e4fd1 !important;
+}
+
+a.ps-cta-primary {
+  text-decoration: none !important;
+}

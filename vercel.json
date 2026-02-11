@@ -12,6 +12,7 @@
           "*.jpeg",
           "*.webp",
           "js/**",
+          "css/**",
           "styles/**",
           "admin/**",
           "blog/**",

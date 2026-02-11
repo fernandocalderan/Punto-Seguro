@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro Admin | Leads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/admin/providers">Panel admin</a>
+      <nav class="nav" aria-label="Navegación admin">
+        <a href="/admin/providers">Proveedores</a>
+        <a href="/admin/leads">Leads</a>
+        <a href="/">Web</a>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="min-height:36px;padding:0.35rem 0.8rem;">Salir</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card">
+        <h1>Leads</h1>
+        <p class="muted">Listado, detalle y actualización de estado.</p>
+        <div class="grid-3" id="metrics" style="margin-top:1rem;"></div>
+      </section>
+
+      <section class="card stack">
+        <h2 style="font-size:1.2rem;">Listado</h2>
+        <div class="table-wrap">
+          <table class="table" id="leads-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Contacto</th>
+                <th>Ubicación</th>
+                <th>Riesgo</th>
+                <th>Estado</th>
+                <th>Asignación</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card stack" id="lead-detail" style="display:none;">
+        <h2 style="font-size:1.2rem;">Detalle de lead</h2>
+        <div id="lead-detail-content" class="stack"></div>
+
+        <form id="lead-update-form" class="stack" style="max-width:520px;">
+          <input type="hidden" id="lead-id" />
+          <div class="field">
+            <label for="lead-status">Estado</label>
+            <select id="lead-status">
+              <option value="new">new</option>
+              <option value="validated">validated</option>
+              <option value="sent">sent</option>
+              <option value="accepted">accepted</option>
+              <option value="closed">closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lead-notes">Notas</label>
+            <textarea id="lead-notes"></textarea>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+
+        <div id="lead-alert" class="notice" style="display:none;"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin/leads.js"></script>
+</body>
+</html>

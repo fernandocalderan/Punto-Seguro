@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro Admin | Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/leads.css" />
+</head>
+<body>
+  <main class="main">
+    <div class="container" style="max-width:520px;">
+      <section class="card stack">
+        <h1>Acceso admin</h1>
+        <p class="muted">Introduce la contraseña configurada en la variable `ADMIN_PASSWORD`.</p>
+
+        <form id="admin-login-form" class="stack">
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" required autocomplete="current-password" />
+          </div>
+
+          <div id="login-alert" class="notice" style="display:none;"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a class="btn btn-secondary" href="/">Volver</a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin/login.js"></script>
+</body>
+</html>

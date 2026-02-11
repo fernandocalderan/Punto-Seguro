@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} // eslint-disable-line no-unused-vars
+    gtag('js', new Date());
+    gtag('config', 'G-4665672QWS');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro | Programa para proveedores</title>
+  <meta name="description" content="Programa piloto pay-per-lead de Punto Seguro para proveedores de alarmas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/">Punto Seguro</a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/diagnostico">Diagnóstico</a>
+        <a href="/solicitar-propuesta">Solicitudes</a>
+        <a href="/admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Programa proveedores Punto Seguro</h1>
+        <p class="lead">Modelo piloto <b>pay-per-lead</b> para instaladores y centrales receptoras con cobertura local.</p>
+
+        <div class="grid-3">
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Asignación</h2>
+            <p class="muted">Cada lead se deriva a un máximo de 2 proveedores por zona, tipo y cupo diario.</p>
+          </div>
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Rotación</h2>
+            <p class="muted">Rotación automática por fecha de última asignación para evitar concentración.</p>
+          </div>
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Transparencia</h2>
+            <p class="muted">El usuario acepta expresamente la cesión de datos a hasta 2 proveedores.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:1rem;">
+          <h2 style="font-size:1.05rem;">Qué consideramos lead válido</h2>
+          <ul class="list">
+            <li>Datos de contacto verificables (nombre, email y teléfono).</li>
+            <li>Zona geográfica cubierta por el proveedor.</li>
+            <li>Consentimiento explícito de cesión de datos.</li>
+            <li>Solicitud activa para recibir propuesta.</li>
+          </ul>
+        </div>
+
+        <div class="notice">
+          Si quieres entrar en el piloto, escribe a <a href="mailto:partners@puntoseguro.local">partners@puntoseguro.local</a> con cobertura, cupo diario y tipología de clientes.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2026 <b>Punto Seguro</b>
+  </footer>
+</body>
+</html>

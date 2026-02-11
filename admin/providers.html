@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro Admin | Proveedores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/admin/providers">Panel admin</a>
+      <nav class="nav" aria-label="Navegación admin">
+        <a href="/admin/providers">Proveedores</a>
+        <a href="/admin/leads">Leads</a>
+        <a href="/">Web</a>
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="min-height:36px;padding:0.35rem 0.8rem;">Salir</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Proveedores</h1>
+        <p class="muted">Alta y edición básica de proveedores: estado, zonas, tipo y cupo diario.</p>
+
+        <form id="provider-form" class="stack">
+          <input id="provider-id" type="hidden" />
+          <div class="grid">
+            <div class="field">
+              <label for="provider-name">Nombre</label>
+              <input id="provider-name" required />
+            </div>
+            <div class="field">
+              <label for="provider-email">Email</label>
+              <input id="provider-email" type="email" required />
+            </div>
+            <div class="field">
+              <label for="provider-phone">Teléfono</label>
+              <input id="provider-phone" />
+            </div>
+            <div class="field">
+              <label for="provider-zones">Zonas (coma separada: cp/ciudad)</label>
+              <input id="provider-zones" placeholder="08840, castelldefels" required />
+            </div>
+            <div class="field">
+              <label for="provider-types">Tipos (coma separada, opcional)</label>
+              <input id="provider-types" placeholder="vivienda, comercio" />
+            </div>
+            <div class="field">
+              <label for="provider-priority">Prioridad (menor = antes)</label>
+              <input id="provider-priority" type="number" min="1" value="100" required />
+            </div>
+            <div class="field">
+              <label for="provider-daily-cap">Cupo diario</label>
+              <input id="provider-daily-cap" type="number" min="1" value="10" required />
+            </div>
+            <label class="field" style="display:flex;gap:0.5rem;align-items:center;">
+              <input id="provider-active" type="checkbox" checked style="width:auto;min-height:auto;" />
+              <span>Proveedor activo</span>
+            </label>
+          </div>
+
+          <div id="provider-alert" class="notice" style="display:none;"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Guardar proveedor</button>
+            <button type="button" id="provider-reset" class="btn btn-secondary">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card stack">
+        <h2 style="font-size:1.2rem;">Listado</h2>
+        <div class="table-wrap">
+          <table class="table" id="providers-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Zonas</th>
+                <th>Tipos</th>
+                <th>Cupo</th>
+                <th>Última asignación</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin/providers.js"></script>
+</body>
+</html>

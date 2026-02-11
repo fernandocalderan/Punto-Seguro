@@ -826,31 +826,19 @@
         display: none;
       }
       .header-contact {
-        background: #25D366;
+        background: var(--brand-primary);
         color: #ffffff;
         border: none;
-        box-shadow: 0 6px 18px rgba(37,211,102,.28);
-        padding: 0 .9rem 0 .7rem;
-        gap: .45rem;
+        box-shadow: 0 6px 18px rgba(43,92,255,0.28);
+        padding: 0 .9rem;
+        gap: 0;
         font-weight: 800;
-        font-size: 0;
-      }
-      .header-contact::before {
-        content: "";
-        width: 18px;
-        height: 18px;
-        display: inline-block;
-        background: url('logo_whatsapp.png') center/contain no-repeat;
-      }
-      .header-contact::after {
-        content: "WhatsApp";
         font-size: .88rem;
-        line-height: 1;
       }
       .header-contact:hover {
-        background: #25D366;
+        background: var(--brand-primary);
         transform: translateY(-1px);
-        box-shadow: 0 10px 28px rgba(37,211,102,.38);
+        box-shadow: 0 10px 28px rgba(43,92,255,0.38);
       }
       .header-contact:active {
         transform: translateY(0);
@@ -912,30 +900,30 @@
     <section class="hero">
       <div class="container hero-grid">
         <div>
-          <p class="hero-eyebrow">Criterio profesional en seguridad</p>
+          <p class="hero-eyebrow">Evaluación independiente de riesgo</p>
           <h1>
-            La mayoría de propietarios se equivocan<br>
-            al evaluar la seguridad de su inmueble.
+            Evalúa tu riesgo de intrusión con criterio independiente<br>
+            antes de pedir propuestas.
           </h1>
 
           <p class="hero-subtitle">
-            El problema no suele ser la falta de medidas,
-            sino una percepción de seguridad que no coincide con la realidad.
+            Punto Seguro ofrece una evaluación neutral para viviendas y negocios.
+            Primero entiendes tu exposición real y después decides si quieres recibir propuestas.
           </p>
           <p class="fineprint">
           </p>
 
           <section class="advisor">
             <div class="advisor-card">
-              <img src="foto_perfil.jpeg" alt="Fernando – Asesor de Seguridad" class="advisor-photo">
+              <img src="foto_perfil.jpeg" alt="Equipo de análisis Punto Seguro" class="advisor-photo">
 
               <div class="advisor-info">
-                <h3>Fernando Aringhieri</h3>
-                <p class="advisor-role">Asesor de Seguridad</p>
+                <h3>Punto Seguro</h3>
+                <p class="advisor-role">Evaluación independiente de riesgo</p>
                 <p class="advisor-desc">
-                  Análisis orientativo basado en criterio profesional para detectar
+                  Diagnóstico orientativo basado en metodología neutral para detectar
                   exposición real, errores de percepción y puntos ignorados
-                  en viviendas y negocios.
+                  antes de comparar propuestas.
                 </p>
               </div>
             </div>
@@ -949,8 +937,9 @@
             >
               Empezar evaluación
             </a>
-            <p class="hero-cta-note">Diagnóstico orientativo + solicitud de propuestas a hasta 2 proveedores.</p>
-            <p class="hero-cta-note">Sin compromiso · Cesión de datos solo con consentimiento explícito</p>
+            <p class="hero-cta-note">⏱️ 2 minutos. No pedimos teléfono hasta el final.</p>
+            <p class="hero-cta-note">🔒 Sin spam: tus datos solo se comparten con hasta 2 instaladores si tú lo pides.</p>
+            <p class="hero-cta-note">📩 Si no solicitas propuesta, no se comparte nada.</p>
           </div>
 
         </div>
@@ -971,13 +960,13 @@
           </div>
           <div class="step">
             <div class="n">2</div>
-            <h3>Paso 2 – Consulta voluntaria</h3>
-            <p>El usuario puede iniciar una conversación directa para contrastar su situación concreta, sin obligación de avanzar.</p>
+            <h3>Paso 2 – Resultado orientativo</h3>
+            <p>Recibes tu nivel de riesgo y los factores de mayor impacto para decidir con criterio.</p>
           </div>
           <div class="step">
             <div class="n">3</div>
-            <h3>Paso 3 – Evaluación técnica (opcional)</h3>
-            <p>Si se solicita una <b>evaluación profesional personalizada</b>, esta se realiza bajo el marco legal correspondiente, <b>con registro de datos</b> conforme a la normativa de seguridad privada.</p>
+            <h3>Paso 3 – Opcional: solicitar propuestas adaptadas a tu evaluación.</h3>
+            <p>Solo si lo decides, Punto Seguro comparte tus datos con hasta 2 proveedores seleccionados.</p>
           </div>
         </div>
       </div>
@@ -1224,9 +1213,8 @@
     <section class="expert-invite">
 
       <p class="expert-invite-intro">
-        Si necesitas contrastar si tu vivienda, local u oficina
-        está correctamente protegida,
-        puedes hablar directamente conmigo.
+        Si quieres pasar de diagnóstico a acción,
+        empieza la evaluación y solicita propuestas solo al final.
       </p>
 
       <a

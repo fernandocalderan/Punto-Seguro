@@ -40,7 +40,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 140px;
+      scroll-padding-top: 92px;
          }
     body {
       font-family: 'Inter', system-ui, sans-serif;
@@ -377,35 +377,35 @@
 <body class="ps-has-sticky">
   <a class="skip-link" href="#main">Saltar al contenido</a>
 
-  <header>
-	    <div class="container header-inner">
-	      <div class="brand">
+  <header class="ps-header">
+	    <div class="container header-inner ps-header-inner">
+	      <a class="brand ps-brand" href="/">
 	        <div class="logo">
-	          <img src="logo-punto-seguro.png" alt="Punto Seguro">
+	          <img class="ps-logo" src="logo-punto-seguro.png" alt="Punto Seguro">
 	        </div>
 	        <div class="brand-text">
-	          <strong>Criterio profesional para detectar exposición real</strong>
-	          <span>Referencia informativa aplicada por asesor de seguridad</span>
+	          <strong class="ps-brand-title">Punto Seguro</strong>
+	          <span class="ps-brand-subtitle">Diagnóstico neutral</span>
 	        </div>
 	        <div class="brand-text-mobile">
-	          <strong>Punto Seguro</strong>
-	          <span>Asesoría en seguridad</span>
+	          <strong class="ps-brand-title">Punto Seguro</strong>
 	        </div>
-	        </div>
+	        </a>
 
-      <nav aria-label="Navegación principal">
+      <nav class="ps-nav" aria-label="Navegación principal">
         <a href="index.html#criterio">Criterio</a>
         <a href="index.html#evaluamos">Qué revisar</a>
         <a href="index.html#faq">Preguntas</a>
       </nav>
-      <div class="ps-header-cta-wrap">
-        <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header">Hacer diagnóstico en 2 minutos</a>
-        <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+      <div class="ps-header-actions">
+        <div class="ps-header-cta-wrap">
+          <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header">Hacer diagnóstico en 2 minutos</a>
+          <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+        </div>
+        <a class="header-link ps-blog-link" href="/blog" aria-label="Ir al blog de Punto Seguro">
+          Blog
+        </a>
       </div>
-
-      <a class="header-link" href="blog.html" target="_blank" rel="noopener noreferrer" aria-label="Ir al blog de Punto Seguro">
-        Blog
-      </a>
     </div>
   </header>
 

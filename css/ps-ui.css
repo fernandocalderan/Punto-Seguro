@@ -279,10 +279,15 @@ a.ps-cta-secondary {
   }
 
   body.home-page.ps-has-sticky {
+    padding-bottom: 24px;
+  }
+
+  body.home-page.ps-has-sticky.ps-sticky-visible {
     padding-bottom: 72px;
   }
 
   .home-page .ps-sticky-bar {
+    display: none;
     flex-direction: row;
     align-items: center;
     justify-content: center;
@@ -297,6 +302,10 @@ a.ps-cta-secondary {
     border: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: none;
+  }
+
+  .home-page .ps-sticky-bar.is-visible {
+    display: flex;
   }
 
   .home-page .ps-sticky-cta {

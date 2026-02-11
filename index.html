@@ -284,19 +284,17 @@
       letter-spacing: -0.03em;
       max-width: 900px;
     }
-    .hero-title-mobile { display: none; }
+    .hero-title-mobile,
+    .hero-mobile-identity,
+    .hero-mobile-brand,
+    .hero-benefits {
+      display: none;
+    }
     .hero-subtitle {
       font-size: 1.12rem;
       color: var(--text-muted);
       max-width: 760px;
       margin-bottom: 1.45rem;
-    }
-    .hero-subtitle-mobile {
-      display: none;
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 760px;
-      margin-bottom: 1.1rem;
     }
     .hero-claim {
       background: rgba(255,255,255,0.85);
@@ -691,7 +689,8 @@
       main { padding-bottom: 90px; }
 
       .hero {
-        padding: 2.2rem 0 2.4rem;
+        padding-top: 20px;
+        padding-bottom: 24px;
         background: #ffffff;
         border-radius: 0;
       }
@@ -705,15 +704,34 @@
         flex-direction: column;
         border-radius: 0;
       }
-      .hero-eyebrow {
+      .hero-mobile-identity {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
         order: 1;
+        margin-bottom: 6px;
+      }
+      .hero-mobile-identity img {
+        width: 52px;
+        height: auto;
+        display: block;
+      }
+      .hero-mobile-brand {
+        display: block;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--brand-secondary);
+        line-height: 1.1;
+      }
+      .hero-eyebrow {
+        order: 2;
         font-size: .78rem;
         color: var(--text-muted);
         letter-spacing: .02em;
-        margin-bottom: .6rem;
+        margin-bottom: .4rem;
       }
       .hero h1 {
-        order: 2;
+        order: 3;
         font-size: 2.05rem;
         line-height: 1.15;
         margin-top: 12px;
@@ -721,16 +739,22 @@
       }
       .hero-title-desktop { display: none; }
       .hero-title-mobile { display: inline; }
-      .hero-subtitle-mobile {
-        display: block;
-        order: 3;
-        font-size: .98rem;
-        margin-bottom: .55rem;
+      .hero-benefits {
+        display: grid;
+        order: 4;
+        gap: 6px;
+        margin-top: 14px;
+        margin-bottom: 18px;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--brand-secondary);
       }
+      .hero-benefits span { display: block; }
       .hero-subtitle {
         order: 6;
         font-size: .97rem;
         margin-bottom: 0;
+        display: none;
       }
       .advisor {
         order: 4;
@@ -755,7 +779,7 @@
       .advisor-desc { font-size: .9rem; line-height: 1.45; }
 
       .hero-mobile-cta {
-        order: 4;
+        order: 5;
         display: flex;
         flex-direction: column;
         gap: .55rem;
@@ -925,14 +949,21 @@
     <section class="hero">
       <div class="container hero-grid mobile-container">
         <div>
+          <div class="hero-mobile-identity">
+            <img src="logo-punto-seguro.png" alt="Punto Seguro">
+            <span class="hero-mobile-brand">Punto Seguro</span>
+          </div>
           <p class="hero-eyebrow">Evaluación independiente de protección</p>
           <h1>
             <span class="hero-title-desktop">Evalúa tu exposición a intrusión en 2 minutos (hogar o negocio).</span>
-            <span class="hero-title-mobile">Evalúa el nivel de protección de tu hogar o negocio en 2 minutos</span>
+            <span class="hero-title-mobile">¿Tu hogar o negocio está bien protegido?</span>
           </h1>
-          <p class="hero-subtitle-mobile">
-            Diagnóstico neutral basado en criterios profesionales. Obtén tu nivel de riesgo y recomendaciones generales.
-          </p>
+          <div class="hero-benefits">
+            <span>✓ Nivel de protección estimado</span>
+            <span>✓ Factores que aumentan el riesgo</span>
+            <span>✓ Recomendaciones generales</span>
+            <span>✓ Opcional: contacto con profesionales</span>
+          </div>
 
           <p class="hero-subtitle hero-description">
             Diagnóstico neutral. No pedimos teléfono al empezar. Solo compartimos tus datos si solicitas propuestas (hasta 2 proveedores).
@@ -948,7 +979,7 @@
             >
               Hacer diagnóstico en 2 minutos
             </a>
-            <p class="hero-cta-note">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</p>
+            <p class="hero-cta-note">Sin llamadas. Tú decides si solicitar contacto.</p>
           </div>
 
         </div>
@@ -1253,13 +1284,36 @@
   <script>
     (function () {
       const heroCta = document.getElementById("hero-primary-cta");
-      if (!heroCta) return;
-
-      heroCta.addEventListener("click", function () {
-        window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
-          source: "home_hero_cta",
+      if (heroCta) {
+        heroCta.addEventListener("click", function () {
+          window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
+            source: "home_hero_cta",
+          });
         });
-      });
+      }
+
+      const stickyBar = document.querySelector(".home-page .ps-sticky-bar");
+      const body = document.body;
+      if (!stickyBar || !body) return;
+
+      const toggleSticky = function () {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (!isMobile) {
+          stickyBar.classList.remove("is-visible");
+          body.classList.remove("ps-sticky-visible");
+          return;
+        }
+
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+        const showSticky = progress >= 0.4;
+        stickyBar.classList.toggle("is-visible", showSticky);
+        body.classList.toggle("ps-sticky-visible", showSticky);
+      };
+
+      toggleSticky();
+      window.addEventListener("scroll", toggleSticky, { passive: true });
+      window.addEventListener("resize", toggleSticky);
     })();
   </script>
 

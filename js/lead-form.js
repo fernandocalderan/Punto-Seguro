@@ -16,9 +16,9 @@
     alertNode.className = isError ? "notice error" : "notice";
   }
 
-  function readSummary() {
+  function readEvaluation() {
     try {
-      const raw = window.sessionStorage.getItem("puntoSeguro.evaluationSummary");
+      const raw = window.sessionStorage.getItem("puntoSeguro.latestEvaluation");
       if (!raw) return null;
       return JSON.parse(raw);
     } catch (_error) {
@@ -26,19 +26,64 @@
     }
   }
 
-  const summary = readSummary();
-  if (summary) {
-    summaryNode.textContent = `Riesgo orientativo: ${summary.risk_level} (${summary.risk_score}/100). Este dato se adjuntará a la solicitud.`;
-    const typeSelect = document.getElementById("business_type");
-    if (summary.tipo_inmueble && ["vivienda", "comercio", "oficina"].includes(summary.tipo_inmueble)) {
-      typeSelect.value = summary.tipo_inmueble;
+  function readIntent() {
+    try {
+      const raw = window.sessionStorage.getItem("puntoSeguro.intent");
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (_error) {
+      return null;
     }
-  } else {
-    summaryNode.textContent = "No se encontró un resultado previo. Puedes enviar la solicitud igualmente con nivel de riesgo orientativo medio.";
   }
 
+  const evaluation = readEvaluation();
+  if (!evaluation) {
+    window.location.href = "/resultado";
+    return;
+  }
+
+  const riskLevel = String(evaluation.risk_level || "MEDIO").toUpperCase();
+  const riskScore = Number(evaluation.risk_score || 0);
+  const intent = readIntent();
+
+  const typeSelect = document.getElementById("business_type");
+  if (evaluation.tipo_inmueble && ["vivienda", "comercio", "oficina"].includes(evaluation.tipo_inmueble)) {
+    typeSelect.value = evaluation.tipo_inmueble;
+  }
+
+  const urgencySelect = document.getElementById("urgency");
+  if (riskLevel === "ALTO") urgencySelect.value = "alta";
+  if (riskLevel === "BAJO") urgencySelect.value = "baja";
+
+  const intentLabelMap = {
+    esta_semana: "Esta semana",
+    "1_3_meses": "1–3 meses",
+    informativo: "Solo informativo",
+  };
+  const intentLabel = intent?.plazo ? intentLabelMap[intent.plazo] || intent.plazo : "No indicado";
+
+  summaryNode.textContent = `Riesgo orientativo: ${riskLevel} (${riskScore}/100). Plazo declarado: ${intentLabel}. Este resumen se adjuntará a la solicitud.`;
+
+  const evaluationSummary = {
+    risk_score: riskScore,
+    risk_level: riskLevel,
+    tipo_inmueble: evaluation.tipo_inmueble || null,
+    factores_top: Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [],
+    generated_at: evaluation.generated_at || null,
+  };
+
+  window.sessionStorage.setItem(
+    "puntoSeguro.evaluationSummary",
+    JSON.stringify({
+      ...evaluationSummary,
+      summary: evaluationSummary.factores_top.map((factor) => factor.texto).join(" | "),
+    })
+  );
+
   window.PuntoSeguroAnalytics?.trackEvent("lead_form_viewed", {
-    has_result: Boolean(summary),
+    has_result: true,
+    risk_level: riskLevel,
+    intent_plazo: intent?.plazo || null,
   });
 
   form.addEventListener("submit", async (event) => {
@@ -63,11 +108,17 @@
       urgency: document.getElementById("urgency").value,
       budget_range: document.getElementById("budget_range").value,
       notes: document.getElementById("notes").value.trim(),
-      risk_level: summary?.risk_level || "MEDIO",
+      risk_level: riskLevel,
       consent: true,
       consent_timestamp: new Date().toISOString(),
-      evaluation_summary: summary?.summary || "Sin resumen específico",
+      evaluation_summary: evaluationSummary,
+      intent_plazo: intent?.plazo || null,
     };
+
+    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
+      risk_level: payload.risk_level,
+      intent_plazo: payload.intent_plazo,
+    });
 
     try {
       const response = await fetch("/api/leads", {
@@ -90,13 +141,9 @@
           provider_count: data.provider_count,
           city: payload.city,
           risk_level: payload.risk_level,
+          intent_plazo: payload.intent_plazo,
         })
       );
-
-      window.PuntoSeguroAnalytics?.trackEvent("lead_submitted", {
-        lead_id: data.lead_id,
-        provider_count: data.provider_count,
-      });
 
       window.location.href = `/confirmacion?lead=${encodeURIComponent(data.lead_id)}`;
     } catch (error) {

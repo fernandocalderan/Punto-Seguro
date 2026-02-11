@@ -1,4 +1,15 @@
 (function analyticsBootstrap() {
+  if (window.PuntoSeguroAnalytics) {
+    if (!window.analytics) {
+      window.analytics = {
+        track(eventName, payload) {
+          return window.PuntoSeguroAnalytics.trackEvent(eventName, payload);
+        },
+      };
+    }
+    return;
+  }
+
   async function trackEvent(eventName, payload) {
     const safePayload = payload || {};
 
@@ -25,5 +36,11 @@
 
   window.PuntoSeguroAnalytics = {
     trackEvent,
+  };
+
+  window.analytics = {
+    track(eventName, payload) {
+      return trackEvent(eventName, payload);
+    },
   };
 })();

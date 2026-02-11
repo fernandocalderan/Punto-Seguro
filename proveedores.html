@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="styles/leads.css" />
   <link rel="stylesheet" href="/css/ps-ui.css" />
 </head>
-<body>
+<body class="ps-has-sticky">
   <header class="header">
     <div class="container header-inner">
       <a class="brand" href="/">Punto Seguro</a>
@@ -29,9 +29,9 @@
         <a href="/solicitar-propuesta">Solicitudes</a>
         <a href="/admin">Admin</a>
       </nav>
-      <div class="header-cta-group">
-        <a class="header-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
-        <span class="header-cta-note">Sin llamadas. Solo compartimos datos si tú lo decides.</span>
+      <div class="ps-header-cta-wrap">
+        <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header">Hacer diagnóstico en 2 minutos</a>
+        <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
       </div>
     </div>
   </header>
@@ -43,9 +43,9 @@
         <p class="lead">Modelo piloto pay-per-lead para instaladores y centrales con cobertura local verificada.</p>
         <div class="actions">
           <a class="btn btn-primary" href="mailto:partners@puntoseguro.local?subject=Solicitud%20acceso%20piloto">Solicitar acceso al piloto</a>
-          <a class="btn btn-secondary" href="/diagnostico">Ver diagnóstico</a>
+          <a class="ps-cta-secondary" href="/diagnostico" data-ps-placement="inline">Ver el diagnóstico que recibe el usuario</a>
         </div>
-        <p class="cta-primary-note">Puedes revisar el recorrido real del usuario antes de entrar al piloto.</p>
+        <p class="cta-primary-note">Así se cualifica el lead antes de llegar al proveedor.</p>
       </section>
 
       <section class="card stack">
@@ -88,7 +88,10 @@
     © 2026 <b>Punto Seguro</b>
   </footer>
 
-  <a class="mobile-flow-cta" href="/diagnostico">🛡️ Hacer diagnóstico en 2 minutos</a>
+  <div class="ps-sticky-bar" role="region" aria-label="Acción principal">
+    <a class="ps-cta-primary ps-sticky-cta" href="/diagnostico" data-ps-placement="sticky">Hacer diagnóstico en 2 minutos</a>
+    <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+  </div>
   <script src="/js/analytics.js"></script>
   <script src="/js/ps-cta.js"></script>
 </body>

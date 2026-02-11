@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} // eslint-disable-line no-unused-vars
+    gtag('js', new Date());
+    gtag('config', 'G-4665672QWS');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro | Confirmación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/">Punto Seguro</a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/diagnostico">Diagnóstico</a>
+        <a href="/proveedores">Proveedores</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="card stack" style="max-width:760px;margin:0 auto;">
+        <h1>Solicitud enviada</h1>
+        <p id="confirmation-message" class="lead">Hemos enviado tu solicitud a hasta 2 proveedores seleccionados.</p>
+        <p class="muted">Recibirás respuesta por email o teléfono según disponibilidad y cobertura de zona.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="/">Volver al inicio</a>
+          <a class="btn btn-secondary" href="/diagnostico">Nueva evaluación</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2026 <b>Punto Seguro</b>
+  </footer>
+
+  <script>
+    (function () {
+      const node = document.getElementById("confirmation-message");
+      try {
+        const raw = window.sessionStorage.getItem("puntoSeguro.lastLead");
+        if (!raw) return;
+
+        const lead = JSON.parse(raw);
+        const providers = Number(lead.provider_count || 0);
+        node.textContent = `Hemos enviado tu solicitud a hasta 2 proveedores seleccionados. Asignados en esta solicitud: ${providers}.`;
+      } catch (_error) {
+        // noop
+      }
+    })();
+  </script>
+</body>
+</html>

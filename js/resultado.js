@@ -1,0 +1,96 @@
+(function resultadoPage() {
+  function readEvaluation() {
+    const raw = window.sessionStorage.getItem("puntoSeguro.latestEvaluation");
+    if (!raw) return null;
+
+    try {
+      return JSON.parse(raw);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function badgeClass(level) {
+    if (level === "BAJO") return "badge badge-low";
+    if (level === "MEDIO") return "badge badge-medium";
+    if (level === "ALTO") return "badge badge-high";
+    return "badge";
+  }
+
+  function explanation(level) {
+    if (level === "ALTO") {
+      return "Tu exposición es alta: conviene contrastar de forma prioritaria las capas de detección y tiempos de respuesta.";
+    }
+    if (level === "MEDIO") {
+      return "Tu exposición es moderada: hay puntos mejorables para reducir previsibilidad y oportunidad de intrusión.";
+    }
+    return "Tu exposición es contenida: mantener revisión periódica ayuda a conservar este nivel.";
+  }
+
+  function recommendations(level) {
+    if (level === "ALTO") {
+      return [
+        "Revisar con un proveedor homologado los puntos de acceso con mayor tiempo de exposición.",
+        "Contrastar opciones de detección temprana y protocolo de respuesta en franjas críticas.",
+        "Definir una priorización por fases para reducir riesgo sin sobredimensionar inversión.",
+      ];
+    }
+
+    if (level === "MEDIO") {
+      return [
+        "Verificar qué accesos o rutinas generan mayor previsibilidad y priorizar su ajuste.",
+        "Comparar dos propuestas técnicas para equilibrar cobertura, coste y tiempos de atención.",
+        "Alinear medidas físicas y hábitos operativos para evitar puntos ciegos frecuentes.",
+      ];
+    }
+
+    return [
+      "Mantener revisión periódica de cerramientos y puntos sensibles de acceso.",
+      "Comprobar que hábitos diarios no incrementen la observabilidad del inmueble.",
+      "Solicitar validación externa anual para detectar desajustes progresivos.",
+    ];
+  }
+
+  const evaluation = readEvaluation();
+  if (!evaluation) {
+    window.location.href = "/diagnostico";
+    return;
+  }
+
+  const score = Number(evaluation.risk_score || 0);
+  const level = String(evaluation.risk_level || "MEDIO").toUpperCase();
+
+  const scoreNode = document.getElementById("risk-score");
+  const levelNode = document.getElementById("risk-level-badge");
+  const explanationNode = document.getElementById("risk-explanation");
+  const recommendationsNode = document.getElementById("recommendations-list");
+
+  scoreNode.textContent = `${score} / 100`;
+  levelNode.textContent = level;
+  levelNode.className = badgeClass(level);
+  explanationNode.textContent = explanation(level);
+
+  recommendationsNode.innerHTML = recommendations(level)
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+
+  const resumen = (evaluation.factores_top || [])
+    .map((factor) => factor.texto)
+    .slice(0, 3)
+    .join(" | ");
+
+  window.sessionStorage.setItem(
+    "puntoSeguro.evaluationSummary",
+    JSON.stringify({
+      risk_level: level,
+      risk_score: score,
+      summary: resumen,
+      tipo_inmueble: evaluation.tipo_inmueble,
+    })
+  );
+
+  window.PuntoSeguroAnalytics?.trackEvent("result_viewed", {
+    risk_level: level,
+    risk_score: score,
+  });
+})();

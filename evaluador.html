@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Punto Seguro | Criterio profesional para detectar exposición real a intrusión</title>
 
-  <meta name="description" content="Criterio profesional para identificar exposición real a intrusión en viviendas y negocios. Sitio informativo. Sin venta. Sin recogida de datos." />
+  <meta name="description" content="Criterio profesional para identificar exposición real a intrusión en viviendas y negocios. Diagnóstico orientativo y solicitud de propuestas con consentimiento." />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -961,16 +961,14 @@
       </nav>
       <div class="header-contact-group">
         <a
-          href="https://wa.me/34663033640?text=Hola,%20quiero%20hablar%20contigo%20sobre%20mi%20situación"
+          href="/resultado"
           class="header-contact"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Contactar"
+          aria-label="Ver resultado"
         >
-          Contactar
+          Ver resultado
         </a>
         <p class="header-contact-note">
-          Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.
+          Completa la evaluación para ver tu nivel de riesgo y solicitar propuestas.
         </p>
       </div>
 
@@ -997,7 +995,7 @@
           <div class="step">
             <div class="n">1</div>
             <h3>Paso 1 – Información y criterio</h3>
-            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+            <p>Contenido preventivo para comprender la exposición real a intrusión. El diagnóstico es orientativo y no requiere datos de contacto.</p>
           </div>
           <div class="step">
             <div class="n">2</div>
@@ -1007,7 +1005,7 @@
           <div class="step">
             <div class="n">3</div>
             <h3>Paso 3 – Evaluación técnica (opcional)</h3>
-            <p>Si se solicita una evaluación profesional personalizada, esta se realiza bajo el marco legal correspondiente, con registro de datos conforme a la normativa de seguridad privada.</p>
+            <p>Si solicitas propuestas, compartimos tus datos con hasta 2 proveedores de tu zona, siempre con consentimiento explícito.</p>
           </div>
         </div>
 
@@ -1219,13 +1217,15 @@
   <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
     <p style="margin:0 0 .4rem;">
       © 2026 <b>Punto Seguro</b> · Sitio informativo de concienciación en seguridad.
-      No se comercializan productos ni se recogen datos personales en esta web.
-      El contacto se realiza únicamente a iniciativa del usuario.
+      Diagnóstico neutral y solicitud de propuestas bajo consentimiento explícito.
+      <br><a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a> · <a href="/cookies">Cookies</a>
     </p>
   </footer>
 
+  <script src="js/analytics.js"></script>
   <script>
     const alertaEvaluador = document.getElementById("form-alerta");
+    let quizStartedTracked = false;
 
     function mostrarAlerta(mensaje) {
       if (!alertaEvaluador) return;
@@ -1260,6 +1260,13 @@
       const comercio = document.getElementById("formulario-comercio");
 
       mostrarAlerta("");
+
+      if (!quizStartedTracked && tipo) {
+        quizStartedTracked = true;
+        window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
+          tipo_inmueble: tipo,
+        });
+      }
 
       if (tipo === "vivienda") {
         setEstadoFormulario(vivienda, true);
@@ -1307,6 +1314,14 @@
     }
 
     cambiarFormulario(document.getElementById("tipo-inmueble").value);
+
+    document.getElementById("evaluador-form").addEventListener("change", () => {
+      if (quizStartedTracked) return;
+      quizStartedTracked = true;
+      window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
+        tipo_inmueble: document.getElementById("tipo-inmueble").value || "pendiente",
+      });
+    });
   </script>
 
   <script>
@@ -1500,7 +1515,6 @@
     else if (riesgoTotal <= 65) nivel = "MEDIO";
     else nivel = "ALTO";
 
-    const nivelClass = `nivel-${nivel.toLowerCase()}`;
     const factores = [
       ...vulnerabilidad.factores,
       ...oportunidad.factores,
@@ -1509,31 +1523,21 @@
     const factoresTop = factores
       .sort((a, b) => b.puntos - a.puntos)
       .slice(0, 3);
-    const factoresHtml = factoresTop
-      .map((factor) => `<li>✖ ${factor.texto}</li>`)
-      .join("");
+    const evaluation = {
+      risk_score: riesgoTotal,
+      risk_level: nivel,
+      tipo_inmueble: tipoInmueble,
+      factores_top: factoresTop,
+      generated_at: new Date().toISOString(),
+    };
 
-    document.getElementById("resultado").innerHTML = `
-      <div class="resultado-card">
-        <div class="resultado-header">
-          <div class="resultado-score">Riesgo estimado: ${riesgoTotal} / 100</div>
-          <span class="resultado-nivel ${nivelClass}">${nivel}</span>
-        </div>
-        <p class="resultado-subtitle">
-          Análisis basado en vulnerabilidad, oportunidad y atractivo del inmueble.
-        </p>
-        <div class="resultado-factores-title">Factores de mayor impacto</div>
-        <ul class="resultado-factores">
-          ${factoresHtml}
-        </ul>
-        <a href="https://wa.me/34663033640?text=Hola,%20he%20hecho%20el%20Evaluador%20Punto%20Seguro.%20Mi%20riesgo%20es%20${riesgoTotal}%20(${nivel})."
-           target="_blank"
-           class="btn-whatsapp-evaluador">
-           Hablar con un Asesor Punto Seguro
-        </a>
-        <p class="fineprint">Si durante la conversación solicitas una evaluación técnica, se te explicará previamente el proceso y el marco legal aplicable.</p>
-      </div>
-    `;
+    window.sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(evaluation));
+    window.PuntoSeguroAnalytics?.trackEvent("quiz_completed", {
+      risk_level: nivel,
+      risk_score: riesgoTotal,
+      tipo_inmueble: tipoInmueble,
+    });
+    window.location.href = "/resultado";
   }
   </script>
 

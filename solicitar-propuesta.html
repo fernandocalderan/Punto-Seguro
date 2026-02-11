@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} // eslint-disable-line no-unused-vars
+    gtag('js', new Date());
+    gtag('config', 'G-4665672QWS');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro | Solicitar propuestas</title>
+  <meta name="description" content="Solicita propuestas adaptadas en Punto Seguro. Compartimos tus datos con hasta 2 proveedores." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/">Punto Seguro</a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/diagnostico">Diagnóstico</a>
+        <a href="/resultado">Resultado</a>
+        <a href="/proveedores">Proveedores</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Solicitar propuestas adaptadas</h1>
+        <p class="lead">Punto Seguro actúa como canal neutral y comparte tu solicitud con hasta 2 proveedores activos para tu zona.</p>
+
+        <div id="lead-summary" class="notice">
+          Recuperando datos de tu evaluación...
+        </div>
+
+        <form id="lead-form" class="stack" novalidate>
+          <div class="grid">
+            <div class="field">
+              <label for="name">Nombre y apellidos</label>
+              <input id="name" name="name" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="phone">Teléfono</label>
+              <input id="phone" name="phone" autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for="city">Ciudad</label>
+              <input id="city" name="city" autocomplete="address-level2" required />
+            </div>
+            <div class="field">
+              <label for="postal_code">Código postal</label>
+              <input id="postal_code" name="postal_code" autocomplete="postal-code" required />
+            </div>
+            <div class="field">
+              <label for="business_type">Tipo de inmueble</label>
+              <select id="business_type" name="business_type" required>
+                <option value="">Selecciona</option>
+                <option value="vivienda">Vivienda</option>
+                <option value="comercio">Comercio</option>
+                <option value="oficina">Oficina</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="urgency">Urgencia</label>
+              <select id="urgency" name="urgency" required>
+                <option value="baja">Baja</option>
+                <option value="media" selected>Media</option>
+                <option value="alta">Alta</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="budget_range">Presupuesto estimado</label>
+              <select id="budget_range" name="budget_range" required>
+                <option value="sin_definir">Sin definir</option>
+                <option value="hasta_500">Hasta 500 EUR</option>
+                <option value="500_1500">500 a 1.500 EUR</option>
+                <option value="1500_3000">1.500 a 3.000 EUR</option>
+                <option value="mas_3000">Más de 3.000 EUR</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="notes">Notas adicionales (opcional)</label>
+            <textarea id="notes" name="notes" placeholder="Horario de contacto, detalles útiles del inmueble, etc."></textarea>
+          </div>
+
+          <label class="field" style="display:flex;gap:0.65rem;align-items:flex-start;">
+            <input id="consent" type="checkbox" style="margin-top:0.18rem;min-height:auto;width:auto;" required />
+            <span>
+              Acepto que Punto Seguro comparta mis datos con hasta 2 proveedores para recibir propuestas.
+              He leído <a href="/privacidad" target="_blank" rel="noopener">Privacidad</a>,
+              <a href="/terminos" target="_blank" rel="noopener">Términos</a> y
+              <a href="/cookies" target="_blank" rel="noopener">Cookies</a>.
+            </span>
+          </label>
+
+          <div id="form-alert" class="notice" style="display:none;"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            <a class="btn btn-secondary" href="/resultado">Volver al resultado</a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2026 <b>Punto Seguro</b> · Transparencia: cesión de datos limitada a hasta 2 proveedores.
+  </footer>
+
+  <script src="js/analytics.js"></script>
+  <script src="js/lead-form.js"></script>
+</body>
+</html>

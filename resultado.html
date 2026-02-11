@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4665672QWS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} // eslint-disable-line no-unused-vars
+    gtag('js', new Date());
+    gtag('config', 'G-4665672QWS');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro | Resultado de evaluación</title>
+  <meta name="description" content="Resultado orientativo de riesgo y recomendaciones generales en Punto Seguro." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/">Punto Seguro</a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/diagnostico">Diagnóstico</a>
+        <a href="/proveedores">Proveedores</a>
+        <a href="/blog">Blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Resultado de evaluación</h1>
+        <p class="lead">Análisis orientativo basado en exposición, oportunidad y atractivo del inmueble.</p>
+
+        <div class="grid" style="align-items:start;">
+          <div class="card" style="padding:1rem;">
+            <p class="muted">Nivel estimado</p>
+            <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
+              <strong id="risk-score" style="font-size:2rem;line-height:1;">-- / 100</strong>
+              <span id="risk-level-badge" class="badge">--</span>
+            </div>
+            <p id="risk-explanation" class="muted" style="margin-top:0.65rem;">Completa el diagnóstico para generar tu resultado.</p>
+          </div>
+
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1.05rem;">Qué hacer ahora</h2>
+            <ul class="list" id="recommendations-list"></ul>
+            <p class="muted" style="margin-top:0.7rem;">Recomendaciones generales, no constituyen un plan técnico ejecutable.</p>
+          </div>
+        </div>
+
+        <div class="notice">
+          Punto Seguro comparte tu solicitud con hasta 2 proveedores seleccionados por zona y disponibilidad diaria.
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="/solicitar-propuesta" id="cta-request">Solicitar propuestas adaptadas</a>
+          <a class="btn btn-secondary" href="/diagnostico">Repetir evaluación</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2026 <b>Punto Seguro</b> · Información preventiva y neutral.
+  </footer>
+
+  <script src="js/analytics.js"></script>
+  <script src="js/resultado.js"></script>
+</body>
+</html>

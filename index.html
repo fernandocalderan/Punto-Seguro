@@ -821,8 +821,7 @@
       }
     }
     @media (min-width: 769px) {
-      .hero-eyebrow,
-      .hero-mobile-cta {
+      .hero-eyebrow {
         display: none;
       }
       .header-contact {
@@ -880,12 +879,12 @@
         <a
           href="/diagnostico"
           class="header-contact"
-          aria-label="Empezar evaluación"
+          aria-label="Ver mi nivel de riesgo"
         >
-          Empezar evaluación
+          Ver mi nivel de riesgo
         </a>
         <p class="header-contact-note">
-          Diagnóstico orientativo en menos de 1 minuto.
+          Diagnóstico orientativo en 2 minutos.
         </p>
       </div>
 
@@ -902,42 +901,23 @@
         <div>
           <p class="hero-eyebrow">Evaluación independiente de riesgo</p>
           <h1>
-            Evalúa tu riesgo de intrusión con criterio independiente<br>
-            antes de pedir propuestas.
+            Descubre tu nivel real de exposición a intrusión en 2 minutos
           </h1>
 
           <p class="hero-subtitle">
-            Punto Seguro ofrece una evaluación neutral para viviendas y negocios.
-            Primero entiendes tu exposición real y después decides si quieres recibir propuestas.
+            Evaluación independiente para hogares y negocios. Primero entiende tu riesgo; después, si quieres, solicitas propuestas adaptadas.
           </p>
-          <p class="fineprint">
-          </p>
-
-          <section class="advisor">
-            <div class="advisor-card">
-              <img src="foto_perfil.jpeg" alt="Equipo de análisis Punto Seguro" class="advisor-photo">
-
-              <div class="advisor-info">
-                <h3>Punto Seguro</h3>
-                <p class="advisor-role">Evaluación independiente de riesgo</p>
-                <p class="advisor-desc">
-                  Diagnóstico orientativo basado en metodología neutral para detectar
-                  exposición real, errores de percepción y puntos ignorados
-                  antes de comparar propuestas.
-                </p>
-              </div>
-            </div>
-          </section>
 
           <div class="hero-mobile-cta">
             <a
               href="/diagnostico"
               class="hero-cta"
-              aria-label="Empezar evaluación"
+              id="hero-primary-cta"
+              aria-label="Ver mi nivel de riesgo"
             >
-              Empezar evaluación
+              Ver mi nivel de riesgo
             </a>
-            <p class="hero-cta-note">⏱️ 2 minutos. No pedimos teléfono hasta el final.</p>
+            <p class="hero-cta-note">⏱️ 2 minutos. No pedimos teléfono al empezar.</p>
             <p class="hero-cta-note">🔒 Sin spam: tus datos solo se comparten con hasta 2 instaladores si tú lo pides.</p>
             <p class="hero-cta-note">📩 Si no solicitas propuesta, no se comparte nada.</p>
           </div>
@@ -955,18 +935,18 @@
         <div class="steps">
           <div class="step">
             <div class="n">1</div>
-            <h3>Paso 1 – Información y criterio</h3>
-            <p>Contenido preventivo para comprender la exposición real a intrusión. Sin registro, sin datos personales, sin compromiso.</p>
+            <h3>Responde 6–10 preguntas</h3>
+            <p>Completa el diagnóstico en menos de 2 minutos para estimar tu exposición.</p>
           </div>
           <div class="step">
             <div class="n">2</div>
-            <h3>Paso 2 – Resultado orientativo</h3>
-            <p>Recibes tu nivel de riesgo y los factores de mayor impacto para decidir con criterio.</p>
+            <h3>Recibe tu nivel de riesgo y recomendaciones generales</h3>
+            <p>Obtén una referencia clara para priorizar decisiones sin tecnicismos.</p>
           </div>
           <div class="step">
             <div class="n">3</div>
-            <h3>Paso 3 – Opcional: solicitar propuestas adaptadas a tu evaluación.</h3>
-            <p>Solo si lo decides, Punto Seguro comparte tus datos con hasta 2 proveedores seleccionados.</p>
+            <h3>Opcional: solicita propuestas adaptadas (hasta 2 proveedores)</h3>
+            <p>Solo si tú lo pides, compartimos tus datos con proveedores de tu zona.</p>
           </div>
         </div>
       </div>
@@ -1133,7 +1113,7 @@
           <h3>Evaluador Punto Seguro</h3>
           <b><p>Calcula en segundos el <a href="/diagnostico">nivel de exposición a intrusión</a> en tu vivienda o local.</p></b>
           <p>Basado en técnicas de seguridad física, CPTED y criterios profesionales.</p>
-          <a class="btn" href="/diagnostico">Empezar evaluación</a>
+          <a class="btn" href="/diagnostico">Ver mi nivel de riesgo</a>
         </div>
       </div>
     </section>
@@ -1213,16 +1193,14 @@
     <section class="expert-invite">
 
       <p class="expert-invite-intro">
-        Si quieres pasar de diagnóstico a acción,
-        empieza la evaluación y solicita propuestas solo al final.
+        ¿Listo para empezar? Evalúa tu nivel de riesgo y decide con datos.
       </p>
 
       <a
         href="/diagnostico"
         class="expert-invite-action"
       >
-        <img src="logo_whatsapp.png" alt="WhatsApp">
-        <span>Empezar evaluación</span>
+        <span>Ver mi nivel de riesgo</span>
       </a>
 
       <p class="expert-invite-note">
@@ -1246,6 +1224,20 @@
       <br>Contenido elaborado por profesional del sector de la seguridad. Enfoque informativo y preventivo.
     </p>
   </footer>
+
+  <script src="js/analytics.js"></script>
+  <script>
+    (function () {
+      const heroCta = document.getElementById("hero-primary-cta");
+      if (!heroCta) return;
+
+      heroCta.addEventListener("click", function () {
+        window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
+          source: "home_hero_cta",
+        });
+      });
+    })();
+  </script>
 
   <script type="application/ld+json">
   {

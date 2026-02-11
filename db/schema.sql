@@ -28,6 +28,14 @@ CREATE TABLE IF NOT EXISTS leads (
   consent_ip TEXT,
   evaluation_summary JSONB,
   provider_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
+  assigned_provider_id TEXT,
+  assigned_at TIMESTAMPTZ,
+  accepted_at TIMESTAMPTZ,
+  sold_at TIMESTAMPTZ,
+  intent_plazo TEXT,
+  lead_score INT,
+  ticket_estimated_eur INT,
+  price_eur INT,
   status TEXT NOT NULL DEFAULT 'new',
   notes TEXT
 );
@@ -42,4 +50,5 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS idx_providers_active ON providers (active);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads (status);
+CREATE INDEX IF NOT EXISTS idx_leads_assigned_provider_id ON leads (assigned_provider_id);
 CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts DESC);

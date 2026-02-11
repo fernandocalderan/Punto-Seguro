@@ -163,6 +163,7 @@ app.post("/api/leads", async (req, res) => {
         risk_level: req.body.risk_level,
         urgency: req.body.urgency,
         budget_range: req.body.budget_range,
+        intent_plazo: req.body.intent_plazo,
         notes: req.body.notes,
         consent: req.body.consent,
         consent_timestamp: req.body.consent_timestamp,

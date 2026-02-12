@@ -288,7 +288,7 @@
     .hero-mobile-identity,
     .hero-mobile-brand,
     .hero-subcopy-mobile,
-    .hero-benefits {
+    .hero-result-preview {
       display: none;
     }
     .hero-subtitle {
@@ -747,17 +747,53 @@
         color: var(--text-muted);
         margin: 0 0 10px;
       }
-      .hero-benefits {
-        display: grid;
+      .hero-result-preview {
+        display: block;
         order: 5;
+        margin-top: 10px;
+        margin-bottom: 14px;
+        padding: 12px 12px 10px;
+        background: #ffffff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 14px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+      .hero-result-preview-title {
+        font-weight: 800;
+        color: var(--brand-secondary);
+        font-size: 0.9rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 8px;
+      }
+      .hero-result-preview-grid {
+        display: grid;
         gap: 6px;
-        margin-top: 14px;
-        margin-bottom: 18px;
-        font-size: 15px;
-        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .hero-result-preview-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .hero-result-preview-label {
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+      .hero-result-preview-value {
+        color: var(--brand-secondary);
+        font-weight: 800;
+      }
+      .hero-result-preview-list {
+        margin: 0;
+        padding-left: 1.05rem;
         color: var(--brand-secondary);
       }
-      .hero-benefits span { display: block; }
+      .hero-result-preview-list li {
+        margin: 0.18rem 0;
+      }
       .hero-subtitle {
         order: 6;
         font-size: .97rem;
@@ -787,7 +823,7 @@
       .advisor-desc { font-size: .9rem; line-height: 1.45; }
 
       .hero-mobile-cta {
-        order: 5;
+        order: 6;
         display: flex;
         flex-direction: column;
         gap: .55rem;
@@ -969,11 +1005,24 @@
           <p class="hero-subcopy-mobile">
             Obtén tu nivel de riesgo y recomendaciones generales. Si quieres, puedes solicitar contacto con profesionales.
           </p>
-          <div class="hero-benefits">
-            <span>✓ Nivel de protección estimado</span>
-            <span>✓ Factores que aumentan el riesgo</span>
-            <span>✓ Recomendaciones generales</span>
-            <span>✓ Opcional: contacto con profesionales</span>
+          <div class="hero-result-preview" aria-label="Resultado que recibirás (ejemplo orientativo)">
+            <div class="hero-result-preview-title">Resultado que recibirás</div>
+            <div class="hero-result-preview-grid" aria-hidden="true">
+              <div class="hero-result-preview-row">
+                <span class="hero-result-preview-label">Nivel de protección</span>
+                <span class="hero-result-preview-value">Medio</span>
+              </div>
+              <div class="hero-result-preview-row">
+                <span class="hero-result-preview-label">Riesgo estimado</span>
+                <span class="hero-result-preview-value">Moderado</span>
+              </div>
+            </div>
+            <ul class="hero-result-preview-list">
+              <li>Puntos vulnerables detectados</li>
+              <li>Factores de entorno</li>
+              <li>Recomendaciones generales</li>
+              <li>Opción de solicitar contacto</li>
+            </ul>
           </div>
 
           <p class="hero-subtitle hero-description">

@@ -425,6 +425,34 @@ app.post("/api/admin/leads/:id/assign-manual", requireAdminApi, asyncHandler(asy
     actor: "admin",
   });
 
+  // Admin assign: enviar email al proveedor principal (si existe)
+  try {
+    const primaryProviderId = providerIds[0] || null;
+
+    if (primaryProviderId) {
+      const provider = await repositories.providers.getById(primaryProviderId);
+
+      if (provider?.email) {
+        console.log("[admin-assign-manual] sending provider email", {
+          lead_id: updatedLead.id,
+          provider_id: primaryProviderId,
+        });
+
+        await emailService.sendProviderLeadEmail(provider, updatedLead);
+      } else {
+        console.log("[admin-assign-manual] provider has no email", {
+          provider_id: primaryProviderId,
+        });
+      }
+    } else {
+      console.log("[admin-assign-manual] no provider assigned, skip email", {
+        lead_id: updatedLead.id,
+      });
+    }
+  } catch (err) {
+    console.error("[admin-assign-manual] email send failed", err);
+  }
+
   return res.json({ ok: true, lead: updatedLead, warnings });
 }));
 
@@ -483,6 +511,32 @@ app.post("/api/admin/leads/:id/reassign-auto", requireAdminApi, asyncHandler(asy
     ip: requesterIp(req),
     actor: "admin",
   });
+
+  // Admin reassign: enviar email al proveedor principal (si existe)
+  try {
+    if (primaryProviderId) {
+      const provider = await repositories.providers.getById(primaryProviderId);
+
+      if (provider?.email) {
+        console.log("[admin-reassign-auto] sending provider email", {
+          lead_id: updatedLead.id,
+          provider_id: primaryProviderId,
+        });
+
+        await emailService.sendProviderLeadEmail(provider, updatedLead);
+      } else {
+        console.log("[admin-reassign-auto] provider has no email", {
+          provider_id: primaryProviderId,
+        });
+      }
+    } else {
+      console.log("[admin-reassign-auto] no provider assigned, skip email", {
+        lead_id: updatedLead.id,
+      });
+    }
+  } catch (err) {
+    console.error("[admin-reassign-auto] email send failed", err);
+  }
 
   return res.json({ ok: true, lead: updatedLead });
 }));

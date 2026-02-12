@@ -369,3 +369,12 @@ a.ps-cta-primary {
     max-width: 520px;
   }
 }
+
+.ps-mode-inflow .ps-header-cta-wrap,
+.ps-mode-inflow .ps-header-cta {
+  display: none !important;
+}
+
+.ps-mode-inflow .ps-header-inner {
+  justify-content: space-between;
+}

@@ -426,44 +426,53 @@
     }
     .btn-evaluador:active { transform: translateY(0); opacity: .95; }
 
-    .ps-progress {
-      margin-bottom: 1.1rem;
-      background: #ffffff;
-      border: 1px solid rgba(15,23,42,0.10);
+    body.ps-mode-inflow .ps-stepbar{
+      position: sticky;
+      top: 10px;
+      z-index: 50;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(15,23,42,.10);
       border-radius: 14px;
-      padding: .85rem 1rem;
-      box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+      padding: 10px 12px;
+      margin: 0 auto 14px;
+      max-width: 980px;
+      box-shadow: 0 10px 26px rgba(15,23,42,.06);
+      text-align: left;
     }
-    .ps-progress-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: .75rem;
+    body.ps-mode-inflow .ps-stepbar-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
-    .ps-progress-label {
-      font-weight: 800;
+    body.ps-mode-inflow .ps-stepbar-step{
+      font-weight:800;
       color: var(--brand-secondary);
-      font-size: .9rem;
+      font-size:.95rem;
     }
-    .ps-progress-value {
-      font-weight: 800;
+    body.ps-mode-inflow .ps-stepbar-pct{
+      font-weight:800;
       color: var(--text-muted);
-      font-size: .9rem;
+      font-size:.95rem;
+      white-space: nowrap;
     }
-    .ps-progress-bar {
-      margin-top: .65rem;
-      height: 10px;
-      background: rgba(15,23,42,0.06);
-      border-radius: 999px;
-      overflow: hidden;
+    body.ps-mode-inflow .ps-stepbar-bar{
+      margin-top:8px;
+      height:10px;
+      background: rgba(15,23,42,.06);
+      border-radius:999px;
+      overflow:hidden;
     }
-    .ps-progress-fill {
-      height: 100%;
+    body.ps-mode-inflow .ps-stepbar-fill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
       background: linear-gradient(90deg, rgba(43,92,255,0.95), rgba(43,92,255,0.55));
-      border-radius: 999px;
-      width: 0%;
       transition: width .18s ease;
     }
+    @media (min-width: 769px) { body.ps-mode-inflow .ps-stepbar { top: 86px; } }
+    @media (max-width: 768px) { body.ps-mode-inflow .ps-stepbar { top: 64px; } }
 
     .ps-microtrust {
       display: flex;
@@ -1003,7 +1012,15 @@
     <main id="main">
     <section id="evaluador-punto-seguro">
       <div class="container ps-evaluador-wrap">
-        <div class="flow-stepbar ps-stepbar">Paso 1 de 3 - Diagnóstico</div>
+        <div class="flow-stepbar ps-stepbar" aria-label="Progreso del diagnóstico">
+          <div class="ps-stepbar-row">
+            <span class="ps-stepbar-step">Paso 1/3 — Diagnóstico</span>
+            <span class="ps-stepbar-pct"><span id="ps-stepbar-pct">0</span>% completado</span>
+          </div>
+          <div class="ps-stepbar-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="ps-stepbar-fill" id="ps-stepbar-fill" style="width:0%"></div>
+          </div>
+        </div>
         <div class="section-title">
           <h2>Vamos a calcular tu nivel de exposición</h2>
           <p>Responde unas preguntas rápidas. No pedimos datos personales en esta fase.</p>
@@ -1011,15 +1028,6 @@
         </div>
 
         <div class="evaluador-card ps-evaluador-card">
-          <div class="ps-progress" aria-label="Progreso del diagnóstico">
-            <div class="ps-progress-top">
-              <span class="ps-progress-label">Progreso</span>
-              <span class="ps-progress-value" id="ps-progress-value">0%</span>
-            </div>
-            <div class="ps-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-              <div class="ps-progress-fill" id="ps-progress-fill" style="width:0%"></div>
-            </div>
-          </div>
           <form id="evaluador-form" onsubmit="event.preventDefault(); calcularRiesgo();" novalidate>
             <div class="evaluador-field ps-evaluador-field">
               <label for="tipo-inmueble">Tipo de inmueble</label>
@@ -1271,36 +1279,35 @@
       });
     }
 
-    function updateProgress() {
-      const tipo = document.getElementById("tipo-inmueble")?.value || "";
-      const valueEl = document.getElementById("ps-progress-value");
-      const fillEl = document.getElementById("ps-progress-fill");
-      const barEl = document.querySelector(".ps-progress-bar");
+    function psUpdateStepbarProgress(){
+      const pctEl = document.getElementById("ps-stepbar-pct");
+      const fillEl = document.getElementById("ps-stepbar-fill");
+      const barEl  = document.querySelector(".ps-stepbar-bar");
+      const tipoEl = document.getElementById("tipo-inmueble");
 
-      // If progress UI is not present, do nothing (keeps scoring logic untouched).
-      if (!valueEl || !fillEl || !barEl) return;
+      if(!pctEl || !fillEl || !barEl || !tipoEl) return;
 
-      const baseTotal = 1; // tipo-inmueble
+      const tipo = (tipoEl.value || "").trim();
+
       let panelSelects = [];
-
-      if (tipo === "vivienda") {
-        panelSelects = Array.from(document.querySelectorAll("#formulario-vivienda select")).filter((select) => !select.disabled);
-      } else if (tipo === "comercio") {
-        panelSelects = Array.from(document.querySelectorAll("#formulario-comercio select")).filter((select) => !select.disabled);
-      } else {
+      if(tipo === "vivienda"){
+        panelSelects = Array.from(document.querySelectorAll("#formulario-vivienda select")).filter(s => !s.disabled);
+      }else if(tipo === "comercio"){
+        panelSelects = Array.from(document.querySelectorAll("#formulario-comercio select")).filter(s => !s.disabled);
+      }else{
         panelSelects = [];
       }
 
-      const total = baseTotal + panelSelects.length;
+      const total = 1 + panelSelects.length;
 
       let completos = 0;
-      if (tipo) completos += 1;
-      completos += panelSelects.filter((select) => Boolean(select.value)).length;
+      if(tipo) completos += 1;
+      completos += panelSelects.filter(s => (s.value || "").trim() !== "").length;
 
-      const pct = total > 0 ? Math.round((completos / total) * 100) : 0;
+      const pct = total > 0 ? Math.round((completos/total)*100) : 0;
 
-      valueEl.textContent = `${pct}%`;
-      fillEl.style.width = `${pct}%`;
+      pctEl.textContent = String(pct);
+      fillEl.style.width = pct + "%";
       barEl.setAttribute("aria-valuenow", String(pct));
     }
 
@@ -1322,7 +1329,7 @@
         setEstadoFormulario(comercio, false);
         comercio.reset?.();
         resetCampos(comercio);
-        updateProgress();
+        psUpdateStepbarProgress();
         return;
       }
 
@@ -1331,7 +1338,7 @@
         setEstadoFormulario(comercio, true);
         vivienda.reset?.();
         resetCampos(vivienda);
-        updateProgress();
+        psUpdateStepbarProgress();
         return;
       }
 
@@ -1339,7 +1346,7 @@
       setEstadoFormulario(comercio, false);
       resetCampos(vivienda);
       resetCampos(comercio);
-      updateProgress();
+      psUpdateStepbarProgress();
     }
 
     function validarFormularioActivo(tipoInmueble) {
@@ -1366,10 +1373,10 @@
     }
 
     cambiarFormulario(document.getElementById("tipo-inmueble").value);
-    updateProgress();
+    psUpdateStepbarProgress();
 
     document.getElementById("evaluador-form").addEventListener("change", () => {
-      updateProgress();
+      psUpdateStepbarProgress();
       if (quizStartedTracked) return;
       quizStartedTracked = true;
       window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {

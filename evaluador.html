@@ -425,6 +425,64 @@
       box-shadow: 0 16px 36px rgba(43,92,255,.32);
     }
     .btn-evaluador:active { transform: translateY(0); opacity: .95; }
+
+    .ps-progress {
+      margin-bottom: 1.1rem;
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.10);
+      border-radius: 14px;
+      padding: .85rem 1rem;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+    }
+    .ps-progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .75rem;
+    }
+    .ps-progress-label {
+      font-weight: 800;
+      color: var(--brand-secondary);
+      font-size: .9rem;
+    }
+    .ps-progress-value {
+      font-weight: 800;
+      color: var(--text-muted);
+      font-size: .9rem;
+    }
+    .ps-progress-bar {
+      margin-top: .65rem;
+      height: 10px;
+      background: rgba(15,23,42,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .ps-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, rgba(43,92,255,0.95), rgba(43,92,255,0.55));
+      border-radius: 999px;
+      width: 0%;
+      transition: width .18s ease;
+    }
+
+    .ps-microtrust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin-top: 1.15rem;
+    }
+    .ps-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .5rem .75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,0.10);
+      background: #ffffff;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: .88rem;
+    }
     #resultado {
       margin-top: 1.4rem;
     }
@@ -969,6 +1027,15 @@
         </div>
 
         <div class="evaluador-card">
+          <div class="ps-progress" aria-label="Progreso del diagnóstico">
+            <div class="ps-progress-top">
+              <span class="ps-progress-label">Progreso</span>
+              <span class="ps-progress-value" id="ps-progress-value">0%</span>
+            </div>
+            <div class="ps-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="ps-progress-fill" id="ps-progress-fill" style="width:0%"></div>
+            </div>
+          </div>
           <form id="evaluador-form" onsubmit="event.preventDefault(); calcularRiesgo();" novalidate>
             <div class="evaluador-field">
               <label for="tipo-inmueble">Tipo de inmueble</label>
@@ -1164,7 +1231,13 @@
               </fieldset>
             </div>
 
-            <button type="submit" class="btn-evaluador" aria-label="Calcular riesgo ahora" tabindex="0">Calcular riesgo ahora</button>
+            <div class="ps-microtrust" aria-label="Garantías del diagnóstico">
+              <span class="ps-pill">✔ Resultado inmediato</span>
+              <span class="ps-pill">✔ Sin registro</span>
+              <span class="ps-pill">✔ Sin llamadas</span>
+            </div>
+
+            <button type="submit" class="btn-evaluador" aria-label="Ver mi nivel de riesgo" tabindex="0">Ver mi nivel de riesgo</button>
           </form>
 
           <div id="resultado" aria-live="polite"></div>
@@ -1214,6 +1287,39 @@
       });
     }
 
+    function updateProgress() {
+      const tipo = document.getElementById("tipo-inmueble")?.value || "";
+      const valueEl = document.getElementById("ps-progress-value");
+      const fillEl = document.getElementById("ps-progress-fill");
+      const barEl = document.querySelector(".ps-progress-bar");
+
+      // If progress UI is not present, do nothing (keeps scoring logic untouched).
+      if (!valueEl || !fillEl || !barEl) return;
+
+      const baseTotal = 1; // tipo-inmueble
+      let panelSelects = [];
+
+      if (tipo === "vivienda") {
+        panelSelects = Array.from(document.querySelectorAll("#formulario-vivienda select")).filter((select) => !select.disabled);
+      } else if (tipo === "comercio") {
+        panelSelects = Array.from(document.querySelectorAll("#formulario-comercio select")).filter((select) => !select.disabled);
+      } else {
+        panelSelects = [];
+      }
+
+      const total = baseTotal + panelSelects.length;
+
+      let completos = 0;
+      if (tipo) completos += 1;
+      completos += panelSelects.filter((select) => Boolean(select.value)).length;
+
+      const pct = total > 0 ? Math.round((completos / total) * 100) : 0;
+
+      valueEl.textContent = `${pct}%`;
+      fillEl.style.width = `${pct}%`;
+      barEl.setAttribute("aria-valuenow", String(pct));
+    }
+
     function cambiarFormulario(tipo) {
       const vivienda = document.getElementById("formulario-vivienda");
       const comercio = document.getElementById("formulario-comercio");
@@ -1232,6 +1338,7 @@
         setEstadoFormulario(comercio, false);
         comercio.reset?.();
         resetCampos(comercio);
+        updateProgress();
         return;
       }
 
@@ -1240,6 +1347,7 @@
         setEstadoFormulario(comercio, true);
         vivienda.reset?.();
         resetCampos(vivienda);
+        updateProgress();
         return;
       }
 
@@ -1247,6 +1355,7 @@
       setEstadoFormulario(comercio, false);
       resetCampos(vivienda);
       resetCampos(comercio);
+      updateProgress();
     }
 
     function validarFormularioActivo(tipoInmueble) {
@@ -1273,8 +1382,10 @@
     }
 
     cambiarFormulario(document.getElementById("tipo-inmueble").value);
+    updateProgress();
 
     document.getElementById("evaluador-form").addEventListener("change", () => {
+      updateProgress();
       if (quizStartedTracked) return;
       quizStartedTracked = true;
       window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {

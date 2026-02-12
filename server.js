@@ -400,7 +400,7 @@ app.post("/api/admin/leads/:id/assign-manual", requireAdminApi, asyncHandler(asy
   const updatedLead = await repositories.leads.update(lead.id, {
     ...lead,
     provider_ids: providerIds,
-    assigned_provider_id: providerIds[0],
+    assigned_provider_id: providerIds[0] || null,
     assigned_at: nowIso,
     assignment_mode: "manual",
     assigned_by: "admin",
@@ -459,7 +459,7 @@ app.post("/api/admin/leads/:id/reassign-auto", requireAdminApi, asyncHandler(asy
     ...lead,
     provider_ids: providerIds,
     assigned_provider_id: primaryProviderId,
-    assigned_at: providerIds.length > 0 ? nowIso : lead.assigned_at,
+    assigned_at: providerIds.length > 0 ? nowIso : null,
     assignment_mode: "auto",
     assigned_by: "admin",
     updated_at: nowIso,

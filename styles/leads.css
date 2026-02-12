@@ -305,6 +305,12 @@ p {
   background: rgba(185, 28, 28, 0.14);
 }
 
+.badge-deleted {
+  color: rgba(15, 23, 42, 0.68);
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
 .kpi {
   display: grid;
   gap: 0.25rem;

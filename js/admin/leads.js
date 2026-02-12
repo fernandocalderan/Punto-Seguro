@@ -147,11 +147,19 @@
 
     tableBody.innerHTML = visibleLeads
       .map((lead) => {
+        const isDeleted = lead.status === "deleted" || Boolean(lead.deleted_at);
+        const contactCell = isDeleted
+          ? `<span class="badge badge-deleted">Anonimizado</span>`
+          : `${escapeHtml(lead.name)}<br><span class="muted">${escapeHtml(lead.email || "-")}</span>`;
+        const locationCell = isDeleted
+          ? "-"
+          : `${escapeHtml(lead.city)} (${escapeHtml(lead.postal_code)})`;
+
         return `
           <tr>
             <td>${new Date(lead.created_at).toLocaleString("es-ES")}</td>
-            <td>${lead.name}<br><span class="muted">${lead.email}</span></td>
-            <td>${lead.city} (${lead.postal_code})</td>
+            <td>${contactCell}</td>
+            <td>${locationCell}</td>
             <td>${lead.risk_level}</td>
             <td>${lead.lead_score ?? "-"}</td>
             <td>${toCurrency(lead.ticket_estimated_eur)}</td>
@@ -210,26 +218,35 @@
     if (primaryProviderSelect) primaryProviderSelect.disabled = isDeleted;
     if (secondaryProviderSelect) secondaryProviderSelect.disabled = isDeleted;
     if (manualNoteInput) manualNoteInput.disabled = isDeleted;
+    if (anonymizeBtn) anonymizeBtn.disabled = isDeleted;
+
+    const piiName = isDeleted ? "Anonimizado" : escapeHtml(lead.name);
+    const piiPhone = isDeleted ? "-" : escapeHtml(lead.phone || "-");
+    const piiEmail = isDeleted ? "-" : escapeHtml(lead.email || "-");
+    const piiCity = isDeleted ? "-" : escapeHtml(lead.city || "-");
+    const piiPostal = isDeleted ? "-" : escapeHtml(lead.postal_code || "-");
+    const piiBadge = isDeleted ? `<p><span class="badge badge-deleted">Anonimizado</span></p>` : "";
 
     detailContent.innerHTML = `
       <div class="grid">
         <div>
+          ${piiBadge}
           <p><b>Lead ID:</b> ${lead.id}</p>
-          <p><b>Nombre:</b> ${lead.name}</p>
-          <p><b>Teléfono:</b> ${lead.phone}</p>
-          <p><b>Email:</b> ${lead.email}</p>
-          <p><b>Ciudad:</b> ${lead.city}</p>
-          <p><b>Código postal:</b> ${lead.postal_code}</p>
+          <p><b>Nombre:</b> ${piiName}</p>
+          <p><b>Teléfono:</b> ${piiPhone}</p>
+          <p><b>Email:</b> ${piiEmail}</p>
+          <p><b>Ciudad:</b> ${piiCity}</p>
+          <p><b>Código postal:</b> ${piiPostal}</p>
         </div>
         <div>
-          <p><b>Tipo:</b> ${lead.business_type}</p>
+          <p><b>Tipo:</b> ${escapeHtml(lead.business_type)}</p>
           <p><b>Riesgo:</b> ${lead.risk_level}</p>
           <p><b>Lead score:</b> ${lead.lead_score ?? "-"}</p>
           <p><b>Ticket estimado:</b> ${toCurrency(lead.ticket_estimated_eur)}</p>
           <p><b>Precio:</b> ${toCurrency(lead.price_eur)}</p>
           <p><b>Plazo intención:</b> ${intentLabel(lead.intent_plazo)}</p>
-          <p><b>Urgencia:</b> ${lead.urgency}</p>
-          <p><b>Presupuesto:</b> ${lead.budget_range}</p>
+          <p><b>Urgencia:</b> ${escapeHtml(lead.urgency)}</p>
+          <p><b>Presupuesto:</b> ${escapeHtml(lead.budget_range)}</p>
           <p><b>Consentimiento:</b> ${lead.consent ? "Sí" : "No"}</p>
           <p><b>Fecha consentimiento:</b> ${lead.consent_timestamp || "-"}</p>
           <p><b>IP consentimiento:</b> ${lead.consent_ip || "-"}</p>

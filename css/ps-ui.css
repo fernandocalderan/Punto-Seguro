@@ -370,11 +370,69 @@ a.ps-cta-primary {
   }
 }
 
-.ps-mode-inflow .ps-header-cta-wrap,
-.ps-mode-inflow .ps-header-cta {
-  display: none !important;
+/* ------------------------------
+   Funnel: paginas dentro del flujo (sin CTA redundante)
+-------------------------------- */
+body.ps-mode-inflow .ps-header-cta-wrap { display: none !important; }
+body.ps-mode-inflow .ps-sticky-bar { display: none !important; }
+body.ps-mode-inflow .ps-header-actions { gap: .75rem; }
+
+/* ------------------------------
+   Evaluador: contraste + layout fluido
+-------------------------------- */
+.ps-evaluador-wrap { max-width: 980px; margin: 0 auto; }
+.ps-evaluador-card {
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.06);
+  padding: 18px;
 }
 
-.ps-mode-inflow .ps-header-inner {
-  justify-content: space-between;
+.ps-evaluador-field { display: grid; gap: 6px; margin-bottom: 14px; }
+.ps-evaluador-field label { font-weight: 800; color: #0f172a; }
+
+.ps-evaluador-field input,
+.ps-evaluador-field select,
+.ps-evaluador-field textarea {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.20);
+  background: #fff;
+  padding: 10px 12px;
+  outline: none;
 }
+
+.ps-evaluador-field input:focus,
+.ps-evaluador-field select:focus,
+.ps-evaluador-field textarea:focus {
+  border-color: rgba(43,92,255,.75);
+  box-shadow: 0 0 0 4px rgba(43,92,255,.14);
+}
+
+.ps-evaluador-hint { color: rgba(15,23,42,.62); font-size: .86rem; line-height: 1.35; }
+
+.ps-evaluador-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 860px) { .ps-evaluador-grid { grid-template-columns: 1fr; } }
+
+/* ------------------------------
+   Stepbar sticky dentro del evaluador
+-------------------------------- */
+.ps-stepbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(15,23,42,.10);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 0 auto 14px;
+  max-width: 980px;
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
+
+/* Header is sticky; keep the stepbar visible below it. */
+@media (min-width: 769px) { .ps-stepbar { top: 86px; } }
+@media (max-width: 768px) { .ps-stepbar { top: 64px; } }

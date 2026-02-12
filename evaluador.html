@@ -981,52 +981,36 @@
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>
 
-<body class="ps-page-evaluador ps-mode-inflow">
+<body class="ps-mode-inflow">
   <!-- Basado en tu index de referencia (colores + logo + tipografía). -->
   <!-- Fuente: archivo adjunto index.html -->
   <!-- :contentReference[oaicite:0]{index=0} -->
 
   <a class="skip-link" href="#main">Saltar al contenido</a>
 
-  <header>
-	    <div class="container header-inner">
-	      <div class="brand">
-	        <div class="logo">
-	          <img src="logo-punto-seguro.png" alt="Punto Seguro">
-	        </div>
-	        <div class="brand-text">
-	          <strong>Criterio profesional para detectar exposición real</strong>
-	          <span>Referencia informativa aplicada por asesor de seguridad</span>
-	        </div>
-	        <div class="brand-text-mobile">
-	          <strong>Punto Seguro</strong>
-	          <span>Asesoría en seguridad</span>
-	        </div>
-	        </div>
+  <header class="ps-header">
+    <div class="container ps-header-inner">
+      <a class="ps-brand" href="/" aria-label="Volver a inicio">
+        <span class="ps-brand-title">Punto Seguro</span>
+      </a>
 
-      <nav aria-label="Navegación principal">
-        <a href="/">Inicio</a>
-        <a href="/resultado">Resultado</a>
-      </nav>
-      <div class="ps-header-cta-wrap">
-        <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header">Hacer diagnóstico en 2 minutos</a>
-        <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+      <div class="ps-header-actions">
+        <a class="ps-blog-link" href="/blog">Blog</a>
       </div>
-
     </div>
   </header>
 
     <main id="main">
     <section id="evaluador-punto-seguro">
-      <div class="container">
-        <div class="flow-stepbar">Paso 1 de 3 - Diagnóstico</div>
+      <div class="container ps-evaluador-wrap">
+        <div class="flow-stepbar ps-stepbar">Paso 1 de 3 - Diagnóstico</div>
         <div class="section-title">
           <h2>Vamos a calcular tu nivel de exposición</h2>
           <p>Responde unas preguntas rápidas. No pedimos datos personales en esta fase.</p>
           <p class="fineprint">Diagnóstico orientativo e independiente. Solo compartimos datos si solicitas propuestas.</p>
         </div>
 
-        <div class="evaluador-card">
+        <div class="evaluador-card ps-evaluador-card">
           <div class="ps-progress" aria-label="Progreso del diagnóstico">
             <div class="ps-progress-top">
               <span class="ps-progress-label">Progreso</span>
@@ -1037,14 +1021,14 @@
             </div>
           </div>
           <form id="evaluador-form" onsubmit="event.preventDefault(); calcularRiesgo();" novalidate>
-            <div class="evaluador-field">
+            <div class="evaluador-field ps-evaluador-field">
               <label for="tipo-inmueble">Tipo de inmueble</label>
               <select id="tipo-inmueble" name="tipo_inmueble" onchange="cambiarFormulario(this.value)" aria-label="Tipo de inmueble para evaluar" aria-describedby="hint-tipo" required tabindex="0">
                 <option value="">Selecciona tipo</option>
                 <option value="vivienda">Vivienda</option>
                 <option value="comercio">Comercio</option>
               </select>
-              <small id="hint-tipo" class="field-hint">Elige el tipo para mostrar el formulario correspondiente.</small>
+              <small id="hint-tipo" class="field-hint ps-evaluador-hint">Elige el tipo para mostrar el formulario correspondiente.</small>
             </div>
 
             <div id="form-alerta" class="form-alerta" role="status" aria-live="polite"></div>
@@ -1052,8 +1036,8 @@
             <div id="formulario-vivienda" class="formulario-panel" aria-hidden="true">
               <fieldset class="evaluador-fieldset" aria-label="Datos de la vivienda">
                 <legend>Datos de la vivienda</legend>
-                <div class="evaluador-grid">
-                  <div class="evaluador-field">
+                <div class="evaluador-grid ps-evaluador-grid">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="tipo_vivienda">Tipo de vivienda</label>
                     <select id="tipo_vivienda" name="tipo_vivienda" aria-describedby="hint-tipo-vivienda" required tabindex="0">
                       <option value="">Selecciona tipo de vivienda</option>
@@ -1063,9 +1047,9 @@
                       <option value="piso_medio">Piso medio</option>
                       <option value="piso_alto">Piso alto</option>
                     </select>
-                    <small id="hint-tipo-vivienda" class="field-hint">Influye en la facilidad de acceso al inmueble.</small>
+                    <small id="hint-tipo-vivienda" class="field-hint ps-evaluador-hint">Influye en la facilidad de acceso al inmueble.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="puerta">Tipo de puerta principal</label>
                     <select id="puerta" name="puerta" aria-describedby="hint-puerta" required tabindex="0">
                       <option value="">Selecciona puerta</option>
@@ -1075,9 +1059,9 @@
                       <option value="aluminio_simple">Aluminio o chapa simple</option>
                       <option value="madera_hueca">Madera hueca</option>
                     </select>
-                    <small id="hint-puerta" class="field-hint">Evalúa la resistencia del acceso principal.</small>
+                    <small id="hint-puerta" class="field-hint ps-evaluador-hint">Evalúa la resistencia del acceso principal.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="ventanas">Protección en ventanas accesibles</label>
                     <select id="ventanas" name="ventanas" aria-describedby="hint-ventanas" required tabindex="0">
                       <option value="">Selecciona protección</option>
@@ -1087,15 +1071,15 @@
                       <option value="con_rejas">Rejas visibles</option>
                       <option value="sin_proteccion">Sin protección visible</option>
                     </select>
-                    <small id="hint-ventanas" class="field-hint">Indica si hay barreras o detección en puntos vulnerables.</small>
+                    <small id="hint-ventanas" class="field-hint ps-evaluador-hint">Indica si hay barreras o detección en puntos vulnerables.</small>
                   </div>
                 </div>
               </fieldset>
 
               <fieldset class="evaluador-fieldset" aria-label="Seguridad y hábitos">
                 <legend>Seguridad y hábitos</legend>
-                <div class="evaluador-grid">
-                  <div class="evaluador-field">
+                <div class="evaluador-grid ps-evaluador-grid">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="horas_vacia">Horas al día que la vivienda está vacía</label>
                     <select id="horas_vacia" name="horas_vacia" aria-describedby="hint-horas" required tabindex="0">
                       <option value="">Selecciona tramo</option>
@@ -1103,9 +1087,9 @@
                       <option value="6a10">6–10</option>
                       <option value="menos6">&lt;6</option>
                     </select>
-                    <small id="hint-horas" class="field-hint">A más horas sin presencia, mayor oportunidad.</small>
+                    <small id="hint-horas" class="field-hint ps-evaluador-hint">A más horas sin presencia, mayor oportunidad.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="alarma_vivienda">Sistema de alarma</label>
                     <select id="alarma_vivienda" name="alarma_vivienda" aria-describedby="hint-alarma-vivienda" required tabindex="0">
                       <option value="">Selecciona alarma</option>
@@ -1114,9 +1098,9 @@
                       <option value="basica_local">Básica (sirena local)</option>
                       <option value="ninguna">Sin alarma</option>
                     </select>
-                    <small id="hint-alarma-vivienda" class="field-hint">Considera el nivel de respuesta o aviso.</small>
+                    <small id="hint-alarma-vivienda" class="field-hint ps-evaluador-hint">Considera el nivel de respuesta o aviso.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="camaras">Cámaras de seguridad</label>
                     <select id="camaras" name="camaras" aria-describedby="hint-camaras" required tabindex="0">
                       <option value="">Selecciona cámaras</option>
@@ -1125,9 +1109,9 @@
                       <option value="interior">Solo interior</option>
                       <option value="no">No</option>
                     </select>
-                    <small id="hint-camaras" class="field-hint">Ayudan a disuadir y registrar accesos.</small>
+                    <small id="hint-camaras" class="field-hint ps-evaluador-hint">Ayudan a disuadir y registrar accesos.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="historial">Historial de robos en vivienda o edificio</label>
                     <select id="historial" name="historial" aria-describedby="hint-historial" required tabindex="0">
                       <option value="">Selecciona historial</option>
@@ -1135,7 +1119,7 @@
                       <option value="si_vecinos">Sí en vecinos</option>
                       <option value="no">No</option>
                     </select>
-                    <small id="hint-historial" class="field-hint">Una zona con incidencias aumenta el atractivo.</small>
+                    <small id="hint-historial" class="field-hint ps-evaluador-hint">Una zona con incidencias aumenta el atractivo.</small>
                   </div>
                 </div>
               </fieldset>
@@ -1144,8 +1128,8 @@
             <div id="formulario-comercio" class="formulario-panel" aria-hidden="true">
               <fieldset class="evaluador-fieldset" aria-label="Acceso y cerramientos">
                 <legend>Acceso y cerramientos</legend>
-                <div class="evaluador-grid">
-                  <div class="evaluador-field">
+                <div class="evaluador-grid ps-evaluador-grid">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="tipo_local">Tipo de local</label>
                     <select id="tipo_local" name="tipo_local" aria-describedby="hint-tipo-local" required tabindex="0">
                       <option value="">Selecciona tipo de local</option>
@@ -1153,9 +1137,9 @@
                       <option value="galeria">Galería comercial</option>
                       <option value="interior">Interior de edificio</option>
                     </select>
-                    <small id="hint-tipo-local" class="field-hint">La visibilidad y acceso condicionan el riesgo.</small>
+                    <small id="hint-tipo-local" class="field-hint ps-evaluador-hint">La visibilidad y acceso condicionan el riesgo.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="cierre">Sistema de cierre frontal</label>
                     <select id="cierre" name="cierre" aria-describedby="hint-cierre" required tabindex="0">
                       <option value="">Selecciona cierre</option>
@@ -1164,9 +1148,9 @@
                       <option value="persiana_reforzada">Persiana ciega reforzada</option>
                       <option value="cierre_seguridad">Cierre de seguridad motorizado</option>
                     </select>
-                    <small id="hint-cierre" class="field-hint">Indica la resistencia del frente del local.</small>
+                    <small id="hint-cierre" class="field-hint ps-evaluador-hint">Indica la resistencia del frente del local.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="cierre_interior">Sistema de cierre interior</label>
                     <select id="cierre_interior" name="cierre_interior" aria-describedby="hint-cierre-interior" required tabindex="0">
                       <option value="">Selecciona cierre interior</option>
@@ -1175,9 +1159,9 @@
                       <option value="cerradura_multipunto">Cerradura multipunto</option>
                       <option value="reja_interior">Reja interior</option>
                     </select>
-                    <small id="hint-cierre-interior" class="field-hint">Refuerzo adicional en caso de intrusión.</small>
+                    <small id="hint-cierre-interior" class="field-hint ps-evaluador-hint">Refuerzo adicional en caso de intrusión.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="lunas">Protección en lunas / escaparate</label>
                     <select id="lunas" name="lunas" aria-describedby="hint-lunas" required tabindex="0">
                       <option value="">Selecciona protección</option>
@@ -1186,15 +1170,15 @@
                       <option value="reja">Reja interior/exterior</option>
                       <option value="laminado">Cristal laminado</option>
                     </select>
-                    <small id="hint-lunas" class="field-hint">Valora la resistencia del escaparate.</small>
+                    <small id="hint-lunas" class="field-hint ps-evaluador-hint">Valora la resistencia del escaparate.</small>
                   </div>
                 </div>
               </fieldset>
 
               <fieldset class="evaluador-fieldset" aria-label="Protección y atractivo">
                 <legend>Protección y atractivo</legend>
-                <div class="evaluador-grid">
-                  <div class="evaluador-field">
+                <div class="evaluador-grid ps-evaluador-grid">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="alarma">Sistema de alarma actual</label>
                     <select id="alarma" name="alarma" aria-describedby="hint-alarma" required tabindex="0">
                       <option value="">Selecciona alarma</option>
@@ -1203,9 +1187,9 @@
                       <option value="con_aviso">Con aviso remoto</option>
                       <option value="con_respuesta">Con respuesta</option>
                     </select>
-                    <small id="hint-alarma" class="field-hint">Define el nivel de respuesta ante intrusión.</small>
+                    <small id="hint-alarma" class="field-hint ps-evaluador-hint">Define el nivel de respuesta ante intrusión.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="actividad">Actividad del local</label>
                     <select id="actividad" name="actividad" aria-describedby="hint-actividad" required tabindex="0">
                       <option value="">Selecciona actividad</option>
@@ -1216,16 +1200,16 @@
                       <option value="oficina">Oficina</option>
                       <option value="otros">Otros</option>
                     </select>
-                    <small id="hint-actividad" class="field-hint">El tipo de producto determina el atractivo.</small>
+                    <small id="hint-actividad" class="field-hint ps-evaluador-hint">El tipo de producto determina el atractivo.</small>
                   </div>
-                  <div class="evaluador-field">
+                  <div class="evaluador-field ps-evaluador-field">
                     <label for="historial_local">Histórico de robos en el local o en la misma calle</label>
                     <select id="historial_local" name="historial_local" aria-describedby="hint-historial-local" required tabindex="0">
                       <option value="">Selecciona historial</option>
                       <option value="si">Sí</option>
                       <option value="no">No</option>
                     </select>
-                    <small id="hint-historial-local" class="field-hint">Incidencias previas elevan la exposición.</small>
+                    <small id="hint-historial-local" class="field-hint ps-evaluador-hint">Incidencias previas elevan la exposición.</small>
                   </div>
                 </div>
               </fieldset>

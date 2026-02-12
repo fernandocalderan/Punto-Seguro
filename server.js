@@ -10,6 +10,7 @@ const { createRepositories } = require("./lib/repositories");
 const { createEmailService } = require("./lib/email");
 const { createLeadAndDispatch } = require("./lib/leadService");
 const { LEAD_STATUSES } = require("./lib/models");
+const { assignProviders } = require("./lib/assignment");
 const { trackEvent } = require("./lib/events");
 
 function resolveRootDir() {
@@ -107,6 +108,18 @@ function asyncHandler(handler) {
   return (req, res, next) => {
     Promise.resolve(handler(req, res, next)).catch(next);
   };
+}
+
+function normalizeProviderIds(value) {
+  if (!Array.isArray(value)) return [];
+  const cleaned = value.map((id) => String(id).trim()).filter(Boolean);
+  return Array.from(new Set(cleaned)).slice(0, MAX_PROVIDERS_PER_LEAD);
+}
+
+function statusAfterAssignment(currentStatus) {
+  const keep = new Set(["sent", "accepted", "closed", "sold", "rejected", "deleted"]);
+  if (keep.has(currentStatus)) return currentStatus;
+  return "assigned";
 }
 
 function routeToFile(routePath, filePath) {
@@ -315,6 +328,150 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
+}));
+
+app.post("/api/admin/leads/:id/assign-manual", requireAdminApi, asyncHandler(async (req, res) => {
+  const lead = await repositories.leads.getById(req.params.id);
+  if (!lead) {
+    return res.status(404).json({ error: "Lead not found" });
+  }
+
+  const providerIds = normalizeProviderIds(req.body.provider_ids);
+  if (providerIds.length === 0) {
+    return res.status(400).json({ error: "provider_ids is required" });
+  }
+  if (Array.isArray(req.body.provider_ids) && req.body.provider_ids.length > MAX_PROVIDERS_PER_LEAD) {
+    return res.status(400).json({ error: `provider_ids max is ${MAX_PROVIDERS_PER_LEAD}` });
+  }
+
+  const providers = await repositories.providers.getByIds(providerIds);
+  const providerMap = new Map(providers.map((provider) => [provider.id, provider]));
+  const missing = providerIds.filter((id) => !providerMap.has(id));
+  if (missing.length > 0) {
+    return res.status(400).json({ error: `Providers not found: ${missing.join(", ")}` });
+  }
+
+  const inactive = providers.filter((provider) => !provider.active).map((provider) => provider.id);
+  const warnings = inactive.length > 0 ? [`inactive_providers: ${inactive.join(", ")}`] : [];
+
+  const nowIso = new Date().toISOString();
+  const note = req.body.note !== undefined ? String(req.body.note).trim() : "";
+  const notes = note
+    ? `${lead.notes || ""}\n[ADMIN manual assign ${nowIso}] ${note}`.trim()
+    : lead.notes || "";
+
+  const updatedLead = await repositories.leads.update(lead.id, {
+    ...lead,
+    provider_ids: providerIds,
+    assigned_provider_id: providerIds[0],
+    assigned_at: nowIso,
+    assignment_mode: "manual",
+    assigned_by: "admin",
+    updated_at: nowIso,
+    status: statusAfterAssignment(lead.status),
+    notes,
+  });
+
+  await repositories.providers.touchAssignedAt(providerIds, nowIso);
+
+  await trackEvent(repositories.events, "lead_assigned_manual", {
+    lead_id: updatedLead.id,
+    provider_ids: providerIds,
+    assigned_provider_id: providerIds[0],
+    previous_provider_ids: lead.provider_ids || [],
+    previous_assigned_provider_id: lead.assigned_provider_id || null,
+    warnings,
+  }, {
+    path: req.path,
+    user_agent: req.headers["user-agent"],
+    ip: requesterIp(req),
+    actor: "admin",
+  });
+
+  return res.json({ ok: true, lead: updatedLead, warnings });
+}));
+
+app.post("/api/admin/leads/:id/reassign-auto", requireAdminApi, asyncHandler(async (req, res) => {
+  const lead = await repositories.leads.getById(req.params.id);
+  if (!lead) {
+    return res.status(404).json({ error: "Lead not found" });
+  }
+
+  const now = new Date();
+  const nowIso = now.toISOString();
+
+  const candidates = await repositories.providers.listActive();
+  const assignedProviders = await assignProviders({
+    lead,
+    providers: candidates,
+    leadRepository: repositories.leads,
+    maxProviders: MAX_PROVIDERS_PER_LEAD,
+    now,
+  });
+
+  const providerIds = assignedProviders.map((provider) => provider.id);
+  const primaryProviderId = providerIds[0] || null;
+
+  const nextStatus = providerIds.length > 0
+    ? statusAfterAssignment(lead.status)
+    : (lead.status === "new" || lead.status === "validated" || lead.status === "assigned")
+      ? "validated"
+      : lead.status;
+
+  const updatedLead = await repositories.leads.update(lead.id, {
+    ...lead,
+    provider_ids: providerIds,
+    assigned_provider_id: primaryProviderId,
+    assigned_at: providerIds.length > 0 ? nowIso : lead.assigned_at,
+    assignment_mode: "auto",
+    assigned_by: "admin",
+    updated_at: nowIso,
+    status: nextStatus,
+  });
+
+  if (providerIds.length > 0) {
+    await repositories.providers.touchAssignedAt(providerIds, nowIso);
+  }
+
+  await trackEvent(repositories.events, "lead_reassigned_auto", {
+    lead_id: updatedLead.id,
+    provider_ids: providerIds,
+    assigned_provider_id: primaryProviderId,
+    provider_count: providerIds.length,
+    previous_provider_ids: lead.provider_ids || [],
+    previous_assigned_provider_id: lead.assigned_provider_id || null,
+  }, {
+    path: req.path,
+    user_agent: req.headers["user-agent"],
+    ip: requesterIp(req),
+    actor: "admin",
+  });
+
+  return res.json({ ok: true, lead: updatedLead });
+}));
+
+app.post("/api/admin/leads/:id/anonymize", requireAdminApi, asyncHandler(async (req, res) => {
+  const lead = await repositories.leads.getById(req.params.id);
+  if (!lead) {
+    return res.status(404).json({ error: "Lead not found" });
+  }
+
+  const reason = req.body.reason !== undefined ? String(req.body.reason).trim() : "";
+  const anonymized = await repositories.leads.anonymize(lead.id, { reason });
+
+  await trackEvent(repositories.events, "lead_anonymized", {
+    lead_id: lead.id,
+    previous_status: lead.status,
+    previous_provider_ids: lead.provider_ids || [],
+    reason: reason || null,
+  }, {
+    path: req.path,
+    user_agent: req.headers["user-agent"],
+    ip: requesterIp(req),
+    actor: "admin",
+  });
+
+  return res.json({ ok: true, lead: anonymized });
 }));
 
 app.get("/api/admin/events", requireAdminApi, asyncHandler(async (req, res) => {

@@ -355,3 +355,17 @@ a.ps-cta-secondary {
 a.ps-cta-primary {
   text-decoration: none !important;
 }
+
+.hero-relevance-trigger {
+  font-size: 14px;
+  color: #475569;
+  margin: 10px 0 14px 0;
+  line-height: 1.4;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .hero-relevance-trigger {
+    max-width: 520px;
+  }
+}

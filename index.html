@@ -287,6 +287,7 @@
     .hero-title-mobile,
     .hero-mobile-identity,
     .hero-mobile-brand,
+    .hero-subcopy-mobile,
     .hero-benefits {
       display: none;
     }
@@ -739,9 +740,16 @@
       }
       .hero-title-desktop { display: none; }
       .hero-title-mobile { display: inline; }
+      .hero-subcopy-mobile {
+        display: block;
+        order: 4;
+        font-size: 0.98rem;
+        color: var(--text-muted);
+        margin: 0 0 10px;
+      }
       .hero-benefits {
         display: grid;
-        order: 4;
+        order: 5;
         gap: 6px;
         margin-top: 14px;
         margin-bottom: 18px;
@@ -953,11 +961,14 @@
             <img src="logo-punto-seguro.png" alt="Punto Seguro">
             <span class="hero-mobile-brand">Punto Seguro</span>
           </div>
-          <p class="hero-eyebrow">Evaluación independiente de protección para viviendas y negocios</p>
+          <p class="hero-eyebrow">Evaluación del nivel de protección en viviendas y negocios</p>
           <h1>
             <span class="hero-title-desktop">Evalúa tu exposición a intrusión en 2 minutos (hogar o negocio).</span>
-            <span class="hero-title-mobile">¿Tu hogar o negocio está bien protegido?</span>
+            <span class="hero-title-mobile">Descubre tu nivel de protección en 2 minutos</span>
           </h1>
+          <p class="hero-subcopy-mobile">
+            Obtén tu nivel de riesgo y recomendaciones generales. Si quieres, puedes solicitar contacto con profesionales.
+          </p>
           <div class="hero-benefits">
             <span>✓ Nivel de protección estimado</span>
             <span>✓ Factores que aumentan el riesgo</span>
@@ -979,7 +990,7 @@
             >
               Hacer diagnóstico en 2 minutos
             </a>
-            <p class="hero-cta-note">Sin llamadas. Tú decides si solicitar contacto.</p>
+            <p class="hero-cta-note">Sin llamadas. Solo compartimos tus datos si tú lo decides (hasta 2 proveedores).</p>
           </div>
 
         </div>

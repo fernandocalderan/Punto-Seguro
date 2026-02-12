@@ -11,64 +11,149 @@
   }
 
   function badgeClass(level) {
-    if (level === "BAJO") return "badge badge-low";
-    if (level === "MEDIO") return "badge badge-medium";
-    if (level === "ALTO") return "badge badge-high";
+    if (level === "CONTROLADA") return "badge badge-low";
+    if (level === "MODERADA") return "badge badge-medium";
+    if (level === "ELEVADA") return "badge badge-high";
+    if (level === "CRÍTICA") return "badge badge-high";
     return "badge";
   }
 
-  function explanation(level) {
-    if (level === "ALTO") {
-      return "Tu exposición es alta: conviene contrastar de forma prioritaria las capas de detección y tiempos de respuesta.";
+  function explanation(level, meta) {
+    const { probabilityIndex, impactIndex, synergyPoints, modelVersion } = meta || {};
+
+    let base = "";
+    if (level === "CRÍTICA") {
+      base = "Exposición crítica: conviene contrastar con prioridad capas de detección, tiempos de respuesta y puntos de acceso.";
+    } else if (level === "ELEVADA") {
+      base = "Exposición elevada: hay varios puntos de mejora y conviene priorizar medidas por fases para reducir riesgo.";
+    } else if (level === "MODERADA") {
+      base = "Exposición moderada: hay puntos mejorables para reducir previsibilidad y oportunidad de intrusión.";
+    } else {
+      base = "Exposición controlada: mantener revisión periódica ayuda a conservar este nivel.";
     }
-    if (level === "MEDIO") {
-      return "Tu exposición es moderada: hay puntos mejorables para reducir previsibilidad y oportunidad de intrusión.";
-    }
-    return "Tu exposición es contenida: mantener revisión periódica ayuda a conservar este nivel.";
+
+    const parts = [
+      base,
+      modelVersion ? `Modelo: ${modelVersion}` : null,
+      Number.isFinite(Number(probabilityIndex)) ? `Probabilidad: ${Number(probabilityIndex)}/100` : null,
+      Number.isFinite(Number(impactIndex)) ? `Impacto: ${Number(impactIndex)}/100` : null,
+      Number.isFinite(Number(synergyPoints)) && Number(synergyPoints) > 0 ? `Sinergia: +${Number(synergyPoints)}` : null,
+    ].filter(Boolean);
+
+    return parts.join(" · ");
   }
 
-  function recommendations(level) {
-    if (level === "ALTO") {
-      return [
-        "Revisar con un proveedor homologado los puntos de acceso con mayor tiempo de exposición.",
-        "Contrastar opciones de detección temprana y protocolo de respuesta en franjas críticas.",
-        "Definir una priorización por fases para reducir riesgo sin sobredimensionar inversión.",
-      ];
+  function recommendations({ level, tipoInmueble, factorsTop }) {
+    const safeFactors = Array.isArray(factorsTop) ? factorsTop : [];
+    const recs = [];
+    const seen = new Set();
+
+    function add(text) {
+      const key = String(text || "").trim().toLowerCase();
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      recs.push(text);
     }
 
-    if (level === "MEDIO") {
-      return [
-        "Verificar qué accesos o rutinas generan mayor previsibilidad y priorizar su ajuste.",
-        "Comparar dos propuestas técnicas para equilibrar cobertura, coste y tiempos de atención.",
-        "Alinear medidas físicas y hábitos operativos para evitar puntos ciegos frecuentes.",
-      ];
+    if (level === "CRÍTICA") {
+      add("Contrastar de forma prioritaria puntos de acceso, detección y protocolo de respuesta en franjas críticas.");
+      add("Pedir una validación técnica para priorizar medidas por fases sin sobredimensionar inversión.");
+    } else if (level === "ELEVADA") {
+      add("Priorizar los accesos con mayor exposición y alinear medidas físicas con detección y respuesta.");
+      add("Comparar dos propuestas técnicas para equilibrar cobertura, coste y tiempos de atención.");
+    } else if (level === "MODERADA") {
+      add("Verificar qué accesos o rutinas generan mayor previsibilidad y priorizar su ajuste.");
+      add("Alinear hábitos y medidas preventivas para evitar puntos ciegos frecuentes.");
+    } else {
+      add("Mantener revisión periódica de cerramientos y puntos sensibles de acceso.");
+      add("Solicitar una validación externa anual para detectar desajustes progresivos.");
     }
 
-    return [
-      "Mantener revisión periódica de cerramientos y puntos sensibles de acceso.",
-      "Comprobar que hábitos diarios no incrementen la observabilidad del inmueble.",
-      "Solicitar validación externa anual para detectar desajustes progresivos.",
-    ];
+    const text = safeFactors
+      .map((factor) => String(factor?.texto || factor?.text || "").toLowerCase())
+      .join(" | ");
+
+    if (tipoInmueble === "vivienda") {
+      if (text.includes("sin sistema de alarma") || text.includes("sin alarma")) {
+        add("Contrastar opciones de detección y aviso/respuesta para reducir la ventana de oportunidad.");
+      }
+      if (text.includes("sin cámaras")) {
+        add("Revisar visibilidad y puntos ciegos (interior/exterior) con enfoque disuasorio y de verificación.");
+      }
+      if (text.includes("ventanas") && (text.includes("sin protección") || text.includes("sin proteccion"))) {
+        add("Revisar refuerzo y detección en ventanas (sensores, lámina o elementos físicos) según contexto.");
+      }
+      if (text.includes("puerta principal") && (text.includes("poco resistente") || text.includes("chapa simple") || text.includes("aluminio"))) {
+        add("Validar resistencia y tipo de cerradura de la puerta principal con criterio técnico.");
+      }
+      if (text.includes("vivienda vacía") || text.includes("vivienda vacia")) {
+        add("Reducir previsibilidad en franjas sin presencia y ajustar medidas en los periodos más expuestos.");
+      }
+      if (text.includes("historial de robos")) {
+        add("En contextos con histórico, priorizar confirmación técnica para decidir acciones con criterio.");
+      }
+    } else if (tipoInmueble === "comercio") {
+      if (text.includes("sin sistema de alarma") || text.includes("sin alarma")) {
+        add("Contrastar opciones de detección y respuesta para reducir el tiempo de exposición en el local.");
+      }
+      if (text.includes("persiana") && text.includes("simple")) {
+        add("Evaluar resistencia del cierre principal y su vulnerabilidad típica, integrándolo con detección.");
+      }
+      if (text.includes("lunas") && (text.includes("sin film") || text.includes("sin protección") || text.includes("sin proteccion"))) {
+        add("Revisar protección del escaparate/lunas y su integración con detección para reducir intrusión oportunista.");
+      }
+      if (text.includes("actividad de alto valor")) {
+        add("Ajustar el nivel de protección a la exposición de la actividad y a franjas de riesgo habituales.");
+      }
+      if (text.includes("sin cierre interior")) {
+        add("Revisar capas complementarias de cierre interior para reducir vulnerabilidad en accesos principales.");
+      }
+    }
+
+    while (recs.length < 3) {
+      if (tipoInmueble === "comercio") add("Revisar procedimientos de cierre y aperturas para reducir oportunidad sin fricción operativa.");
+      else add("Comprobar que hábitos diarios no incrementen la observabilidad del inmueble.");
+    }
+
+    return recs.slice(0, 3);
   }
 
-  function humanTranslation(level) {
-    if (level === "ALTO") {
-      return "El patrón coincide con escenarios de intrusión cuando el inmueble queda sin presencia.";
+  function humanTranslation(level, meta) {
+    const { probabilityIndex, impactIndex, synergyPoints } = meta || {};
+
+    let base = "";
+    if (level === "CRÍTICA") {
+      base = "El patrón se acerca a escenarios típicos de intrusión cuando el inmueble queda sin presencia.";
+    } else if (level === "ELEVADA") {
+      base = "Hay varios puntos de exposición que conviene revisar con criterio técnico para reducir riesgo.";
+    } else if (level === "MODERADA") {
+      base = "Se aprecian puntos mejorables habituales. Ajustarlos suele reducir oportunidad sin grandes cambios.";
+    } else {
+      base = "No se detecta exposición relevante actualmente, aunque conviene mantener revisión periódica.";
     }
-    if (level === "MEDIO") {
-      return "Hay varios puntos típicos de acceso oportunista que conviene revisar con criterio técnico.";
-    }
-    return "No se detecta exposición relevante actualmente, aunque conviene mantener revisión periódica.";
+
+    const details = [];
+    if (Number.isFinite(Number(probabilityIndex))) details.push(`probabilidad ${Number(probabilityIndex)}/100`);
+    if (Number.isFinite(Number(impactIndex))) details.push(`impacto ${Number(impactIndex)}/100`);
+    if (Number.isFinite(Number(synergyPoints)) && Number(synergyPoints) > 0) details.push(`sinergia +${Number(synergyPoints)}`);
+
+    return details.length ? `${base} (${details.join(", ")}).` : base;
   }
 
   const evaluation = readEvaluation();
   if (!evaluation) {
-    window.location.href = "/diagnostico";
+    // Keep default empty state copy rendered by the HTML.
+    window.PuntoSeguroAnalytics?.trackEvent("result_viewed", { has_result: false });
     return;
   }
 
   const score = Number(evaluation.risk_score || 0);
-  const level = String(evaluation.risk_level || "MEDIO").toUpperCase();
+  const level = String(evaluation.risk_level || "MODERADA").toUpperCase();
+  const tipoInmueble = String(evaluation.tipo_inmueble || "").trim();
+  const probabilityIndex = Number(evaluation.probability_index);
+  const impactIndex = Number(evaluation.impact_index);
+  const synergyPoints = Number(evaluation.synergy_points || 0);
+  const modelVersion = String(evaluation.model_version || "").trim();
 
   const scoreNode = document.getElementById("risk-score");
   const levelNode = document.getElementById("risk-level-badge");
@@ -86,14 +171,28 @@
   scoreNode.textContent = `${score} / 100`;
   levelNode.textContent = level;
   levelNode.className = badgeClass(level);
-  explanationNode.textContent = explanation(level);
-  humanTextNode.textContent = humanTranslation(level);
+  explanationNode.textContent = explanation(level, {
+    probabilityIndex,
+    impactIndex,
+    synergyPoints,
+    modelVersion,
+  });
+  humanTextNode.textContent = humanTranslation(level, {
+    probabilityIndex,
+    impactIndex,
+    synergyPoints,
+  });
 
-  recommendationsNode.innerHTML = recommendations(level)
+  const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
+
+  recommendationsNode.innerHTML = recommendations({
+    level,
+    tipoInmueble,
+    factorsTop,
+  })
     .map((item) => `<li>${item}</li>`)
     .join("");
 
-  const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
   topFactorsNode.innerHTML = factorsTop.length > 0
     ? factorsTop.map((factor) => `<li>${factor.texto || "Factor de riesgo detectado"}</li>`).join("")
     : "<li>No se detectaron factores destacados en esta simulación.</li>";
@@ -108,16 +207,22 @@
     JSON.stringify({
       risk_level: level,
       risk_score: score,
+      model_version: modelVersion || null,
+      probability_index: Number.isFinite(probabilityIndex) ? probabilityIndex : null,
+      impact_index: Number.isFinite(impactIndex) ? impactIndex : null,
+      synergy_points: Number.isFinite(synergyPoints) ? synergyPoints : null,
       summary: resumen,
-      tipo_inmueble: evaluation.tipo_inmueble,
+      tipo_inmueble: tipoInmueble || null,
       factores_top: factorsTop,
       generated_at: evaluation.generated_at || new Date().toISOString(),
     })
   );
 
   window.PuntoSeguroAnalytics?.trackEvent("result_viewed", {
+    has_result: true,
     risk_level: level,
     risk_score: score,
+    model_version: modelVersion || null,
   });
 
   try {

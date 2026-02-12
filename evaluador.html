@@ -1561,43 +1561,110 @@
   function calcularRiesgo() {
     const tipoInmueble = document.getElementById("tipo-inmueble").value;
     if (!validarFormularioActivo(tipoInmueble)) return;
-    const datos = tipoInmueble === "vivienda" ? obtenerDatosVivienda() : obtenerDatosComercio();
 
-    // Cálculo modular por ejes del modelo
+    const datos = tipoInmueble === "vivienda"
+      ? obtenerDatosVivienda()
+      : obtenerDatosComercio();
+
     const vulnerabilidad = calcularVulnerabilidad(tipoInmueble, datos);
     const oportunidad = calcularOportunidad(tipoInmueble, datos);
     const atractivo = calcularAtractivo(tipoInmueble, datos);
 
-    const riesgoBruto = vulnerabilidad.puntos + oportunidad.puntos + atractivo.puntos;
-    const riesgoTotal = Math.min(100, Math.round(riesgoBruto));
+    const V = vulnerabilidad.puntos;
+    const O = oportunidad.puntos;
+    const A = atractivo.puntos;
 
-    let nivel = "";
-    if (riesgoTotal < 35) nivel = "BAJO";
-    else if (riesgoTotal <= 65) nivel = "MEDIO";
-    else nivel = "ALTO";
+    let Vmax, Omax, Amax, pesoV, pesoO, pesoA;
 
+    if (tipoInmueble === "vivienda") {
+      // máximos teóricos según mapas actuales
+      Vmax = 42; // 14 + 16 + 12
+      Omax = 32; // 12 + 12 + 8
+      Amax = 10; // historial
+      // ponderaciones
+      pesoV = 0.40;
+      pesoO = 0.40;
+      pesoA = 0.20;
+    } else {
+      Vmax = 54; // 16 + 16 + 10 + 12
+      Omax = 14; // alarma
+      Amax = 26; // 18 + 8
+      pesoV = 0.45;
+      pesoO = 0.30;
+      pesoA = 0.25;
+    }
+
+    // Normalización 0-100 por eje
+    const Vn = (V / Vmax) * 100;
+    const On = (O / Omax) * 100;
+    const An = (A / Amax) * 100;
+
+    // Índice base ponderado
+    let IEI = (Vn * pesoV) + (On * pesoO) + (An * pesoA);
+
+    // Factor sinergia (combinaciones críticas)
+    let synergy = 0;
+
+    if (tipoInmueble === "vivienda") {
+      if (datos.alarma === "ninguna" && datos.ventanas === "sin_proteccion") synergy += 8;
+      if ((datos.tipoVivienda === "casa" || datos.tipoVivienda === "adosado") && datos.horasVacia === "10plus") synergy += 6;
+      if ((datos.puerta === "madera_hueca" || datos.puerta === "aluminio_simple") && datos.camaras === "no") synergy += 5;
+      if ((datos.historial === "si_yo" || datos.historial === "si_vecinos") && datos.alarma === "ninguna") synergy += 6;
+    }
+
+    if (tipoInmueble === "comercio") {
+      if (datos.alarma === "ninguna" && datos.cierre === "persiana_simple") synergy += 10;
+      if ((datos.actividad === "joyeria" || datos.actividad === "electronica") && datos.alarma === "ninguna") synergy += 10;
+      if (datos.lunas === "sin_proteccion" && datos.tipoLocal === "calle") synergy += 7;
+      if (datos.cierreInterior === "ninguno" && datos.lunas === "sin_proteccion") synergy += 6;
+    }
+
+    IEI = Math.min(100, Math.round(IEI + synergy));
+
+    // Nuevo nivel profesional
+    let nivel;
+    if (IEI < 30) nivel = "CONTROLADA";
+    else if (IEI <= 55) nivel = "MODERADA";
+    else if (IEI <= 75) nivel = "ELEVADA";
+    else nivel = "CRÍTICA";
+
+    // Índices auxiliares (para explicar mejor en resultado)
+    const probabilityIndex = Math.round((Vn + On) / 2);
+    const impactIndex = Math.round(An);
+
+    // Top factores (mantener compatibilidad)
     const factores = [
       ...vulnerabilidad.factores,
       ...oportunidad.factores,
       ...atractivo.factores,
     ];
+
     const factoresTop = factores
+      .slice()
       .sort((a, b) => b.puntos - a.puntos)
       .slice(0, 3);
+
     const evaluation = {
-      risk_score: riesgoTotal,
+      model_version: "IEI-2.0",
+      risk_score: IEI,
       risk_level: nivel,
+      probability_index: probabilityIndex,
+      impact_index: impactIndex,
       tipo_inmueble: tipoInmueble,
       factores_top: factoresTop,
+      synergy_points: synergy,
       generated_at: new Date().toISOString(),
     };
 
-    window.sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(evaluation));
+    sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(evaluation));
+
     window.PuntoSeguroAnalytics?.trackEvent("quiz_completed", {
       risk_level: nivel,
-      risk_score: riesgoTotal,
+      risk_score: IEI,
       tipo_inmueble: tipoInmueble,
+      model_version: "IEI-2.0",
     });
+
     window.location.href = "/resultado";
   }
   </script>

@@ -93,7 +93,7 @@
       min-width: 260px;
     }
     .logo img {
-      height: 150px;
+      height: 52px;
       width: auto;
       display: block;
     }
@@ -601,7 +601,7 @@
     }
     @media (max-width: 860px) {
       .split { grid-template-columns: 1fr; }
-      .logo img { height: 78px; }
+      .logo img { height: 34px; }
       .brand { min-width: 0; }
       .hero h1 { font-size: 2.2rem; }
       .advisor-card { flex-direction: column; align-items: flex-start; }
@@ -839,11 +839,31 @@
         opacity: .95;
       }
     }
+
+
+    @media (max-width: 768px) {
+      body.blog-page.ps-has-sticky {
+        padding-bottom: 24px;
+      }
+
+      body.blog-page.ps-has-sticky.ps-sticky-visible {
+        padding-bottom: 96px;
+      }
+
+      .blog-page .ps-sticky-bar {
+        display: none;
+      }
+
+      .blog-page .ps-sticky-bar.is-visible {
+        display: flex;
+      }
+    }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>
 
-<body class="ps-has-sticky">
+<body class="ps-has-sticky blog-page">
   <!-- Basado en tu index de referencia (colores + logo + tipografía). -->
   <!-- Fuente: archivo adjunto index.html -->
   <!-- :contentReference[oaicite:0]{index=0} -->
@@ -865,15 +885,9 @@
           </div>
 	      </a>
 
-      <nav class="ps-nav" aria-label="Navegación principal">
-        <a href="index.html#criterio">Criterio</a>
-        <a href="index.html#evaluamos">Qué revisar</a>
-        <a href="index.html#faq">Preguntas</a>
-      </nav>
       <div class="ps-header-actions">
         <div class="ps-header-cta-wrap">
-          <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
-          <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+          <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header" aria-label="Diagnóstico">Diagnóstico</a>
         </div>
         <a class="header-link ps-blog-link" href="/blog" aria-label="Ir al blog de Punto Seguro">
           Blog
@@ -886,26 +900,10 @@
     <section class="hero">
       <div class="container hero-grid">
         <div>
-          <p class="fineprint"><a href="index.html">Volver a Punto Seguro</a></p>
           <h1>Blog Punto Seguro</h1>
-          <p class="hero-subtitle">Evaluación IEI™ neutral para entender exposición, rutina y puntos ignorados antes de decidir.</p>
-          <p class="fineprint">Primero evaluación IEI™ orientativa. Después, si quieres, solicitas propuestas adaptadas.</p>
+          <p class="hero-subtitle">Lecturas breves para detectar exposición real, entender patrones de intrusión y decidir con criterio técnico.</p>
           <div class="ps-cta-inline-block" style="margin-top: 1.1rem;">
-            <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="inline" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
-            <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container" style="max-width: 860px;">
-        <div class="card" style="text-align: center;">
-          <h2 style="font-size: 1.45rem; color: var(--brand-secondary); margin-bottom: .65rem;">Calcula primero tu Índice IEI™</h2>
-          <p style="color: var(--text-muted); margin-bottom: 1rem;">Antes de leer más casos, puedes ver tu nivel de exposición en 2 minutos.</p>
-          <div class="ps-cta-inline-block" style="align-items:center;">
-            <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="inline" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
-            <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
+            <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="hero">Calcular mi Índice IEI™</a>
           </div>
         </div>
       </div>
@@ -919,37 +917,37 @@
         </div>
         <div class="grid">
           <a class="card" href="blog/posts/06-intruso-busca-oportunidad.html">
-  <img src="el_intruso_busca_oportunidad.png" alt="Análisis de oportunidad y comportamiento del intruso">
+  <img src="/blog/img/el_intruso_busca_oportunidad.png" alt="Análisis de oportunidad y comportamiento del intruso">
   <h3>El intruso no busca valor, busca oportunidad</h3>
   <p>La mayoría de robos no se producen por lo que hay dentro, sino por lo fácil que parece entrar y salir.</p>
   <p class="fineprint">Comportamiento · 7 ene 2026 · 5 min</p>
 </a>
           <a class="card" href="blog/posts/05-seguridad-sin-diagnostico.html">
-  <img src="seguridad_sin_diagnostico.png" alt="Sistemas de seguridad y toma de decisiones informada">
+  <img src="/blog/img/seguridad_sin_diagnostico.png" alt="Sistemas de seguridad y toma de decisiones informada">
   <h3>Seguridad sin diagnóstico: por qué más medidas no siempre protegen más</h3>
   <p>Añadir dispositivos sin evaluación IEI™ no reduce la exposición: solo la disimula. La protección real empieza entendiendo dónde estás expuesto.</p>
   <p class="fineprint">Decisión · 7 ene 2026 · 5 min</p>
 </a>
 <a class="card" href="blog/posts/04-pisos-bajos-aticos-locales.html">
-  <img src="pisos_bajos_aticos_locales.png" alt="Accesibilidad y recorridos de acceso en inmuebles residenciales y comerciales">
+  <img src="/blog/img/pisos_bajos_aticos_locales.png" alt="Accesibilidad y recorridos de acceso en inmuebles residenciales y comerciales">
   <h3>Pisos bajos, áticos y locales: por qué comparten más riesgo del que parece</h3>
   <p>Inmuebles muy distintos pueden tener vulnerabilidades idénticas. El factor común no es el tipo, sino la accesibilidad y la discreción.</p>
   <p class="fineprint">Vulnerabilidades · 7 ene 2026 · 5 min</p>
 </a>
 <a class="card" href="blog/posts/03-nunca-ha-pasado-nada.html">
-  <img src="nunca_ha_pasado_nada.png" alt="Iluminación exterior y zonas de acceso con baja visibilidad">
+  <img src="/blog/img/nunca_ha_pasado_nada.png" alt="Iluminación exterior y zonas de acceso con baja visibilidad">
   <h3>Cuando “nunca ha pasado nada” es precisamente el problema</h3>
   <p>La ausencia de incidentes no reduce la exposición: la adormece. El entorno cambia antes de que alguien se dé cuenta.</p>
   <p class="fineprint">Exposición · 7 ene 2026 · 5 min</p>
 </a>
 <a class="card" href="blog/posts/02-error-1-seguridad-sin-evaluacion.html">
-  <img src="error_1_seguridad_sin_evaluacion.png" alt="Seguridad basada en hábitos y entorno real">
+  <img src="/blog/img/error_1_seguridad_sin_evaluacion.png" alt="Seguridad basada en hábitos y entorno real">
   <h3>El error nº1 en seguridad: decidir sin evaluación</h3>
   <p>Copiar soluciones no copia la exposición. Sin evaluación IEI™ previa, el gasto aumenta y la protección no mejora.</p>
   <p class="fineprint">Decisión · 7 ene 2026 · 5 min</p>
 </a>
 <a class="card" href="blog/posts/01-donde-empiezan-robos.html">
-  <img src="blog/donde_empiezan_robos.png" alt="Seguridad residencial y comercial: puntos de acceso olvidados">
+  <img src="/blog/img/donde_empiezan_robos.png" alt="Seguridad residencial y comercial: puntos de acceso olvidados">
   <h3>Dónde empiezan realmente la mayoría de robos (y no es donde crees)</h3>
   <p>La mayoría de robos no empiezan por la puerta principal. Empiezan por lo que nadie mira porque “nunca ha pasado nada”.</p>
   <p class="fineprint">Accesos · 7 ene 2026 · 4 min</p>
@@ -990,10 +988,9 @@
         Cuando termines de revisar el contenido, puedes calcular tu Índice IEI™ y decidir con datos.
       </p>
 
-      <div class="ps-cta-inline-block" style="align-items:center;">
-        <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="inline" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
-        <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
-      </div>
+      <p class="fineprint">
+        Si quieres, puedes hacer el <a href="/diagnostico">diagnóstico IEI™</a> cuando te venga bien.
+      </p>
 
     </section>
 </main>
@@ -1011,7 +1008,7 @@
     </div>
   </footer>
 
-  <div class="ps-sticky-bar" role="region" aria-label="Acción principal">
+  <div class="ps-sticky-bar ps-sticky-hidden" role="region" aria-label="Acción principal">
     <a class="ps-cta-primary ps-sticky-cta" href="/diagnostico" data-ps-placement="sticky" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
     <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
   </div>
@@ -1099,6 +1096,36 @@
       }
     ]
   }
+  </script>
+
+
+  <script>
+    (function () {
+      const stickyBar = document.querySelector(".blog-page .ps-sticky-bar");
+      const body = document.body;
+      if (!stickyBar || !body) return;
+
+      const toggleSticky = function () {
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (!isMobile) {
+          stickyBar.classList.remove("is-visible");
+          body.classList.remove("ps-sticky-visible");
+          return;
+        }
+
+        const hero = document.querySelector(".hero");
+        const heroHeight = hero?.offsetHeight ?? 0;
+        const threshold = heroHeight > 0 ? heroHeight * 0.8 : window.innerHeight * 0.8;
+        const showSticky = window.scrollY > threshold;
+
+        stickyBar.classList.toggle("is-visible", showSticky);
+        body.classList.toggle("ps-sticky-visible", showSticky);
+      };
+
+      toggleSticky();
+      window.addEventListener("scroll", toggleSticky, { passive: true });
+      window.addEventListener("resize", toggleSticky);
+    })();
   </script>
 
   <script src="/js/analytics.js"></script>

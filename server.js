@@ -289,6 +289,43 @@ app.put("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, re
   }
 }));
 
+app.delete("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const providerId = String(req.params.id || "").trim();
+  const provider = await repositories.providers.getById(providerId);
+  if (!provider) {
+    return res.status(404).json({ error: "Provider not found" });
+  }
+
+  const leads = await repositories.leads.list();
+  const hasAssignments = leads.some((lead) => {
+    if (lead.assigned_provider_id === providerId) return true;
+    return Array.isArray(lead.provider_ids) && lead.provider_ids.includes(providerId);
+  });
+
+  if (hasAssignments) {
+    return res.status(409).json({
+      error: "Provider has assigned leads and cannot be deleted",
+    });
+  }
+
+  const deleted = await repositories.providers.deleteProvider(providerId);
+  if (!deleted) {
+    return res.status(404).json({ error: "Provider not found" });
+  }
+
+  await trackEvent(repositories.events, "provider_deleted", {
+    provider_id: providerId,
+    provider_name: provider.name,
+  }, {
+    path: req.path,
+    user_agent: req.headers["user-agent"],
+    ip: requesterIp(req),
+    actor: "admin",
+  });
+
+  return res.json({ ok: true });
+}));
+
 app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (_req, res) => {
   return res.json({
     leads: await repositories.leads.list(),

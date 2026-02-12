@@ -11,7 +11,17 @@
   const statusInput = document.getElementById("lead-status");
   const notesInput = document.getElementById("lead-notes");
 
+  const primaryProviderSelect = document.getElementById("manual-provider-primary");
+  const secondaryProviderSelect = document.getElementById("manual-provider-secondary");
+  const manualNoteInput = document.getElementById("manual-note");
+  const assignManualBtn = document.getElementById("assign-manual-btn");
+  const reassignAutoBtn = document.getElementById("reassign-auto-btn");
+  const anonymizeReasonInput = document.getElementById("anonymize-reason");
+  const anonymizeBtn = document.getElementById("anonymize-btn");
+
   let leadsCache = [];
+  let providersCache = [];
+  let providerMap = new Map();
   let activeStatusFilter = "all";
 
   function showAlert(message, isError) {
@@ -70,6 +80,44 @@
       .replaceAll("'", "&#39;");
   }
 
+  function providerLabel(providerId) {
+    if (!providerId) return "-";
+    const provider = providerMap.get(providerId);
+    if (!provider) return providerId;
+    return provider.active ? provider.name : `${provider.name} (inactivo)`;
+  }
+
+  function renderProviderSelects(selectedIds) {
+    if (!primaryProviderSelect || !secondaryProviderSelect) return;
+
+    const providers = Array.isArray(providersCache) ? providersCache.slice() : [];
+    providers.sort((a, b) => {
+      const aActive = a.active ? 0 : 1;
+      const bActive = b.active ? 0 : 1;
+      if (aActive !== bActive) return aActive - bActive;
+      return String(a.name || "").localeCompare(String(b.name || ""), "es");
+    });
+
+    const optionHtml = providers
+      .map((provider) => {
+        const suffix = provider.active ? "" : " (inactivo)";
+        return `<option value="${escapeHtml(provider.id)}">${escapeHtml(provider.name + suffix)}</option>`;
+      })
+      .join("");
+
+    primaryProviderSelect.innerHTML =
+      `<option value="">Selecciona proveedor</option>` + optionHtml;
+    secondaryProviderSelect.innerHTML =
+      `<option value="">Sin segundo proveedor</option>` + optionHtml;
+
+    const ids = Array.isArray(selectedIds) ? selectedIds : [];
+    const primary = ids[0] || "";
+    const secondary = ids[1] && ids[1] !== primary ? ids[1] : "";
+
+    primaryProviderSelect.value = primary;
+    secondaryProviderSelect.value = secondary;
+  }
+
   function renderMetrics(metrics) {
     const totals = metrics.totals || {};
     const status = metrics.leads_by_status || {};
@@ -109,9 +157,9 @@
             <td>${toCurrency(lead.ticket_estimated_eur)}</td>
             <td>${intentLabel(lead.intent_plazo)}</td>
             <td>${lead.status}</td>
-            <td>${lead.assigned_provider_id || "-"}</td>
+            <td>${escapeHtml(providerLabel(lead.assigned_provider_id))}</td>
             <td>${toCurrency(lead.price_eur)}</td>
-            <td><button type="button" class="btn btn-secondary" style="min-height:34px;padding:0.3rem 0.7rem;" data-open="${lead.id}">Ver</button></td>
+            <td><button type="button" class="btn btn-secondary btn-compact" data-open="${lead.id}">Ver</button></td>
           </tr>
         `;
       })
@@ -151,6 +199,17 @@
     leadIdInput.value = lead.id;
     statusInput.value = lead.status;
     notesInput.value = lead.notes || "";
+    if (manualNoteInput) manualNoteInput.value = "";
+    if (anonymizeReasonInput) anonymizeReasonInput.value = "";
+
+    renderProviderSelects(Array.isArray(lead.provider_ids) ? lead.provider_ids : []);
+
+    const isDeleted = lead.status === "deleted" || Boolean(lead.deleted_at);
+    if (assignManualBtn) assignManualBtn.disabled = isDeleted;
+    if (reassignAutoBtn) reassignAutoBtn.disabled = isDeleted;
+    if (primaryProviderSelect) primaryProviderSelect.disabled = isDeleted;
+    if (secondaryProviderSelect) secondaryProviderSelect.disabled = isDeleted;
+    if (manualNoteInput) manualNoteInput.disabled = isDeleted;
 
     detailContent.innerHTML = `
       <div class="grid">
@@ -174,9 +233,13 @@
           <p><b>Consentimiento:</b> ${lead.consent ? "Sí" : "No"}</p>
           <p><b>Fecha consentimiento:</b> ${lead.consent_timestamp || "-"}</p>
           <p><b>IP consentimiento:</b> ${lead.consent_ip || "-"}</p>
-          <p><b>Assigned provider ID:</b> ${lead.assigned_provider_id || "-"}</p>
-          <p><b>Assigned at:</b> ${lead.assigned_at || "-"}</p>
-          <p><b>Provider IDs:</b> ${(lead.provider_ids || []).join(", ") || "Sin asignación"}</p>
+          <p><b>Proveedor principal:</b> ${escapeHtml(providerLabel(lead.assigned_provider_id))}</p>
+          <p><b>Asignado:</b> ${lead.assigned_at || "-"}</p>
+          <p><b>Proveedores:</b> ${escapeHtml((lead.provider_ids || []).map(providerLabel).join(", ") || "Sin asignación")}</p>
+          <p><b>Modo asignación:</b> ${escapeHtml(lead.assignment_mode || "-")}</p>
+          <p><b>Asignado por:</b> ${escapeHtml(lead.assigned_by || "-")}</p>
+          <p><b>Actualizado:</b> ${lead.updated_at || "-"}</p>
+          <p><b>Borrado:</b> ${lead.deleted_at || "-"}</p>
         </div>
       </div>
       ${formatEvaluationSummary(lead)}
@@ -184,14 +247,19 @@
   }
 
   async function loadAll() {
-    const [leadsData, metricsData] = await Promise.all([
+    const [leadsData, metricsData, providersData] = await Promise.all([
       api("/api/admin/leads"),
       api("/api/admin/metrics"),
+      api("/api/admin/providers"),
     ]);
 
     leadsCache = leadsData.leads || [];
+    providersCache = providersData.providers || [];
+    providerMap = new Map(providersCache.map((provider) => [provider.id, provider]));
+
     renderTable();
     renderMetrics(metricsData);
+    renderProviderSelects([]);
   }
 
   tableBody.addEventListener("click", async (event) => {
@@ -230,6 +298,94 @@
 
       showAlert("Lead actualizado.");
       await loadAll();
+      const data = await api(`/api/admin/leads/${id}`);
+      openLeadDetail(data.lead);
+    } catch (error) {
+      showAlert(error.message, true);
+    }
+  });
+
+  async function reloadAndOpenLead(id) {
+    await loadAll();
+    const data = await api(`/api/admin/leads/${id}`);
+    openLeadDetail(data.lead);
+  }
+
+  assignManualBtn?.addEventListener("click", async () => {
+    showAlert("");
+
+    const id = leadIdInput.value;
+    if (!id) return;
+
+    const primary = String(primaryProviderSelect?.value || "").trim();
+    const secondaryRaw = String(secondaryProviderSelect?.value || "").trim();
+    const secondary = secondaryRaw && secondaryRaw !== primary ? secondaryRaw : "";
+
+    if (!primary) {
+      showAlert("Selecciona un proveedor principal.", true);
+      return;
+    }
+
+    const providerIds = Array.from(new Set([primary, secondary].filter(Boolean)));
+    const note = String(manualNoteInput?.value || "").trim();
+
+    try {
+      const result = await api(`/api/admin/leads/${id}/assign-manual`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider_ids: providerIds, note }),
+      });
+
+      const warnings = Array.isArray(result.warnings) && result.warnings.length > 0
+        ? ` (warnings: ${result.warnings.join("; ")})`
+        : "";
+      showAlert(`Asignación manual guardada.${warnings}`);
+      await reloadAndOpenLead(id);
+    } catch (error) {
+      showAlert(error.message, true);
+    }
+  });
+
+  reassignAutoBtn?.addEventListener("click", async () => {
+    showAlert("");
+
+    const id = leadIdInput.value;
+    if (!id) return;
+
+    try {
+      await api(`/api/admin/leads/${id}/reassign-auto`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+
+      showAlert("Reasignación automática aplicada.");
+      await reloadAndOpenLead(id);
+    } catch (error) {
+      showAlert(error.message, true);
+    }
+  });
+
+  anonymizeBtn?.addEventListener("click", async () => {
+    showAlert("");
+
+    const id = leadIdInput.value;
+    if (!id) return;
+
+    const ok = window.confirm("¿Anonimizar este lead? Esto eliminará datos personales y marcará el lead como deleted.");
+    if (!ok) return;
+
+    const reason = String(anonymizeReasonInput?.value || "").trim();
+
+    try {
+      await api(`/api/admin/leads/${id}/anonymize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason }),
+      });
+
+      showAlert("Lead anonimizado.");
+      await reloadAndOpenLead(id);
     } catch (error) {
       showAlert(error.message, true);
     }

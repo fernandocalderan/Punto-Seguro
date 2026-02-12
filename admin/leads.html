@@ -17,7 +17,7 @@
         <a href="/admin/providers">Proveedores</a>
         <a href="/admin/leads">Leads</a>
         <a href="/">Web</a>
-        <button type="button" id="logout-btn" class="btn btn-secondary" style="min-height:36px;padding:0.35rem 0.8rem;">Salir</button>
+        <button type="button" id="logout-btn" class="btn btn-secondary btn-compact">Salir</button>
       </nav>
     </div>
   </header>
@@ -27,15 +27,15 @@
       <section class="card">
         <h1>Leads</h1>
         <p class="muted">Listado, detalle y actualización de estado.</p>
-        <div class="grid-3" id="metrics" style="margin-top:1rem;"></div>
+        <div class="grid-3 metrics-grid" id="metrics"></div>
       </section>
 
       <section class="card stack">
-        <h2 style="font-size:1.2rem;">Listado</h2>
-        <div class="actions" style="justify-content:flex-start;">
-          <label for="status-filter" style="display:flex;gap:0.5rem;align-items:center;">
+        <h2 class="section-title">Listado</h2>
+        <div class="actions actions-left">
+          <label for="status-filter" class="filter-row">
             <span class="muted">Filtrar por estado</span>
-            <select id="status-filter" style="width:auto;min-width:180px;">
+            <select id="status-filter" class="filter-select">
               <option value="all">Todos</option>
               <option value="new">new</option>
               <option value="validated">validated</option>
@@ -45,6 +45,7 @@
               <option value="closed">closed</option>
               <option value="sold">sold</option>
               <option value="rejected">rejected</option>
+              <option value="deleted">deleted</option>
             </select>
           </label>
         </div>
@@ -70,35 +71,81 @@
         </div>
       </section>
 
-      <section class="card stack" id="lead-detail" style="display:none;">
-        <h2 style="font-size:1.2rem;">Detalle de lead</h2>
-        <div id="lead-detail-content" class="stack"></div>
+      <section class="stack" id="lead-detail" style="display:none;">
+        <section class="card stack">
+          <h2 class="section-title">Detalle de lead</h2>
+          <div id="lead-detail-content" class="stack"></div>
+        </section>
 
-        <form id="lead-update-form" class="stack" style="max-width:520px;">
-          <input type="hidden" id="lead-id" />
-          <div class="field">
-            <label for="lead-status">Estado</label>
-            <select id="lead-status">
-              <option value="new">new</option>
-              <option value="validated">validated</option>
-              <option value="assigned">assigned</option>
-              <option value="sent">sent</option>
-              <option value="accepted">accepted</option>
-              <option value="closed">closed</option>
-              <option value="sold">sold</option>
-              <option value="rejected">rejected</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="lead-notes">Notas</label>
-            <textarea id="lead-notes"></textarea>
-          </div>
-          <div class="actions">
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-          </div>
-        </form>
+        <div class="grid">
+          <section class="card stack" aria-label="Asignación">
+            <h3 class="subsection-title">Asignación</h3>
+            <p class="muted">Administra proveedores o anonimiza el lead (GDPR).</p>
 
-        <div id="lead-alert" class="notice" style="display:none;"></div>
+            <div class="field">
+              <label for="manual-provider-primary">Proveedor principal</label>
+              <select id="manual-provider-primary"></select>
+            </div>
+
+            <div class="field">
+              <label for="manual-provider-secondary">Segundo proveedor (opcional)</label>
+              <select id="manual-provider-secondary"></select>
+              <small class="muted">Se enviará a máximo 2 proveedores.</small>
+            </div>
+
+            <div class="field">
+              <label for="manual-note">Nota (opcional)</label>
+              <input id="manual-note" type="text" placeholder="Ej: solicitud prioritaria" />
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-primary" id="assign-manual-btn">Asignar manual</button>
+              <button type="button" class="btn btn-secondary" id="reassign-auto-btn">Reasignar automático</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+              <label for="anonymize-reason">Razón (opcional)</label>
+              <input id="anonymize-reason" type="text" placeholder="Ej: solicitud usuario" />
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn btn-danger" id="anonymize-btn">Anonimizar lead</button>
+            </div>
+          </section>
+
+          <section class="card stack" aria-label="Estado y notas">
+            <h3 class="subsection-title">Estado y notas</h3>
+
+            <form id="lead-update-form" class="stack">
+              <input type="hidden" id="lead-id" />
+              <div class="field">
+                <label for="lead-status">Estado</label>
+                <select id="lead-status">
+                  <option value="new">new</option>
+                  <option value="validated">validated</option>
+                  <option value="assigned">assigned</option>
+                  <option value="sent">sent</option>
+                  <option value="accepted">accepted</option>
+                  <option value="closed">closed</option>
+                  <option value="sold">sold</option>
+                  <option value="rejected">rejected</option>
+                  <option value="deleted">deleted</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="lead-notes">Notas</label>
+                <textarea id="lead-notes"></textarea>
+              </div>
+              <div class="actions">
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+              </div>
+            </form>
+
+            <div id="lead-alert" class="notice" style="display:none;"></div>
+          </section>
+        </div>
       </section>
     </div>
   </main>

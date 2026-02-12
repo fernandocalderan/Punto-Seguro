@@ -197,6 +197,10 @@ p {
   margin-top: 0.4rem;
 }
 
+.actions-left {
+  justify-content: flex-start;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -228,6 +232,53 @@ p {
 
 .btn-secondary:hover {
   background: #f4f6f8;
+}
+
+.btn-danger {
+  background: var(--bad);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #a31313;
+}
+
+.btn-compact {
+  min-height: 36px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.metrics-grid {
+  margin-top: 1rem;
+}
+
+.section-title {
+  font-size: 1.2rem;
+}
+
+.subsection-title {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  width: auto;
+  min-width: 180px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  margin: 0.65rem 0;
 }
 
 .badge {

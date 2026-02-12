@@ -36,6 +36,10 @@ CREATE TABLE IF NOT EXISTS leads (
   lead_score INT,
   ticket_estimated_eur INT,
   price_eur INT,
+  assignment_mode TEXT DEFAULT 'auto',
+  assigned_by TEXT,
+  updated_at TIMESTAMPTZ,
+  deleted_at TIMESTAMPTZ,
   status TEXT NOT NULL DEFAULT 'new',
   notes TEXT
 );

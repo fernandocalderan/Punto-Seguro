@@ -78,6 +78,7 @@ Nota SSL:
 
 - Por defecto el cliente usa SSL con `rejectUnauthorized: false`.
 - Si tu Postgres local no usa SSL, define `PG_SSL_DISABLE=true`.
+- Si tu `DATABASE_URL` trae `sslmode=require` (ej. Neon), puedes cambiarlo a `sslmode=verify-full` en la URL (misma credencial, solo cambia el modo).
 
 ### Despliegue en Vercel
 

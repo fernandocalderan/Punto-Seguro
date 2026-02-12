@@ -13,9 +13,21 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Punto Seguro | Criterio profesional para detectar exposición real a intrusión</title>
+  <title>Diagnóstico de Seguridad y Riesgo de Robo | Evaluación en 2 minutos – Punto Seguro</title>
 
-  <meta name="description" content="Evaluación IEI™ 2.0 para identificar exposición real a intrusión en viviendas y negocios. Resultado orientativo y solicitud de propuestas con consentimiento." />
+  <meta name="description" content="Calcula en 2 minutos el riesgo de robo y tu nivel de exposición en vivienda o negocio. Detecta puntos vulnerables y recibe recomendaciones generales. Sin registro al inicio." />
+  <link rel="canonical" href="https://puntoseguro.com.es/diagnostico" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Diagnóstico de Seguridad y Riesgo de Robo (2 minutos) – Punto Seguro" />
+  <meta property="og:description" content="Detecta vulnerabilidades, hábitos de riesgo y factores del entorno. Resultado claro + recomendaciones." />
+  <meta property="og:url" content="https://puntoseguro.com.es/diagnostico" />
+  <meta property="og:image" content="https://puntoseguro.com.es/og-diagnostico.jpg" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Diagnóstico de Seguridad y Riesgo de Robo – Punto Seguro" />
+  <meta name="twitter:description" content="Evaluación en 2 minutos. Sin registro al inicio. Resultado claro + recomendaciones." />
+  <meta name="twitter:image" content="https://puntoseguro.com.es/og-diagnostico.jpg" />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -986,6 +998,38 @@
     .ps-page-evaluador .header-contact-group { display: none !important; }
     .ps-page-evaluador .header-contact { display: none !important; }
 
+    .ps-seo-intro{
+      max-width: 980px;
+      margin: 0 auto 1.4rem;
+      padding: 0 0 .25rem;
+    }
+    .ps-seo-intro h1{
+      font-size: 2.1rem;
+      line-height: 1.15;
+      color: var(--brand-secondary);
+      letter-spacing: -0.02em;
+      margin: 0 0 .75rem;
+    }
+    .ps-seo-intro h2{
+      font-size: 1.25rem;
+      color: var(--brand-secondary);
+      margin: 1.1rem 0 .55rem;
+      letter-spacing: -0.01em;
+    }
+    .ps-seo-intro p{
+      color: var(--text-muted);
+      font-size: 1.02rem;
+      margin: 0 0 .8rem;
+    }
+    .ps-seo-intro ul, .ps-seo-intro ol{
+      margin: 0 0 .35rem 1.2rem;
+      color: var(--text-muted);
+    }
+    .ps-seo-intro li{ margin: .25rem 0; }
+    @media (max-width: 768px){
+      .ps-seo-intro h1{ font-size: 1.6rem; }
+    }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>
@@ -1021,8 +1065,31 @@
             <div class="ps-stepbar-fill" id="ps-stepbar-fill" style="width:0%"></div>
           </div>
         </div>
+        <div class="ps-seo-intro">
+          <h1>Diagnóstico de seguridad: calcula tu riesgo de robo en 2 minutos</h1>
+          <p>
+            Este diagnóstico evalúa vulnerabilidades habituales en viviendas y negocios: accesos, cerramientos, hábitos,
+            visibilidad, iluminación y factores del entorno. El objetivo es convertir una sensación (“creo que estoy protegido”)
+            en una referencia clara para priorizar acciones.
+          </p>
+
+          <h2>Qué evalúa este diagnóstico</h2>
+          <ul>
+            <li>Accesos y cerramientos (puertas, ventanas, cierres y puntos secundarios)</li>
+            <li>Rutinas y previsibilidad (ausencias, horarios y señales visibles)</li>
+            <li>Entorno y visibilidad (iluminación, puntos ciegos, exposición)</li>
+            <li>Medidas actuales (alarma, cámaras, protección visible)</li>
+          </ul>
+
+          <h2>Cómo funciona</h2>
+          <ol>
+            <li>Selecciona tipo de inmueble (vivienda o comercio).</li>
+            <li>Responde las preguntas rápidas.</li>
+            <li>Obtendrás el resultado al finalizar y podrás solicitar propuestas solo si lo deseas.</li>
+          </ol>
+        </div>
         <div class="section-title">
-          <h2>Vamos a calcular tu nivel de exposición</h2>
+          <h2>Calcula tu nivel de exposición y riesgo de intrusión</h2>
           <p>Responde unas preguntas rápidas. No pedimos datos personales en esta fase.</p>
           <p class="fineprint">Evaluación IEI™ orientativa e independiente. Solo compartimos datos si solicitas propuestas.</p>
           <div class="ps-model-block" aria-label="Modelo IEI">
@@ -1676,6 +1743,52 @@
     });
 
     window.location.href = "/resultado";
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Diagnóstico de Seguridad Punto Seguro",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "All",
+        "inLanguage": "es-ES",
+        "url": "https://puntoseguro.com.es/diagnostico",
+        "description": "Diagnóstico en 2 minutos para estimar riesgo de robo y exposición a intrusión en vivienda o negocio."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Necesito dejar mis datos para ver el resultado?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. No pedimos datos personales al inicio. Solo se comparten datos si solicitas propuestas y das consentimiento explícito."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Este diagnóstico sustituye una auditoría técnica?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Es una evaluación orientativa que ayuda a identificar vulnerabilidades habituales y priorizar mejoras. La revisión técnica se realiza solo si el usuario la solicita."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué factores influyen más en el riesgo de intrusión?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Accesos secundarios poco visibles, cerramientos débiles, iluminación insuficiente, rutinas previsibles y ausencia de medidas activas (alarma/cámaras) suelen aumentar la exposición."
+            }
+          }
+        ]
+      }
+    ]
   }
   </script>
 

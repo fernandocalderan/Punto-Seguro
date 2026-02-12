@@ -166,6 +166,25 @@ a.ps-cta-secondary {
   color: var(--ps-muted);
 }
 
+.ps-model-block {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ps-muted);
+}
+
+.ps-model-title {
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.ps-model-desc {
+  color: var(--ps-muted);
+}
+
 .ps-header-cta-wrap {
   display: inline-flex;
   flex-direction: column;

@@ -1,9 +1,9 @@
 # Punto Seguro - Motor de Leads (Alarmas)
 
-Implementación local end-to-end para captura y distribución de leads:
+Implementación local end-to-end para captura y distribución de leads basada en IEI™ 2.0:
 
-- Diagnóstico (`/diagnostico`) reutilizando el evaluador existente.
-- Resultado (`/resultado`) con nivel de riesgo y recomendaciones generales.
+- Evaluación IEI™ (`/diagnostico`) reutilizando el evaluador existente.
+- Resultado (`/resultado`) con Índice IEI™ (nivel de exposición) y recomendaciones generales.
 - CTA a formulario de lead (`/solicitar-propuesta`) con consentimiento GDPR.
 - Asignación automática a hasta 2 proveedores por zona/tipo/rotación/cupo.
 - Envío de emails a proveedores y confirmación a usuario.

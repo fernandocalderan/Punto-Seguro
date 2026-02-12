@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Punto Seguro | Criterio profesional para detectar exposición real a intrusión</title>
 
-  <meta name="description" content="Criterio profesional para identificar exposición real a intrusión en viviendas y negocios. Diagnóstico orientativo y solicitud de propuestas con consentimiento." />
+  <meta name="description" content="Evaluación IEI™ 2.0 para identificar exposición real a intrusión en viviendas y negocios. Resultado orientativo y solicitud de propuestas con consentimiento." />
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1012,9 +1012,9 @@
     <main id="main">
     <section id="evaluador-punto-seguro">
       <div class="container ps-evaluador-wrap">
-        <div class="flow-stepbar ps-stepbar" aria-label="Progreso del diagnóstico">
+        <div class="flow-stepbar ps-stepbar" aria-label="Progreso de la evaluación IEI™">
           <div class="ps-stepbar-row">
-            <span class="ps-stepbar-step">Paso 1/3 — Diagnóstico</span>
+            <span class="ps-stepbar-step">Paso 1/3 — Evaluación IEI™</span>
             <span class="ps-stepbar-pct"><span id="ps-stepbar-pct">0</span>% completado</span>
           </div>
           <div class="ps-stepbar-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -1024,7 +1024,11 @@
         <div class="section-title">
           <h2>Vamos a calcular tu nivel de exposición</h2>
           <p>Responde unas preguntas rápidas. No pedimos datos personales en esta fase.</p>
-          <p class="fineprint">Diagnóstico orientativo e independiente. Solo compartimos datos si solicitas propuestas.</p>
+          <p class="fineprint">Evaluación IEI™ orientativa e independiente. Solo compartimos datos si solicitas propuestas.</p>
+          <div class="ps-model-block" aria-label="Modelo IEI">
+            <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
+            <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+          </div>
         </div>
 
         <div class="evaluador-card ps-evaluador-card">
@@ -1145,7 +1149,7 @@
                       <option value="galeria">Galería comercial</option>
                       <option value="interior">Interior de edificio</option>
                     </select>
-                    <small id="hint-tipo-local" class="field-hint ps-evaluador-hint">La visibilidad y acceso condicionan el riesgo.</small>
+                    <small id="hint-tipo-local" class="field-hint ps-evaluador-hint">La visibilidad y acceso condicionan la exposición.</small>
                   </div>
                   <div class="evaluador-field ps-evaluador-field">
                     <label for="cierre">Sistema de cierre frontal</label>
@@ -1223,13 +1227,13 @@
               </fieldset>
             </div>
 
-            <div class="ps-microtrust" aria-label="Garantías del diagnóstico">
+            <div class="ps-microtrust" aria-label="Garantías de la evaluación IEI™">
               <span class="ps-pill">✔ Resultado inmediato</span>
               <span class="ps-pill">✔ Sin registro</span>
               <span class="ps-pill">✔ Sin llamadas</span>
             </div>
 
-            <button type="submit" class="btn-evaluador" aria-label="Ver mi nivel de riesgo" tabindex="0">Ver mi nivel de riesgo</button>
+            <button type="submit" class="btn-evaluador" aria-label="Ver mi nivel de exposición" tabindex="0">Ver mi nivel de exposición</button>
           </form>
 
           <div id="resultado" aria-live="polite"></div>
@@ -1241,9 +1245,13 @@
   <footer style="font-size:.78rem;color:#9ca3af;line-height:1.5;padding:2rem 1.5rem 2.5rem;text-align:center;">
     <p style="margin:0 0 .4rem;">
       © 2026 <b>Punto Seguro</b> · Sitio informativo de concienciación en seguridad.
-      Diagnóstico neutral y solicitud de propuestas bajo consentimiento explícito.
+      Evaluación IEI™ neutral y solicitud de propuestas bajo consentimiento explícito.
       <br><a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a> · <a href="/cookies">Cookies</a>
     </p>
+    <div class="ps-model-block">
+      <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
+      <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+    </div>
   </footer>
 
   <script src="/js/analytics.js"></script>
@@ -1351,7 +1359,7 @@
 
     function validarFormularioActivo(tipoInmueble) {
       if (!tipoInmueble) {
-        mostrarAlerta("Selecciona el tipo de inmueble antes de calcular el riesgo.");
+        mostrarAlerta("Selecciona el tipo de inmueble antes de calcular tu Índice IEI™.");
         document.getElementById("tipo-inmueble").focus();
         return false;
       }
@@ -1663,6 +1671,8 @@
       risk_score: IEI,
       tipo_inmueble: tipoInmueble,
       model_version: "IEI-2.0",
+      iei_level: nivel,
+      iei_score: IEI,
     });
 
     window.location.href = "/resultado";

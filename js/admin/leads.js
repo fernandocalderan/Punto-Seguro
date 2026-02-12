@@ -160,7 +160,7 @@
             <td>${new Date(lead.created_at).toLocaleString("es-ES")}</td>
             <td>${contactCell}</td>
             <td>${locationCell}</td>
-            <td>${lead.risk_level}</td>
+            <td>${lead.risk_level || "-"}</td>
             <td>${lead.lead_score ?? "-"}</td>
             <td>${toCurrency(lead.ticket_estimated_eur)}</td>
             <td>${intentLabel(lead.intent_plazo)}</td>
@@ -176,11 +176,11 @@
 
   function formatEvaluationSummary(lead) {
     if (!lead.evaluation_summary) {
-      return "<div class=\"notice\">Resumen evaluación: No disponible</div>";
+      return "<div class=\"notice\">Resumen IEI™: No disponible</div>";
     }
 
     if (typeof lead.evaluation_summary === "string") {
-      return `<div class="notice">Resumen evaluación: ${escapeHtml(lead.evaluation_summary)}</div>`;
+      return `<div class="notice">Resumen IEI™: ${escapeHtml(lead.evaluation_summary)}</div>`;
     }
 
     const summaryJson = JSON.stringify(lead.evaluation_summary, null, 2);
@@ -240,7 +240,7 @@
         </div>
         <div>
           <p><b>Tipo:</b> ${escapeHtml(lead.business_type)}</p>
-          <p><b>Riesgo:</b> ${lead.risk_level}</p>
+          <p><b>Exposición (IEI™):</b> ${lead.risk_level || "-"}</p>
           <p><b>Lead score:</b> ${lead.lead_score ?? "-"}</p>
           <p><b>Ticket estimado:</b> ${toCurrency(lead.ticket_estimated_eur)}</p>
           <p><b>Precio:</b> ${toCurrency(lead.price_eur)}</p>

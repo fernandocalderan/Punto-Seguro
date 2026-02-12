@@ -25,7 +25,7 @@
     if (level === "CRÍTICA") {
       base = "Exposición crítica: conviene contrastar con prioridad capas de detección, tiempos de respuesta y puntos de acceso.";
     } else if (level === "ELEVADA") {
-      base = "Exposición elevada: hay varios puntos de mejora y conviene priorizar medidas por fases para reducir riesgo.";
+      base = "Exposición elevada: hay varios puntos de mejora y conviene priorizar medidas por fases para reducir exposición.";
     } else if (level === "MODERADA") {
       base = "Exposición moderada: hay puntos mejorables para reducir previsibilidad y oportunidad de intrusión.";
     } else {
@@ -90,7 +90,7 @@
         add("Reducir previsibilidad en franjas sin presencia y ajustar medidas en los periodos más expuestos.");
       }
       if (text.includes("historial de robos")) {
-        add("En contextos con histórico, priorizar confirmación técnica para decidir acciones con criterio.");
+        add("En contextos con histórico, priorizar confirmación técnica para decidir medidas con criterio.");
       }
     } else if (tipoInmueble === "comercio") {
       if (text.includes("sin sistema de alarma") || text.includes("sin alarma")) {
@@ -103,7 +103,7 @@
         add("Revisar protección del escaparate/lunas y su integración con detección para reducir intrusión oportunista.");
       }
       if (text.includes("actividad de alto valor")) {
-        add("Ajustar el nivel de protección a la exposición de la actividad y a franjas de riesgo habituales.");
+        add("Ajustar el nivel de protección a la exposición de la actividad y a franjas críticas habituales.");
       }
       if (text.includes("sin cierre interior")) {
         add("Revisar capas complementarias de cierre interior para reducir vulnerabilidad en accesos principales.");
@@ -125,7 +125,7 @@
     if (level === "CRÍTICA") {
       base = "El patrón se acerca a escenarios típicos de intrusión cuando el inmueble queda sin presencia.";
     } else if (level === "ELEVADA") {
-      base = "Hay varios puntos de exposición que conviene revisar con criterio técnico para reducir riesgo.";
+      base = "Hay varios puntos de exposición que conviene revisar con criterio técnico para reducir exposición.";
     } else if (level === "MODERADA") {
       base = "Se aprecian puntos mejorables habituales. Ajustarlos suele reducir oportunidad sin grandes cambios.";
     } else {
@@ -194,7 +194,7 @@
     .join("");
 
   topFactorsNode.innerHTML = factorsTop.length > 0
-    ? factorsTop.map((factor) => `<li>${factor.texto || "Factor de riesgo detectado"}</li>`).join("")
+    ? factorsTop.map((factor) => `<li>${factor.texto || "Factor de exposición detectado"}</li>`).join("")
     : "<li>No se detectaron factores destacados en esta simulación.</li>";
 
   const resumen = (evaluation.factores_top || [])
@@ -222,6 +222,8 @@
     has_result: true,
     risk_level: level,
     risk_score: score,
+    iei_level: level,
+    iei_score: score,
     model_version: modelVersion || null,
   });
 
@@ -263,6 +265,9 @@
     window.PuntoSeguroAnalytics?.trackEvent("lead_declined", {
       risk_level: level,
       risk_score: score,
+      iei_level: level,
+      iei_score: score,
+      model_version: modelVersion || null,
     });
   });
 
@@ -282,6 +287,9 @@
       plazo,
       risk_level: level,
       risk_score: score,
+      iei_level: level,
+      iei_score: score,
+      model_version: modelVersion || null,
     });
 
     window.location.href = "/solicitar-propuesta";

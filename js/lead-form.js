@@ -42,7 +42,7 @@
     return;
   }
 
-  const riskLevel = String(evaluation.risk_level || "MEDIO").toUpperCase();
+  const riskLevel = String(evaluation.risk_level || "MODERADA").toUpperCase();
   const riskScore = Number(evaluation.risk_score || 0);
   const intent = readIntent();
 
@@ -52,8 +52,8 @@
   }
 
   const urgencySelect = document.getElementById("urgency");
-  if (riskLevel === "ALTO") urgencySelect.value = "alta";
-  if (riskLevel === "BAJO") urgencySelect.value = "baja";
+  if (riskLevel === "CRÍTICA" || riskLevel === "ELEVADA") urgencySelect.value = "alta";
+  if (riskLevel === "CONTROLADA") urgencySelect.value = "baja";
 
   const intentLabelMap = {
     esta_semana: "Esta semana",
@@ -62,7 +62,7 @@
   };
   const intentLabel = intent?.plazo ? intentLabelMap[intent.plazo] || intent.plazo : "No indicado";
 
-  summaryNode.textContent = `Riesgo orientativo: ${riskLevel} (${riskScore}/100). Plazo declarado: ${intentLabel}. Este resumen se adjuntará a la solicitud.`;
+  summaryNode.textContent = `Exposición orientativa (IEI™): ${riskLevel} (${riskScore}/100). Plazo declarado: ${intentLabel}. Este resumen se adjuntará a la solicitud.`;
 
   const evaluationSummary = {
     risk_score: riskScore,
@@ -83,6 +83,9 @@
   window.PuntoSeguroAnalytics?.trackEvent("lead_form_viewed", {
     has_result: true,
     risk_level: riskLevel,
+    iei_level: riskLevel,
+    iei_score: riskScore,
+    model_version: evaluation.model_version || null,
     intent_plazo: intent?.plazo || null,
   });
 
@@ -117,6 +120,9 @@
 
     window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
       risk_level: payload.risk_level,
+      iei_level: payload.risk_level,
+      iei_score: riskScore,
+      model_version: evaluation.model_version || null,
       intent_plazo: payload.intent_plazo,
     });
 

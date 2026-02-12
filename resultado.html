@@ -12,8 +12,8 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Punto Seguro | Resultado de evaluación</title>
-  <meta name="description" content="Resultado orientativo de riesgo y recomendaciones generales en Punto Seguro." />
+  <title>Punto Seguro | Resultado IEI™ 2.0</title>
+  <meta name="description" content="Resultado IEI™ 2.0 (Índice de Exposición a Intrusión) con explicación orientativa y recomendaciones generales." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -33,16 +33,21 @@
   <main class="main">
     <div class="container stack">
       <section class="card stack">
-        <h1>Resultado de evaluación</h1>
-        <p class="lead">Análisis orientativo basado en exposición, oportunidad y atractivo del inmueble.</p>
+        <h1>Resultado IEI™ 2.0</h1>
+        <p class="lead">Índice de Exposición a Intrusión (orientativo), basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</p>
+
+        <div class="ps-model-block" aria-label="Modelo IEI">
+          <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
+          <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+        </div>
 
         <div class="card stack" style="padding:1rem;">
-          <p class="muted">Resultado técnico</p>
+          <p class="muted">Índice IEI™ 2.0 (técnico)</p>
           <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
             <strong id="risk-score" style="font-size:2rem;line-height:1;">-- / 100</strong>
             <span id="risk-level-badge" class="badge">--</span>
           </div>
-          <p id="risk-explanation" class="muted" style="margin-top:0.65rem;">Completa el diagnóstico para generar tu resultado.</p>
+          <p id="risk-explanation" class="muted" style="margin-top:0.65rem;">Completa la evaluación IEI™ para generar tu resultado.</p>
           <div>
             <h2 style="font-size:1.05rem;margin-top:0.2rem;">Factores principales detectados</h2>
             <ul class="list" id="top-factors-list"></ul>
@@ -58,7 +63,7 @@
         </div>
 
         <div class="notice">
-          En niveles MEDIO/ALTO, muchas personas piden una confirmación técnica para decidir si actuar o ajustar medidas.
+          En niveles MODERADA o superior, muchas personas piden una confirmación técnica para decidir si actuar o ajustar medidas.
         </div>
 
         <div class="notice">
@@ -96,6 +101,10 @@
 
   <footer class="footer">
     © 2026 <b>Punto Seguro</b> · Información preventiva y neutral.
+    <div class="ps-model-block">
+      <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
+      <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+    </div>
   </footer>
 
   <script src="/js/analytics.js"></script>

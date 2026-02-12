@@ -314,7 +314,7 @@ def read_post(md_path: Path) -> Post:
         )
 
     # 3. CTA suave automático si falta
-    if "Ver mi nivel de riesgo" not in body and "/diagnostico" not in body:
+    if "Calcular mi Índice IEI™" not in body and "/diagnostico" not in body:
         body += (
             "\n\n## Hablar con un experto\n\n"
             "Si quieres contrastar tu caso, reviso tu vivienda o negocio con un diagnóstico sin compromiso.\n\n"
@@ -504,7 +504,7 @@ def expert_invite_block(asset_prefix: str = "") -> str:
         rel="noopener noreferrer"
       >
         <img src="{asset_prefix}/logo-punto-seguro.png" alt="Diagnóstico">
-        <span>Ver mi nivel de riesgo</span>
+        <span>Calcular mi Índice IEI™</span>
       </a>
 
       <p class="expert-invite-note">

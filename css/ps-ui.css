@@ -376,6 +376,7 @@ a.ps-cta-primary {
 body.ps-mode-inflow .ps-header-cta-wrap { display: none !important; }
 body.ps-mode-inflow .ps-sticky-bar { display: none !important; }
 body.ps-mode-inflow .ps-header-actions { gap: .75rem; }
+body.ps-mode-inflow .ps-blog-link { display: none !important; }
 
 /* ------------------------------
    Evaluador: contraste + layout fluido

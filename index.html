@@ -1032,7 +1032,7 @@
           <div class="hero-mobile-cta">
             <a
               href="/diagnostico"
-              class="ps-cta-primary"
+              class="ps-cta-primary ps-cta-hero"
               id="hero-primary-cta"
               data-ps-placement="inline"
               aria-label="Hacer diagnóstico en 2 minutos"
@@ -1234,7 +1234,7 @@
           <b><p>Calcula en segundos el <a href="/diagnostico">nivel de exposición a intrusión</a> en tu vivienda o local.</p></b>
           <p>Basado en técnicas de seguridad física, CPTED y criterios profesionales.</p>
           <div class="ps-cta-inline-block">
-            <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="inline">Hacer diagnóstico en 2 minutos</a>
+            <a class="ps-cta-primary ps-cta-mid" href="/diagnostico" data-ps-placement="inline">Hacer diagnóstico en 2 minutos</a>
             <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
           </div>
         </div>
@@ -1318,7 +1318,7 @@
         ¿Listo para empezar? Evalúa tu nivel de riesgo y decide con datos.
       </p>
       <div class="ps-cta-inline-block">
-        <a class="ps-cta-primary" href="/diagnostico" data-ps-placement="inline">Hacer diagnóstico en 2 minutos</a>
+        <a class="ps-cta-primary ps-cta-footer" href="/diagnostico" data-ps-placement="inline">Hacer diagnóstico en 2 minutos</a>
         <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
       </div>
     </section>
@@ -1335,7 +1335,7 @@
     </p>
   </footer>
 
-  <div class="ps-sticky-bar" role="region" aria-label="Acción principal">
+  <div class="ps-sticky-bar ps-sticky-hidden" role="region" aria-label="Acción principal">
     <a class="ps-cta-primary ps-sticky-cta" href="/diagnostico" data-ps-placement="sticky">Hacer diagnóstico en 2 minutos</a>
     <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
   </div>
@@ -1364,9 +1364,10 @@
           return;
         }
 
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-        const showSticky = progress >= 0.4;
+        const hero = document.querySelector(".hero");
+        const heroHeight = hero?.offsetHeight ?? 0;
+        const threshold = heroHeight > 0 ? heroHeight * 0.8 : window.innerHeight * 0.8;
+        const showSticky = window.scrollY > threshold;
         stickyBar.classList.toggle("is-visible", showSticky);
         body.classList.toggle("ps-sticky-visible", showSticky);
       };

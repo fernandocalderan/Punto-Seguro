@@ -265,6 +265,10 @@ a.ps-cta-secondary {
     z-index: 95;
   }
 
+  .ps-sticky-hidden {
+    display: none;
+  }
+
   .ps-sticky-cta {
     display: block;
     width: 100%;
@@ -283,20 +287,20 @@ a.ps-cta-secondary {
   }
 
   body.home-page.ps-has-sticky.ps-sticky-visible {
-    padding-bottom: 72px;
+    padding-bottom: 96px;
   }
 
   .home-page .ps-sticky-bar {
     display: none;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: center;
-    gap: 0;
+    gap: 0.35rem;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 56px;
-    padding: 6px 12px;
+    height: auto;
+    padding: 8px 12px 10px;
     border-radius: 0;
     background: #ffffff;
     border: 0;
@@ -309,14 +313,21 @@ a.ps-cta-secondary {
   }
 
   .home-page .ps-sticky-cta {
-    min-height: 40px;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    min-height: 44px;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
     box-shadow: none !important;
   }
 
   .home-page .ps-sticky-bar .ps-trustline {
-    display: none;
+    display: block;
+    text-align: center;
+    font-size: 0.72rem;
+  }
+
+  .ps-cta-mid,
+  .ps-cta-mid + .ps-trustline {
+    display: none !important;
   }
 }
 

@@ -39,7 +39,10 @@ cp .env.example .env
 - Con `DATABASE_URL`: usa Postgres para `providers`, `leads` y `events`.
 - En producción (Vercel) debes definir `DATABASE_URL`; sin esta variable la persistencia será efímera.
 
-SMTP es opcional. Si no se configura, los correos se guardan en `data/email-outbox.log`.
+Email:
+
+- En producción: configura `RESEND_API_KEY` para enviar correos reales vía Resend.
+- Sin `RESEND_API_KEY`: el servidor imprime en consola el outbox (modo desarrollo).
 
 ## Postgres (persistencia permanente)
 
@@ -130,9 +133,8 @@ Modo JSON (sin `DATABASE_URL`):
 - `data/providers.json`
 - `data/leads.json`
 - `data/events.json`
-- `data/email-outbox.log`
 
 Modo Postgres (con `DATABASE_URL`):
 
 - tablas `providers`, `leads`, `events`
-- `data/email-outbox.log` para trazas de correo en local
+  

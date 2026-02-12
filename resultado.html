@@ -70,15 +70,20 @@
           <button class="btn btn-secondary" type="button" id="cta-keep">Mantener solo resultado</button>
         </div>
 
-        <section id="intent-block" class="card stack" style="padding:1rem;display:none;">
-          <h2 style="font-size:1.05rem;">Antes de continuar</h2>
-          <p class="muted">Indica tu plazo de instalación para priorizar mejor tu solicitud.</p>
-          <label for="intent-plazo"><b>Plazo de instalación</b></label>
-          <select id="intent-plazo">
+        <section id="intent-block" class="ps-intent-card ps-hidden" aria-labelledby="intent-title">
+          <div class="ps-intent-head">
+            <h2 id="intent-title">Antes de continuar</h2>
+            <p class="muted">Indica tu plazo de instalación para priorizar mejor tu solicitud.</p>
+          </div>
+
+          <div class="ps-intent-form">
+            <label for="intent-plazo"><span class="ps-label-strong">Plazo de instalación</span></label>
+            <select id="intent-plazo" class="ps-select">
             <option value="esta_semana">Esta semana</option>
             <option value="1_3_meses">1–3 meses</option>
             <option value="informativo">Solo informativo</option>
-          </select>
+            </select>
+          </div>
           <div class="actions">
             <button class="btn btn-primary" type="button" id="intent-confirm">Continuar a solicitud</button>
           </div>

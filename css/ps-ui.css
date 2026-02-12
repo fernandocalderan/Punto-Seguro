@@ -437,3 +437,71 @@ body.ps-mode-inflow .ps-blog-link { display: none !important; }
 /* Header is sticky; keep the stepbar visible below it. */
 @media (min-width: 769px) { .ps-stepbar { top: 86px; } }
 @media (max-width: 768px) { .ps-stepbar { top: 64px; } }
+
+/* Utilities */
+.ps-hidden { display: none !important; }
+
+/* Intent card (resultado -> plazo) */
+.ps-intent-card{
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.12);
+  box-shadow: 0 14px 40px rgba(15,23,42,.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* “Destaque” sobrio: acento lateral */
+.ps-intent-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width: 4px;
+  background: rgba(43,92,255,.9);
+  opacity: .9;
+}
+
+/* Head */
+.ps-intent-head h2{
+  font-size: 1.05rem;
+  margin: 0 0 6px 0;
+}
+.ps-intent-head .muted{
+  margin: 0 0 12px 0;
+}
+
+/* Form */
+.ps-intent-form{
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ps-label-strong{
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* Select coherente */
+.ps-select{
+  width: 100%;
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.20);
+  background: #fff;
+  padding: 10px 12px;
+  outline: none;
+}
+.ps-select:focus{
+  border-color: rgba(43,92,255,.75);
+  box-shadow: 0 0 0 4px rgba(43,92,255,.14);
+}
+
+/* Mobile: mas respiracion + boton full width si tu sistema no lo hace */
+@media (max-width: 768px){
+  .ps-intent-card{ padding: 16px; }
+  .ps-intent-card .actions .btn{ width: 100%; min-height: 52px; border-radius: 12px; }
+}

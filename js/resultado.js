@@ -132,10 +132,22 @@
     // Ignore stale/invalid intent state in sessionStorage.
   }
 
-  ctaRequestNode?.addEventListener("click", () => {
+  if (intentBlockNode) {
+    // Ensure the intent UI is hidden by default and only shown after request CTA.
+    intentBlockNode.classList.add("ps-hidden");
+  }
+
+  function showIntentBlock() {
     if (!intentBlockNode) return;
-    intentBlockNode.style.display = "block";
-    intentBlockNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    intentBlockNode.classList.remove("ps-hidden");
+    intentBlockNode.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => {
+      intentSelectNode && intentSelectNode.focus();
+    }, 250);
+  }
+
+  ctaRequestNode?.addEventListener("click", () => {
+    showIntentBlock();
   });
 
   ctaKeepNode?.addEventListener("click", () => {

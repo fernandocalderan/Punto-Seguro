@@ -551,3 +551,94 @@ body.ps-mode-inflow .ps-blog-link { display: none !important; }
   .ps-intent-card{ padding: 16px; }
   .ps-intent-card .actions .btn{ width: 100%; min-height: 52px; border-radius: 12px; }
 }
+
+/* ------------------------------
+   Evaluador: selector premium de tipo (vivienda/comercio)
+-------------------------------- */
+.ps-start { margin-top: 12px; }
+
+.ps-start-title {
+  font-weight: 800;
+  font-size: 16px;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.ps-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ps-type-btn {
+  width: 100%;
+  text-align: left;
+  padding: 16px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  font: inherit;
+}
+
+.ps-type-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
+}
+
+.ps-type-btn.ps-active {
+  border: 2px solid rgba(37, 99, 235, 0.85);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f7ff 100%);
+  box-shadow: 0 18px 45px rgba(37, 99, 235, 0.14);
+}
+
+.ps-type-btn:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.25);
+  outline-offset: 2px;
+}
+
+.ps-type-name {
+  font-weight: 800;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.ps-type-desc {
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.65);
+}
+
+.ps-start-trustline {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  color: rgba(15, 23, 42, 0.65);
+  font-size: 13px;
+}
+
+.ps-start-trustline span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255,255,255,0.7);
+}
+
+/* Scroll alignment when showing the form after type selection */
+#formulario-vivienda,
+#formulario-comercio {
+  scroll-margin-top: 120px;
+}
+
+@media (max-width: 768px) {
+  .ps-type-grid { grid-template-columns: 1fr; }
+  .ps-type-btn { padding: 16px 14px; }
+  #formulario-vivienda,
+  #formulario-comercio {
+    scroll-margin-top: 90px;
+  }
+}

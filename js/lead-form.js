@@ -46,6 +46,22 @@
   const riskScore = Number(evaluation.risk_score || 0);
   const intent = readIntent();
 
+  let hasTrackedStarted = false;
+  function trackStartedOnce() {
+    if (hasTrackedStarted) return;
+    hasTrackedStarted = true;
+
+    window.PuntoSeguroAnalytics?.trackEvent("lead_form_started", {
+      risk_level: riskLevel,
+      iei_level: riskLevel,
+      iei_score: riskScore,
+      model_version: evaluation.model_version || null,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      intent_plazo: intent?.plazo || null,
+    });
+  }
+
   const typeSelect = document.getElementById("business_type");
   if (evaluation.tipo_inmueble && ["vivienda", "comercio", "oficina"].includes(evaluation.tipo_inmueble)) {
     typeSelect.value = evaluation.tipo_inmueble;
@@ -65,9 +81,19 @@
   summaryNode.textContent = `Exposición orientativa (IEI™): ${riskLevel} (${riskScore}/100). Plazo declarado: ${intentLabel}. Este resumen se adjuntará a la solicitud.`;
 
   const evaluationSummary = {
+    model_version: evaluation.model_version || null,
     risk_score: riskScore,
     risk_level: riskLevel,
     tipo_inmueble: evaluation.tipo_inmueble || null,
+    tier: evaluation.tier || null,
+    dominant_axis: evaluation.dominant_axis || null,
+    axis_mix: evaluation.axis_mix || null,
+    confidence_score: evaluation.confidence_score ?? null,
+    iei_base: evaluation.iei_base ?? null,
+    iei_raw: evaluation.iei_raw ?? null,
+    probability_index: evaluation.probability_index ?? null,
+    impact_index: evaluation.impact_index ?? null,
+    synergy_points: evaluation.synergy_points ?? null,
     factores_top: Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [],
     generated_at: evaluation.generated_at || null,
   };
@@ -87,35 +113,99 @@
     iei_score: riskScore,
     model_version: evaluation.model_version || null,
     intent_plazo: intent?.plazo || null,
+    tier: evaluation.tier || null,
+    dominant_axis: evaluation.dominant_axis || null,
   });
+
+  ["name", "phone", "postal_code"].forEach((id) => {
+    const node = document.getElementById(id);
+    node?.addEventListener("focus", trackStartedOnce, { once: true });
+    node?.addEventListener("input", trackStartedOnce, { once: true });
+  });
+
+  function normalizePostalCode(value) {
+    return String(value || "").replace(/\D/g, "").trim();
+  }
+
+  function submitError(reason, message, focusId) {
+    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_error", {
+      reason,
+      risk_level: riskLevel,
+      iei_level: riskLevel,
+      iei_score: riskScore,
+      model_version: evaluation.model_version || null,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      intent_plazo: intent?.plazo || null,
+    });
+
+    showAlert(message || "No se pudo enviar la solicitud.", true);
+    if (focusId) {
+      document.getElementById(focusId)?.focus();
+    }
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     showAlert("");
 
-    if (!form.reportValidity()) return;
+    trackStartedOnce();
+
+    const name = document.getElementById("name").value.trim();
+    if (!name) {
+      submitError("missing_name", "Indica tu nombre y apellidos.", "name");
+      return;
+    }
 
     const consent = document.getElementById("consent").checked;
     if (!consent) {
-      showAlert("Debes aceptar el consentimiento para continuar.", true);
+      submitError("missing_consent", "Debes aceptar el consentimiento para continuar.", "consent");
+      return;
+    }
+
+    const phone = document.getElementById("phone").value.trim();
+    if (!phone) {
+      submitError("missing_phone", "Indica un teléfono de contacto.", "phone");
+      return;
+    }
+
+    const postalCode = normalizePostalCode(document.getElementById("postal_code").value);
+    if (!postalCode) {
+      submitError("missing_postal_code", "Indica tu código postal.", "postal_code");
+      return;
+    }
+    if (!/^\d{5}$/.test(postalCode)) {
+      submitError("invalid_postal_code", "El código postal debe tener 5 dígitos.", "postal_code");
+      return;
+    }
+
+    const emailNode = document.getElementById("email");
+    const email = emailNode.value.trim();
+    if (email && !emailNode.checkValidity()) {
+      submitError("invalid_email", "Revisa el email (formato no válido).", "email");
       return;
     }
 
     const payload = {
-      name: document.getElementById("name").value.trim(),
-      email: document.getElementById("email").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
+      name,
+      email,
+      phone,
       city: document.getElementById("city").value.trim(),
-      postal_code: document.getElementById("postal_code").value.trim(),
-      business_type: document.getElementById("business_type").value,
-      urgency: document.getElementById("urgency").value,
-      budget_range: document.getElementById("budget_range").value,
+      postal_code: postalCode,
+      business_type: document.getElementById("business_type").value || "",
+      urgency: document.getElementById("urgency").value || "",
+      budget_range: document.getElementById("budget_range").value || "",
       notes: document.getElementById("notes").value.trim(),
       risk_level: riskLevel,
       consent: true,
       consent_timestamp: new Date().toISOString(),
       evaluation_summary: evaluationSummary,
       intent_plazo: intent?.plazo || null,
+      iei_score: riskScore,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      axis_mix: evaluation.axis_mix || null,
+      model_version: evaluation.model_version || null,
     };
 
     window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
@@ -123,6 +213,8 @@
       iei_level: payload.risk_level,
       iei_score: riskScore,
       model_version: evaluation.model_version || null,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
       intent_plazo: payload.intent_plazo,
     });
 
@@ -140,6 +232,18 @@
         throw new Error(data.error || "No se pudo enviar la solicitud");
       }
 
+      window.PuntoSeguroAnalytics?.trackEvent("lead_submit_success", {
+        lead_id: data.lead_id,
+        risk_level: payload.risk_level,
+        iei_level: payload.risk_level,
+        iei_score: riskScore,
+        model_version: evaluation.model_version || null,
+        tier: evaluation.tier || null,
+        dominant_axis: evaluation.dominant_axis || null,
+        tipo_inmueble: evaluation.tipo_inmueble || payload.business_type || null,
+        intent_plazo: payload.intent_plazo,
+      });
+
       window.sessionStorage.setItem(
         "puntoSeguro.lastLead",
         JSON.stringify({
@@ -153,7 +257,7 @@
 
       window.location.href = `/confirmacion?lead=${encodeURIComponent(data.lead_id)}`;
     } catch (error) {
-      showAlert(error.message, true);
+      submitError("request_failed", error.message || "No se pudo enviar la solicitud");
     }
   });
 })();

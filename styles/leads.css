@@ -190,6 +190,34 @@ p {
   resize: vertical;
 }
 
+.optional-details {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+}
+
+.optional-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--brand-secondary);
+  list-style: none;
+}
+
+.optional-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.optional-details summary:focus-visible {
+  outline: 3px solid rgba(43, 92, 255, 0.18);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.optional-details-body {
+  margin-top: 0.85rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

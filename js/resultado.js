@@ -52,7 +52,7 @@
 
     const parts = [
       base,
-      modelVersion ? `Modelo: ${modelVersion}` : null,
+      modelVersion ? "Modelo: IEI™" : null,
       Number.isFinite(Number(probabilityIndex)) ? `Probabilidad: ${Number(probabilityIndex)}/100` : null,
       Number.isFinite(Number(impactIndex)) ? `Impacto: ${Number(impactIndex)}/100` : null,
       Number.isFinite(Number(synergyPoints)) && Number(synergyPoints) > 0 ? `Sinergia: +${Number(synergyPoints)}` : null,

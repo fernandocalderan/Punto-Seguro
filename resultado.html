@@ -12,8 +12,8 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Punto Seguro | Resultado IEI™ 2.0</title>
-  <meta name="description" content="Resultado IEI™ 2.0 (Índice de Exposición a Intrusión) con explicación orientativa y recomendaciones generales." />
+  <title>Punto Seguro | Resultado IEI™</title>
+  <meta name="description" content="Resultado IEI™ (Índice de Exposición a Intrusión) con explicación orientativa y recomendaciones generales." />
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -48,16 +48,16 @@
   <main class="main">
     <div class="container stack">
       <section class="card stack">
-        <h1>Resultado IEI™ 2.0</h1>
+        <h1>Resultado IEI™</h1>
         <p class="lead">Índice de Exposición a Intrusión (orientativo), basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</p>
 
         <div class="ps-model-block" aria-label="Modelo IEI">
-          <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
-          <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+          <div class="ps-model-title" id="ps-iei-title"></div>
+          <div class="ps-model-desc" id="ps-iei-desc"></div>
         </div>
 
         <div class="card stack" style="padding:1rem;">
-          <p class="muted">Índice IEI™ 2.0 (técnico)</p>
+          <p class="muted">Índice IEI™ (técnico)</p>
           <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
             <strong id="risk-score" style="font-size:2rem;line-height:1;">-- / 100</strong>
             <span id="risk-level-badge" class="badge">--</span>
@@ -117,13 +117,15 @@
   <footer class="footer">
     © 2026 <b>Punto Seguro</b> · Información preventiva y neutral.
     <div class="ps-model-block">
-      <div class="ps-model-title">IEI™ 2.0 – Índice de Exposición a Intrusión</div>
-      <div class="ps-model-desc">Modelo orientativo basado en vulnerabilidad estructural, oportunidad operativa y atractivo objetivo.</div>
+      <div class="ps-model-title ps-iei-title"></div>
+      <div class="ps-model-desc ps-iei-desc"></div>
     </div>
   </footer>
 
   <script src="/js/analytics.js"></script>
   <script src="js/resultado.js"></script>
   <script src="/js/ps-cta.js"></script>
+  <script src="/js/iei-meta.js"></script>
+  <script src="/js/iei-ui.js"></script>
 </body>
 </html>

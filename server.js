@@ -138,6 +138,7 @@ routeToFile("/privacidad", "privacidad.html");
 routeToFile("/terminos", "terminos.html");
 routeToFile("/cookies", "cookies.html");
 routeToFile("/blog", "blog.html");
+routeToFile("/iei", "iei.html");
 
 app.get("/admin/login", (_req, res) => {
   res.sendFile(file("admin/login.html"));

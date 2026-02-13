@@ -80,6 +80,14 @@
     return `${base} ${tail}`;
   }
 
+  function pickMeaningfulTopFactor(topFactors) {
+    for (const f of topFactors || []) {
+      const t = normalizeText(f?.texto || f?.text || "");
+      if (t && !t.startsWith("tipo de")) return (f?.texto || f?.text || "").trim();
+    }
+    return (topFactors?.[0]?.texto || topFactors?.[0]?.text || "").trim();
+  }
+
   // Reglas deterministas: 1 factor => 1 paso candidato (frase autónoma neutra)
   const RULES = [
     {
@@ -162,7 +170,7 @@
     const tipo = normalizeText(evaluation?.tipo_inmueble || evaluation?.business_type || "");
 
     const topFactors = getTopFactors(evaluation, 5);
-    const top1Text = (topFactors[0]?.texto || topFactors[0]?.text || "").trim();
+    const top1Text = pickMeaningfulTopFactor(topFactors);
 
     // generar candidatos: por cada factor, intentar casar reglas
     const candidates = [];
@@ -197,11 +205,32 @@
     }
 
     // fallback si faltan pasos
-    const fallback = [
-      "Revisar accesos y cerramientos reduce vulnerabilidad estructural en los puntos más expuestos.",
-      "Mejorar detección temprana y protocolo de aviso/refuerzo incrementa capacidad de respuesta.",
-      "Disuasión visible y reducción de puntos ciegos suelen disminuir oportunidad y atractivo percibido."
-    ];
+    const lvl = String(level || "").toUpperCase();
+
+    const fallbackByLevel = {
+      CONTROLADA: [
+        "Revisar accesos y cerramientos puede eliminar puntos ciegos habituales.",
+        "Mejorar protocolo de aviso aporta estabilidad operativa.",
+        "Disuasión visible ayuda a mantener el nivel actual."
+      ],
+      MODERADA: [
+        "Revisar accesos y cerramientos reduce vulnerabilidad estructural detectada.",
+        "Mejorar detección temprana incrementa capacidad de respuesta.",
+        "Reducir puntos ciegos disminuye oportunidad operativa."
+      ],
+      ELEVADA: [
+        "Reforzar accesos expuestos reduce el punto de entrada más probable según el perfil detectado.",
+        "Incorporar detección con verificación mejora reacción ante evento.",
+        "Reducir exposición visible y puntos ciegos limita oportunidad en franjas sin presencia."
+      ],
+      CRÍTICA: [
+        "Reforzar accesos expuestos es clave para reducir el punto de entrada más probable en este perfil.",
+        "Incorporar detección con verificación y protocolo claro es determinante en este nivel.",
+        "Reducir puntos ciegos y aumentar disuasión visible limita aproximación en escenarios sin presencia."
+      ]
+    };
+
+    const fallback = fallbackByLevel[lvl] || fallbackByLevel.MODERADA;
 
     const steps = deduped.slice(0, 3).map(x => x.text);
     while (steps.length < 3) steps.push(fallback[steps.length]);
@@ -423,7 +452,7 @@
       "puntoSeguro.intent",
       JSON.stringify({
         plazo: inferredPlazo,
-        inferred: true,
+        source: "inferred",
         selected_at: new Date().toISOString(),
       })
     );

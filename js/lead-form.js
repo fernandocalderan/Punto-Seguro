@@ -76,9 +76,21 @@
     "1_3_meses": "1–3 meses",
     informativo: "Solo informativo",
   };
-  const intentLabel = intent?.plazo ? intentLabelMap[intent.plazo] || intent.plazo : "No indicado";
+  const humanizePlazo = (plazo) => intentLabelMap[plazo] || plazo;
 
-  summaryNode.textContent = `Exposición orientativa (IEI™): ${riskLevel} (${riskScore}/100). Plazo declarado: ${intentLabel}. Este resumen se adjuntará a la solicitud.`;
+  let plazoLine = "";
+  if (intent?.plazo) {
+    const source = intent?.source || (intent?.inferred ? "inferred" : "user");
+    const intentLabel = humanizePlazo(intent.plazo);
+
+    if (source === "user") {
+      plazoLine = ` Plazo declarado: ${intentLabel}.`;
+    } else if (source === "inferred") {
+      plazoLine = ` Prioridad estimada por nivel IEI™: ${intentLabel}.`;
+    }
+  }
+
+  summaryNode.textContent = `Exposición orientativa (IEI™): ${riskLevel} (${riskScore}/100).${plazoLine} Este resumen se adjuntará a la solicitud.`;
 
   const evaluationSummary = {
     model_version: evaluation.model_version || null,

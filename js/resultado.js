@@ -25,6 +25,200 @@
     return "";
   }
 
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function getFactorPoints(factor) {
+    const points = Number(factor?.puntos ?? factor?.points ?? 0);
+    return Number.isFinite(points) ? points : 0;
+  }
+
+  function getTopFactors(evaluation, limit = 3) {
+    const raw = Array.isArray(evaluation?.factores_top)
+      ? evaluation.factores_top
+      : Array.isArray(evaluation?.factors_top)
+        ? evaluation.factors_top
+        : [];
+
+    return raw
+      .slice()
+      .sort((a, b) => getFactorPoints(b) - getFactorPoints(a))
+      .slice(0, Math.max(0, Number(limit) || 0));
+  }
+
+  function tonePrefix(level) {
+    if (level === "CONTROLADA") return "Optimiza";
+    if (level === "MODERADA") return "Ajusta";
+    if (level === "ELEVADA") return "Prioriza";
+    if (level === "CRÍTICA") return "Actúa hoy";
+    return "Ajusta";
+  }
+
+  const RULES = [
+    {
+      id: "no_alarm",
+      match: [/sin\s+(sistema\s+de\s+)?alarma/, /\balarma\b.*\bninguna\b/],
+      priority: 90,
+      step(_tipo, tone) {
+        return `${tone}: instala detección con verificación (sensores + protocolo de aviso) para reducir oportunidad operativa.`;
+      },
+    },
+    {
+      id: "windows",
+      match: [/ventanas?/, /sin\s+proteccion.*ventan/, /ventan.*sin\s+proteccion/],
+      priority: 70,
+      step(tipo, tone) {
+        const t = normalizeText(tipo);
+        if (t.includes("vivienda")) {
+          return `${tone}: refuerza ventanas expuestas (cierres, sensor perimetral y elemento disuasorio visible).`;
+        }
+        return `${tone}: refuerza puntos acristalados expuestos (sensor, lámina/film y disuasión visible).`;
+      },
+    },
+    {
+      id: "ground_floor",
+      match: [/piso\s*bajo/, /planta\s*baja/, /a\s*ras\s*de\s*calle/],
+      priority: 65,
+      step(tipo, tone) {
+        const t = normalizeText(tipo);
+        if (!t.includes("vivienda")) return "";
+        return `${tone}: prioriza puntos a ras de calle (ventanas/puertas) y reduce accesos fáciles desde exterior.`;
+      },
+    },
+    {
+      id: "street_level_shop",
+      match: [/local\s+a\s+pie\s+de\s+calle/, /pie\s+de\s+calle/, /local\s+de\s+calle/],
+      priority: 75,
+      step(tipo, tone) {
+        const t = normalizeText(tipo);
+        if (!t.includes("comercio")) return "";
+        return `${tone}: mejora disuasión visible (iluminación, señalización y cámara orientada a fachada/accesos).`;
+      },
+    },
+    {
+      id: "shutter",
+      match: [/persiana/, /microperforada/],
+      priority: 72,
+      step(tipo, tone) {
+        const t = normalizeText(tipo);
+        if (!t.includes("comercio")) return "";
+        return `${tone}: revisa cierre/persiana (puntos de palanca, guías y bloqueo) y combina con detección en acceso.`;
+      },
+    },
+    {
+      id: "high_value_stock",
+      match: [/stock\s+atractivo/, /alimentacion/, /joyeria/, /electronica/],
+      priority: 68,
+      step(tipo, tone) {
+        const t = normalizeText(tipo);
+        if (!t.includes("comercio")) return "";
+        return `${tone}: reduce atractivo (stock fuera de vista, rutinas de exposición y control de cierre en horas críticas).`;
+      },
+    },
+    {
+      id: "no_cameras",
+      match: [/sin\s+camara/, /sin\s+camaras/, /sin\s+videovigilancia/],
+      priority: 60,
+      step(_tipo, tone) {
+        return `${tone}: añade verificación visual (cámara en acceso principal y zona de punto ciego).`;
+      },
+    },
+    {
+      id: "lighting_blind_spots",
+      match: [/iluminacion/, /puntos?\s+ciegos?/, /punto\s+ciego/],
+      priority: 58,
+      step(_tipo, tone) {
+        return `${tone}: elimina puntos ciegos (iluminación exterior + limpieza de líneas de visión).`;
+      },
+    },
+    {
+      id: "absence_routine",
+      match: [/ausencia/, /muchas\s+horas\s+vaci/, /rutina\s+previsible/, /horas?\s+vaci/],
+      priority: 62,
+      step(_tipo, tone) {
+        return `${tone}: rompe la previsibilidad (rutinas, temporizadores y protocolo cuando queda vacío).`;
+      },
+    },
+  ];
+
+  function buildPlanFromFactors(evaluation) {
+    const level = String(evaluation?.risk_level || "MODERADA").toUpperCase();
+    const tone = tonePrefix(level);
+    const tipo = evaluation?.tipo_inmueble || evaluation?.business_type || "";
+
+    const topFactors = getTopFactors(evaluation, 5);
+
+    const candidates = [];
+    for (const factor of topFactors) {
+      const rawText = factor?.texto || factor?.text || "";
+      const normalized = normalizeText(rawText);
+      const factorPts = getFactorPoints(factor);
+
+      for (const rule of RULES) {
+        const matches = (rule.match || []).some((m) => (m instanceof RegExp ? m.test(normalized) : normalized.includes(normalizeText(m))));
+        if (!matches) continue;
+
+        const text = rule.step(tipo, tone);
+        if (!text) continue;
+
+        candidates.push({
+          text,
+          priority: Number(rule.priority) || 0,
+          factorPoints: factorPts,
+        });
+      }
+    }
+
+    candidates.sort((a, b) => (b.priority - a.priority) || (b.factorPoints - a.factorPoints));
+
+    const steps = [];
+    const seen = new Set();
+    for (const candidate of candidates) {
+      const key = normalizeText(candidate.text);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      steps.push(candidate.text);
+      if (steps.length >= 3) break;
+    }
+
+    const t = normalizeText(tipo);
+    const fallbacks = t.includes("comercio")
+      ? [
+          `${tone}: revisa accesos y cierre principal (puerta, persiana/cierre, cristal) y puntos secundarios.`,
+          `${tone}: mejora detección + verificación + protocolo de respuesta para reducir la ventana operativa.`,
+          `${tone}: refuerza disuasión visible y elimina puntos ciegos (iluminación y líneas de visión).`,
+        ]
+      : t.includes("vivienda")
+        ? [
+            `${tone}: revisa accesos principales y secundarios (puerta, ventanas, balcones) y su resistencia real.`,
+            `${tone}: añade detección temprana (sensores perimetrales/interiores) y un protocolo claro de aviso/respuesta.`,
+            `${tone}: mejora disuasión y elimina puntos ciegos (iluminación exterior, visibilidad, orden).`,
+          ]
+        : [
+            `${tone}: revisa accesos/cerramientos y puntos secundarios para reducir vulnerabilidad estructural.`,
+            `${tone}: mejora detección y respuesta para reducir oportunidad operativa.`,
+            `${tone}: refuerza disuasión y elimina puntos ciegos (iluminación y visibilidad).`,
+          ];
+
+    for (const fallback of fallbacks) {
+      if (steps.length >= 3) break;
+      const key = normalizeText(fallback);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      steps.push(fallback);
+    }
+
+    return {
+      title: "Plan en 3 pasos (según tus puntos débiles)",
+      steps: steps.slice(0, 3),
+    };
+  }
+
   function explanation(level, meta) {
     const {
       probabilityIndex,
@@ -67,89 +261,6 @@
     ].filter(Boolean);
 
     return parts.join(" · ");
-  }
-
-  function recommendations({ level, tipoInmueble, factorsTop, dominantAxisCode }) {
-    const safeFactors = Array.isArray(factorsTop) ? factorsTop : [];
-    const recs = [];
-    const seen = new Set();
-
-    function add(text) {
-      const key = String(text || "").trim().toLowerCase();
-      if (!key || seen.has(key)) return;
-      seen.add(key);
-      recs.push(text);
-    }
-
-    if (dominantAxisCode === "V") {
-      add("Priorizar refuerzo físico de accesos y cerramientos para reducir vulnerabilidad estructural.");
-    } else if (dominantAxisCode === "O") {
-      add("Priorizar detección, alarma y capacidad de respuesta para reducir la oportunidad operativa.");
-    } else if (dominantAxisCode === "A") {
-      add("Priorizar disuasión visible y control de stock/valor para reducir atractivo objetivo.");
-    }
-
-    if (level === "CRÍTICA") {
-      add("Contrastar de forma prioritaria puntos de acceso, detección y protocolo de respuesta en franjas críticas.");
-      add("Pedir una validación técnica para priorizar medidas por fases sin sobredimensionar inversión.");
-    } else if (level === "ELEVADA") {
-      add("Priorizar los accesos con mayor exposición y alinear medidas físicas con detección y respuesta.");
-      add("Comparar dos propuestas técnicas para equilibrar cobertura, coste y tiempos de atención.");
-    } else if (level === "MODERADA") {
-      add("Verificar qué accesos o rutinas generan mayor previsibilidad y priorizar su ajuste.");
-      add("Alinear hábitos y medidas preventivas para evitar puntos ciegos frecuentes.");
-    } else {
-      add("Mantener revisión periódica de cerramientos y puntos sensibles de acceso.");
-      add("Solicitar una validación externa anual para detectar desajustes progresivos.");
-    }
-
-    const text = safeFactors
-      .map((factor) => String(factor?.texto || factor?.text || "").toLowerCase())
-      .join(" | ");
-
-    if (tipoInmueble === "vivienda") {
-      if (text.includes("sin sistema de alarma") || text.includes("sin alarma")) {
-        add("Contrastar opciones de detección y aviso/respuesta para reducir la ventana de oportunidad.");
-      }
-      if (text.includes("sin cámaras")) {
-        add("Revisar visibilidad y puntos ciegos (interior/exterior) con enfoque disuasorio y de verificación.");
-      }
-      if (text.includes("ventanas") && (text.includes("sin protección") || text.includes("sin proteccion"))) {
-        add("Revisar refuerzo y detección en ventanas (sensores, lámina o elementos físicos) según contexto.");
-      }
-      if (text.includes("puerta principal") && (text.includes("poco resistente") || text.includes("chapa simple") || text.includes("aluminio"))) {
-        add("Validar resistencia y tipo de cerradura de la puerta principal con criterio técnico.");
-      }
-      if (text.includes("vivienda vacía") || text.includes("vivienda vacia")) {
-        add("Reducir previsibilidad en franjas sin presencia y ajustar medidas en los periodos más expuestos.");
-      }
-      if (text.includes("historial de robos")) {
-        add("En contextos con histórico, priorizar confirmación técnica para decidir medidas con criterio.");
-      }
-    } else if (tipoInmueble === "comercio") {
-      if (text.includes("sin sistema de alarma") || text.includes("sin alarma")) {
-        add("Contrastar opciones de detección y respuesta para reducir el tiempo de exposición en el local.");
-      }
-      if (text.includes("persiana") && text.includes("simple")) {
-        add("Evaluar resistencia del cierre principal y su vulnerabilidad típica, integrándolo con detección.");
-      }
-      if (text.includes("lunas") && (text.includes("sin film") || text.includes("sin protección") || text.includes("sin proteccion"))) {
-        add("Revisar protección del escaparate/lunas y su integración con detección para reducir intrusión oportunista.");
-      }
-      if (text.includes("actividad de alto valor")) {
-        add("Ajustar el nivel de protección a la exposición de la actividad y a franjas críticas habituales.");
-      }
-      if (text.includes("sin cierre interior")) {
-        add("Revisar capas complementarias de cierre interior para reducir vulnerabilidad en accesos principales.");
-      }
-    }
-
-    while (recs.length < 3) {
-      if (tipoInmueble === "comercio") add("Revisar procedimientos de cierre y aperturas para reducir oportunidad sin fricción operativa.");
-      else add("Comprobar que hábitos diarios no incrementen la observabilidad del inmueble.");
-    }
-
-    return recs.slice(0, 3);
   }
 
   function humanTranslation(level, meta) {
@@ -249,15 +360,10 @@
     });
   }
 
-  const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
+  const factorsTop = getTopFactors(evaluation, 3);
 
-  const recs = recommendations({
-    level,
-    tipoInmueble,
-    factorsTop,
-    dominantAxisCode,
-  });
-  recommendationsNode.innerHTML = recs
+  const plan = buildPlanFromFactors(evaluation);
+  recommendationsNode.innerHTML = (plan.steps || [])
     .map((item, index) => `
       <div class="step-card">
         <div class="step-n">${index + 1}</div>
@@ -267,11 +373,12 @@
     .join("");
 
   topFactorsNode.innerHTML = factorsTop.length > 0
-    ? factorsTop.map((factor) => `<span class="chip">${factor.texto || "Factor de exposición detectado"}</span>`).join("")
+    ? factorsTop.map((factor) => `<span class="chip">${factor.texto || factor.text || "Factor de exposición detectado"}</span>`).join("")
     : "<span class=\"chip\">Sin factores destacados en esta simulación.</span>";
 
-  const resumen = (evaluation.factores_top || [])
-    .map((factor) => factor.texto)
+  const resumen = factorsTop
+    .map((factor) => factor?.texto || factor?.text)
+    .filter(Boolean)
     .slice(0, 3)
     .join(" | ");
 

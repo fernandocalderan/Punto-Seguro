@@ -1591,6 +1591,35 @@
     return { puntos, factores };
   }
 
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function logistic01(x, k, m) {
+    return 1 / (1 + Math.exp(-k * (x - m)));
+  }
+
+  function logistic100(x, k, m) {
+    return 100 * logistic01(x, k, m);
+  }
+
+  function dominantAxis(Vn, On, An) {
+    if (Vn >= On && Vn >= An) return "V";
+    if (On >= Vn && On >= An) return "O";
+    return "A";
+  }
+
+  function tierFromIEI(score) {
+    if (score >= 70) return "PREMIUM";
+    if (score >= 50) return "PLUS";
+    return "STANDARD";
+  }
+
+  function confidenceScore(_tipoInmueble) {
+    // Todos los campos del formulario actual son obligatorios.
+    return 100;
+  }
+
   function calcularRiesgo() {
     const tipoInmueble = document.getElementById("tipo-inmueble").value;
     if (!validarFormularioActivo(tipoInmueble)) return;
@@ -1633,26 +1662,33 @@
     const An = (A / Amax) * 100;
 
     // Índice base ponderado
-    let IEI = (Vn * pesoV) + (On * pesoO) + (An * pesoA);
+    const IEI_base = (Vn * pesoV) + (On * pesoO) + (An * pesoA);
 
     // Factor sinergia (combinaciones críticas)
     let synergy = 0;
 
     if (tipoInmueble === "vivienda") {
-      if (datos.alarma === "ninguna" && datos.ventanas === "sin_proteccion") synergy += 8;
-      if ((datos.tipoVivienda === "casa" || datos.tipoVivienda === "adosado") && datos.horasVacia === "10plus") synergy += 6;
-      if ((datos.puerta === "madera_hueca" || datos.puerta === "aluminio_simple") && datos.camaras === "no") synergy += 5;
-      if ((datos.historial === "si_yo" || datos.historial === "si_vecinos") && datos.alarma === "ninguna") synergy += 6;
+      const factor = (Vn / 100) * (On / 100);
+      if (datos.alarma === "ninguna" && datos.ventanas === "sin_proteccion") synergy += 8 * factor;
+      if ((datos.tipoVivienda === "casa" || datos.tipoVivienda === "adosado") && datos.horasVacia === "10plus") synergy += 6 * factor;
+      if ((datos.puerta === "madera_hueca" || datos.puerta === "aluminio_simple") && datos.camaras === "no") synergy += 5 * factor;
+      if ((datos.historial === "si_yo" || datos.historial === "si_vecinos") && datos.alarma === "ninguna") synergy += 6 * factor;
     }
 
     if (tipoInmueble === "comercio") {
-      if (datos.alarma === "ninguna" && datos.cierre === "persiana_simple") synergy += 10;
-      if ((datos.actividad === "joyeria" || datos.actividad === "electronica") && datos.alarma === "ninguna") synergy += 10;
-      if (datos.lunas === "sin_proteccion" && datos.tipoLocal === "calle") synergy += 7;
-      if (datos.cierreInterior === "ninguno" && datos.lunas === "sin_proteccion") synergy += 6;
+      const factor = (Vn / 100) * (Math.max(On, An) / 100);
+      if (datos.alarma === "ninguna" && datos.cierre === "persiana_simple") synergy += 10 * factor;
+      if ((datos.actividad === "joyeria" || datos.actividad === "electronica") && datos.alarma === "ninguna") synergy += 10 * factor;
+      if (datos.lunas === "sin_proteccion" && datos.tipoLocal === "calle") synergy += 7 * factor;
+      if (datos.cierreInterior === "ninguno" && datos.lunas === "sin_proteccion") synergy += 6 * factor;
     }
 
-    IEI = Math.min(100, Math.round(IEI + synergy));
+    synergy = clamp(Math.round(synergy), 0, 18);
+
+    const IEI_raw = IEI_base + synergy;
+    const k = 0.075;
+    const m = 52;
+    const IEI = clamp(Math.round(logistic100(IEI_raw, k, m)), 0, 100);
 
     // Nuevo nivel profesional
     let nivel;
@@ -1664,6 +1700,9 @@
     // Índices auxiliares (para explicar mejor en resultado)
     const probabilityIndex = Math.round((Vn + On) / 2);
     const impactIndex = Math.round(An);
+    const dominant = dominantAxis(Vn, On, An);
+    const tier = tierFromIEI(IEI);
+    const confidence = confidenceScore(tipoInmueble);
 
     // Top factores (mantener compatibilidad)
     const factores = [
@@ -1678,14 +1717,24 @@
       .slice(0, 3);
 
     const evaluation = {
-      model_version: "IEI-2.0",
+      model_version: "IEI-3.0",
       risk_score: IEI,
       risk_level: nivel,
       probability_index: probabilityIndex,
       impact_index: impactIndex,
+      axis_mix: {
+        Vn: Math.round(Vn),
+        On: Math.round(On),
+        An: Math.round(An),
+      },
+      dominant_axis: dominant,
+      iei_base: Math.round(IEI_base),
+      iei_raw: Math.round(IEI_raw),
       tipo_inmueble: tipoInmueble,
       factores_top: factoresTop,
       synergy_points: synergy,
+      tier,
+      confidence_score: confidence,
       generated_at: new Date().toISOString(),
     };
 
@@ -1695,7 +1744,12 @@
       risk_level: nivel,
       risk_score: IEI,
       tipo_inmueble: tipoInmueble,
-      model_version: "IEI-2.0",
+      model_version: "IEI-3.0",
+      tier,
+      dominant_axis: dominant,
+      Vn: Math.round(Vn),
+      On: Math.round(On),
+      An: Math.round(An),
       iei_level: nivel,
       iei_score: IEI,
     });

@@ -18,8 +18,26 @@
     return "badge";
   }
 
+  function axisLabel(axis) {
+    if (axis === "V") return "Vulnerabilidad";
+    if (axis === "O") return "Oportunidad";
+    if (axis === "A") return "Atractivo";
+    return "";
+  }
+
   function explanation(level, meta) {
-    const { probabilityIndex, impactIndex, synergyPoints, modelVersion } = meta || {};
+    const {
+      probabilityIndex,
+      impactIndex,
+      synergyPoints,
+      modelVersion,
+      axisMix,
+      dominantAxisCode,
+      tier,
+      confidenceScore,
+      ieiBase,
+      ieiRaw,
+    } = meta || {};
 
     let base = "";
     if (level === "CRÍTICA") {
@@ -38,12 +56,20 @@
       Number.isFinite(Number(probabilityIndex)) ? `Probabilidad: ${Number(probabilityIndex)}/100` : null,
       Number.isFinite(Number(impactIndex)) ? `Impacto: ${Number(impactIndex)}/100` : null,
       Number.isFinite(Number(synergyPoints)) && Number(synergyPoints) > 0 ? `Sinergia: +${Number(synergyPoints)}` : null,
+      modelVersion === "IEI-3.0" && Number.isFinite(Number(ieiBase)) ? `Base: ${Number(ieiBase)}` : null,
+      modelVersion === "IEI-3.0" && Number.isFinite(Number(ieiRaw)) ? `Raw: ${Number(ieiRaw)}` : null,
+      modelVersion === "IEI-3.0" && axisMix && Number.isFinite(Number(axisMix.Vn)) && Number.isFinite(Number(axisMix.On)) && Number.isFinite(Number(axisMix.An))
+        ? `Mix V/O/A: ${Number(axisMix.Vn)}/${Number(axisMix.On)}/${Number(axisMix.An)}`
+        : null,
+      modelVersion === "IEI-3.0" && axisLabel(dominantAxisCode) ? `Eje: ${axisLabel(dominantAxisCode)}` : null,
+      modelVersion === "IEI-3.0" && tier ? `Tier: ${tier}` : null,
+      modelVersion === "IEI-3.0" && Number.isFinite(Number(confidenceScore)) ? `Confianza: ${Number(confidenceScore)}/100` : null,
     ].filter(Boolean);
 
     return parts.join(" · ");
   }
 
-  function recommendations({ level, tipoInmueble, factorsTop }) {
+  function recommendations({ level, tipoInmueble, factorsTop, dominantAxisCode }) {
     const safeFactors = Array.isArray(factorsTop) ? factorsTop : [];
     const recs = [];
     const seen = new Set();
@@ -53,6 +79,14 @@
       if (!key || seen.has(key)) return;
       seen.add(key);
       recs.push(text);
+    }
+
+    if (dominantAxisCode === "V") {
+      add("Priorizar refuerzo físico de accesos y cerramientos para reducir vulnerabilidad estructural.");
+    } else if (dominantAxisCode === "O") {
+      add("Priorizar detección, alarma y capacidad de respuesta para reducir la oportunidad operativa.");
+    } else if (dominantAxisCode === "A") {
+      add("Priorizar disuasión visible y control de stock/valor para reducir atractivo objetivo.");
     }
 
     if (level === "CRÍTICA") {
@@ -119,7 +153,7 @@
   }
 
   function humanTranslation(level, meta) {
-    const { probabilityIndex, impactIndex, synergyPoints } = meta || {};
+    const { probabilityIndex, impactIndex, synergyPoints, dominantAxisCode, tier } = meta || {};
 
     let base = "";
     if (level === "CRÍTICA") {
@@ -137,7 +171,12 @@
     if (Number.isFinite(Number(impactIndex))) details.push(`impacto ${Number(impactIndex)}/100`);
     if (Number.isFinite(Number(synergyPoints)) && Number(synergyPoints) > 0) details.push(`sinergia +${Number(synergyPoints)}`);
 
-    return details.length ? `${base} (${details.join(", ")}).` : base;
+    const axis = axisLabel(dominantAxisCode);
+    const summary = details.length ? `${base} (${details.join(", ")}).` : base;
+    const axisLine = axis ? ` Eje dominante: ${axis}.` : "";
+    const tierLine = tier ? ` Tier: ${tier}.` : "";
+
+    return `${summary}${axisLine}${tierLine}`;
   }
 
   const evaluation = readEvaluation();
@@ -154,6 +193,18 @@
   const impactIndex = Number(evaluation.impact_index);
   const synergyPoints = Number(evaluation.synergy_points || 0);
   const modelVersion = String(evaluation.model_version || "").trim();
+  const dominantAxisCode = String(evaluation.dominant_axis || "").trim().toUpperCase();
+  const tier = String(evaluation.tier || "").trim();
+  const confidence = Number(evaluation.confidence_score);
+  const ieiBase = Number(evaluation.iei_base);
+  const ieiRaw = Number(evaluation.iei_raw);
+  const axisMix = evaluation.axis_mix && typeof evaluation.axis_mix === "object"
+    ? {
+        Vn: Number(evaluation.axis_mix.Vn),
+        On: Number(evaluation.axis_mix.On),
+        An: Number(evaluation.axis_mix.An),
+      }
+    : null;
 
   const scoreNode = document.getElementById("risk-score");
   const levelNode = document.getElementById("risk-level-badge");
@@ -176,11 +227,19 @@
     impactIndex,
     synergyPoints,
     modelVersion,
+    axisMix,
+    dominantAxisCode,
+    tier,
+    confidenceScore: confidence,
+    ieiBase,
+    ieiRaw,
   });
   humanTextNode.textContent = humanTranslation(level, {
     probabilityIndex,
     impactIndex,
     synergyPoints,
+    dominantAxisCode,
+    tier,
   });
 
   const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
@@ -189,6 +248,7 @@
     level,
     tipoInmueble,
     factorsTop,
+    dominantAxisCode,
   })
     .map((item) => `<li>${item}</li>`)
     .join("");
@@ -211,6 +271,14 @@
       probability_index: Number.isFinite(probabilityIndex) ? probabilityIndex : null,
       impact_index: Number.isFinite(impactIndex) ? impactIndex : null,
       synergy_points: Number.isFinite(synergyPoints) ? synergyPoints : null,
+      axis_mix: axisMix && Number.isFinite(axisMix.Vn) && Number.isFinite(axisMix.On) && Number.isFinite(axisMix.An)
+        ? axisMix
+        : null,
+      dominant_axis: dominantAxisCode || null,
+      tier: tier || null,
+      confidence_score: Number.isFinite(confidence) ? confidence : null,
+      iei_base: Number.isFinite(ieiBase) ? ieiBase : null,
+      iei_raw: Number.isFinite(ieiRaw) ? ieiRaw : null,
       summary: resumen,
       tipo_inmueble: tipoInmueble || null,
       factores_top: factorsTop,
@@ -225,6 +293,8 @@
     iei_level: level,
     iei_score: score,
     model_version: modelVersion || null,
+    tier: tier || null,
+    dominant_axis: dominantAxisCode || null,
   });
 
   try {
@@ -268,6 +338,8 @@
       iei_level: level,
       iei_score: score,
       model_version: modelVersion || null,
+      tier: tier || null,
+      dominant_axis: dominantAxisCode || null,
     });
   });
 
@@ -290,6 +362,8 @@
       iei_level: level,
       iei_score: score,
       model_version: modelVersion || null,
+      tier: tier || null,
+      dominant_axis: dominantAxisCode || null,
     });
 
     window.location.href = "/solicitar-propuesta";

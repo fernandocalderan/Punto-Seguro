@@ -87,6 +87,69 @@
     return provider.active ? provider.name : `${provider.name} (inactivo)`;
   }
 
+  function renderIEIReport(diagInput) {
+    if (!diagInput) return "";
+
+    let diag = diagInput;
+    if (typeof diagInput === "string") {
+      try {
+        diag = JSON.parse(diagInput);
+      } catch (_error) {
+        diag = { raw: diagInput };
+      }
+    }
+
+    const level = diag.risk_level || "—";
+    const score = diag.risk_score ?? "—";
+    const tipo = diag.tipo_inmueble || "—";
+    const fecha = diag.generated_at ? new Date(diag.generated_at).toLocaleString("es-ES") : "—";
+    const factores = (diag.factores_top || diag.factors_top || []).slice(0, 3);
+
+    const levelColor = {
+      CONTROLADA: "#d1fae5",
+      MODERADA: "#fef3c7",
+      ELEVADA: "#fde68a",
+      "CRÍTICA": "#fecaca",
+      CRITICA: "#fecaca",
+    }[String(level).toUpperCase()] || "#e5e7eb";
+
+    const diagnosticJson = diag.raw ? diag.raw : JSON.stringify(diag, null, 2);
+
+    const factorsHtml = Array.isArray(factores) && factores.length > 0
+      ? factores.map((f) => `<li>${escapeHtml(f?.texto || f?.text || "-")}</li>`).join("")
+      : "<li>-</li>";
+
+    return `
+      <div class="iei-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:2rem;font-weight:700;">IEI™ ${escapeHtml(score)}/100</div>
+            <div style="font-size:0.9rem;color:#6b7280;">Generado: ${escapeHtml(fecha)}</div>
+          </div>
+          <div style="padding:0.4rem 0.8rem;border-radius:999px;background:${levelColor};font-weight:600;">
+            ${escapeHtml(level)}
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;">
+          <strong>Tipo:</strong> ${escapeHtml(tipo)}
+        </div>
+
+        <div style="margin-top:1rem;">
+          <strong>Top factores</strong>
+          <ul style="margin-top:0.5rem;padding-left:1.2rem;">
+            ${factorsHtml}
+          </ul>
+        </div>
+
+        <details style="margin-top:1rem;">
+          <summary style="cursor:pointer;font-weight:600;">Ver diagnóstico técnico</summary>
+          <pre style="margin-top:0.5rem;background:#f3f4f6;padding:0.75rem;border-radius:6px;overflow:auto;white-space:pre-wrap;">${escapeHtml(diagnosticJson)}</pre>
+        </details>
+      </div>
+    `;
+  }
+
   function renderProviderSelects(selectedIds) {
     if (!primaryProviderSelect || !secondaryProviderSelect) return;
 
@@ -174,34 +237,6 @@
       .join("");
   }
 
-  function formatEvaluationSummary(lead) {
-    if (!lead.evaluation_summary) {
-      return "<div class=\"notice\">Resumen IEI™: No disponible</div>";
-    }
-
-    if (typeof lead.evaluation_summary === "string") {
-      return `<div class="notice">Resumen IEI™: ${escapeHtml(lead.evaluation_summary)}</div>`;
-    }
-
-    const summaryJson = JSON.stringify(lead.evaluation_summary, null, 2);
-    const factors = Array.isArray(lead.evaluation_summary.factores_top)
-      ? lead.evaluation_summary.factores_top
-      : [];
-    const factorsHtml = factors.length > 0
-      ? `<ul class="list">${factors
-        .map((factor) => `<li>${escapeHtml(factor.texto || "Factor")}</li>`)
-        .join("")}</ul>`
-      : "<p class=\"muted\">Sin factores destacados guardados.</p>";
-
-    return `
-      <div class="notice">
-        <p><b>Top factores</b></p>
-        ${factorsHtml}
-      </div>
-      <pre style="white-space:pre-wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.75rem;overflow:auto;">${escapeHtml(summaryJson)}</pre>
-    `;
-  }
-
   function openLeadDetail(lead) {
     detailSection.style.display = "grid";
     leadIdInput.value = lead.id;
@@ -226,6 +261,8 @@
     const piiCity = isDeleted ? "-" : escapeHtml(lead.city || "-");
     const piiPostal = isDeleted ? "-" : escapeHtml(lead.postal_code || "-");
     const piiBadge = isDeleted ? `<p><span class="badge badge-deleted">Anonimizado</span></p>` : "";
+
+    const diag = lead.evaluation_summary || lead.diagnostico || lead.evaluation || null;
 
     detailContent.innerHTML = `
       <div class="grid">
@@ -259,7 +296,7 @@
           <p><b>Borrado:</b> ${lead.deleted_at || "-"}</p>
         </div>
       </div>
-      ${formatEvaluationSummary(lead)}
+      ${renderIEIReport(diag)}
     `;
   }
 

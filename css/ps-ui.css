@@ -57,6 +57,18 @@
   display: none;
 }
 
+.ps-brand .brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ps-brand .brand-text-mobile {
+  display: none;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
 .ps-nav {
   display: inline-flex;
   align-items: center;

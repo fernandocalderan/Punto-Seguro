@@ -18,204 +18,198 @@
     return "badge";
   }
 
-  function axisLabel(axis) {
-    if (axis === "V") return "Vulnerabilidad";
-    if (axis === "O") return "Oportunidad";
-    if (axis === "A") return "Atractivo";
-    return "";
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
-  function normalizeText(value) {
-    return String(value || "")
+  function axisLabel(axis) {
+    const m = { V: "vulnerabilidad estructural", O: "oportunidad operativa", A: "atractivo objetivo" };
+    return m[axis] || "";
+  }
+
+  function normalizeText(s) {
+    return String(s || "")
       .toLowerCase()
       .trim()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ");
   }
 
-  function getFactorPoints(factor) {
-    const points = Number(factor?.puntos ?? factor?.points ?? 0);
-    return Number.isFinite(points) ? points : 0;
-  }
-
-  function getTopFactors(evaluation, limit = 3) {
-    const raw = Array.isArray(evaluation?.factores_top)
-      ? evaluation.factores_top
-      : Array.isArray(evaluation?.factors_top)
-        ? evaluation.factors_top
-        : [];
-
-    return raw
+  function getTopFactors(evaluation, limit = 5) {
+    const factors = evaluation?.factores_top || evaluation?.factors_top || [];
+    if (!Array.isArray(factors)) return [];
+    return factors
       .slice()
-      .sort((a, b) => getFactorPoints(b) - getFactorPoints(a))
-      .slice(0, Math.max(0, Number(limit) || 0));
+      .sort((a, b) => (Number(b?.puntos || 0) - Number(a?.puntos || 0)))
+      .slice(0, limit);
   }
 
-  function tonePrefix(level) {
-    if (level === "CONTROLADA") return "Optimiza";
-    if (level === "MODERADA") return "Ajusta";
-    if (level === "ELEVADA") return "Prioriza";
-    if (level === "CRÍTICA") return "Actúa hoy";
-    return "Ajusta";
+  function shortFactorText(txt) {
+    const s = String(txt || "").trim();
+    if (!s) return "";
+    return s.length > 60 ? s.slice(0, 57) + "..." : s;
   }
 
+  function closingRecommendation(level, axis, topFactorText) {
+    const ax = axisLabel(axis);
+    const f = shortFactorText(topFactorText);
+
+    const base =
+      ax || f
+        ? `En este resultado, el punto más sensible está ligado a ${ax || "tu perfil"}${f ? ` (factor: ${f})` : ""}.`
+        : `En este resultado, conviene abordar la mejora por fases según tu perfil.`;
+
+    const byLevel = {
+      CONTROLADA:
+        "Con pequeños ajustes y mantenimiento, el nivel suele mantenerse estable sin sobredimensionar medidas.",
+      MODERADA:
+        "Un ajuste preventivo y progresivo suele ser suficiente para reducir exposición sin cambios drásticos.",
+      ELEVADA:
+        "Un enfoque por capas (accesos + detección + respuesta) suele reducir exposición de forma clara y ordenada.",
+      CRÍTICA:
+        "Suele abordarse con prioridad técnica por capas (accesos, detección y respuesta) para reducir exposición cuanto antes."
+    };
+
+    const tail = byLevel[String(level || "").toUpperCase()] || "Un enfoque por fases suele ser el camino más eficiente.";
+    return `${base} ${tail}`;
+  }
+
+  // Reglas deterministas: 1 factor => 1 paso candidato (frase autónoma neutra)
   const RULES = [
     {
       id: "no_alarm",
-      match: [/sin\s+(sistema\s+de\s+)?alarma/, /\balarma\b.*\bninguna\b/],
-      priority: 90,
-      step(_tipo, tone) {
-        return `${tone}: instala detección con verificación (sensores + protocolo de aviso) para reducir oportunidad operativa.`;
-      },
-    },
-    {
-      id: "windows",
-      match: [/ventanas?/, /sin\s+proteccion.*ventan/, /ventan.*sin\s+proteccion/],
-      priority: 70,
-      step(tipo, tone) {
-        const t = normalizeText(tipo);
-        if (t.includes("vivienda")) {
-          return `${tone}: refuerza ventanas expuestas (cierres, sensor perimetral y elemento disuasorio visible).`;
-        }
-        return `${tone}: refuerza puntos acristalados expuestos (sensor, lámina/film y disuasión visible).`;
-      },
-    },
-    {
-      id: "ground_floor",
-      match: [/piso\s*bajo/, /planta\s*baja/, /a\s*ras\s*de\s*calle/],
-      priority: 65,
-      step(tipo, tone) {
-        const t = normalizeText(tipo);
-        if (!t.includes("vivienda")) return "";
-        return `${tone}: prioriza puntos a ras de calle (ventanas/puertas) y reduce accesos fáciles desde exterior.`;
-      },
-    },
-    {
-      id: "street_level_shop",
-      match: [/local\s+a\s+pie\s+de\s+calle/, /pie\s+de\s+calle/, /local\s+de\s+calle/],
-      priority: 75,
-      step(tipo, tone) {
-        const t = normalizeText(tipo);
-        if (!t.includes("comercio")) return "";
-        return `${tone}: mejora disuasión visible (iluminación, señalización y cámara orientada a fachada/accesos).`;
-      },
-    },
-    {
-      id: "shutter",
-      match: [/persiana/, /microperforada/],
-      priority: 72,
-      step(tipo, tone) {
-        const t = normalizeText(tipo);
-        if (!t.includes("comercio")) return "";
-        return `${tone}: revisa cierre/persiana (puntos de palanca, guías y bloqueo) y combina con detección en acceso.`;
-      },
-    },
-    {
-      id: "high_value_stock",
-      match: [/stock\s+atractivo/, /alimentacion/, /joyeria/, /electronica/],
-      priority: 68,
-      step(tipo, tone) {
-        const t = normalizeText(tipo);
-        if (!t.includes("comercio")) return "";
-        return `${tone}: reduce atractivo (stock fuera de vista, rutinas de exposición y control de cierre en horas críticas).`;
-      },
+      priority: 100,
+      appliesTo: "any",
+      match: ["sin sistema de alarma", "sin alarma", "no tiene alarma"],
+      step: () =>
+        "La ausencia de detección temprana y verificación incrementa la oportunidad operativa en escenarios de intrusión."
     },
     {
       id: "no_cameras",
-      match: [/sin\s+camara/, /sin\s+camaras/, /sin\s+videovigilancia/],
-      priority: 60,
-      step(_tipo, tone) {
-        return `${tone}: añade verificación visual (cámara en acceso principal y zona de punto ciego).`;
-      },
+      priority: 80,
+      appliesTo: "any",
+      match: ["sin camaras", "sin cámaras", "sin videovigilancia", "no hay camaras", "no hay cámaras"],
+      step: () =>
+        "La verificación visual en accesos y puntos ciegos mejora la capacidad de confirmar eventos y reduce incertidumbre operativa."
     },
     {
-      id: "lighting_blind_spots",
-      match: [/iluminacion/, /puntos?\s+ciegos?/, /punto\s+ciego/],
-      priority: 58,
-      step(_tipo, tone) {
-        return `${tone}: elimina puntos ciegos (iluminación exterior + limpieza de líneas de visión).`;
-      },
+      id: "windows_unprotected",
+      priority: 90,
+      appliesTo: "vivienda",
+      match: ["ventanas sin proteccion", "ventanas sin protección", "ventanas expuestas", "ventanas"],
+      step: () =>
+        "Las ventanas expuestas suelen concentrar vulnerabilidad estructural; reforzarlas reduce el punto de entrada más frecuente."
     },
     {
-      id: "absence_routine",
-      match: [/ausencia/, /muchas\s+horas\s+vaci/, /rutina\s+previsible/, /horas?\s+vaci/],
-      priority: 62,
-      step(_tipo, tone) {
-        return `${tone}: rompe la previsibilidad (rutinas, temporizadores y protocolo cuando queda vacío).`;
-      },
+      id: "ground_floor",
+      priority: 70,
+      appliesTo: "vivienda",
+      match: ["piso bajo", "planta baja", "bajo"],
+      step: () =>
+        "Los inmuebles a ras de calle suelen requerir especial atención en accesos y perímetro por facilidad de aproximación."
     },
+    {
+      id: "street_level_shop",
+      priority: 90,
+      appliesTo: "comercio",
+      match: ["local a pie de calle", "pie de calle", "fachada expuesta"],
+      step: () =>
+        "La exposición directa a vía pública aumenta observación y oportunidad; disuasión visible y control de accesos suelen aportar mejora."
+    },
+    {
+      id: "shutter",
+      priority: 85,
+      appliesTo: "comercio",
+      match: ["persiana microperforada", "persiana", "cierre enrollable", "cierre"],
+      step: () =>
+        "Determinados tipos de cierre pueden generar puntos de palanca si no se combinan con detección y refuerzo en guías/bloqueo."
+    },
+    {
+      id: "attractive_stock",
+      priority: 80,
+      appliesTo: "comercio",
+      match: ["stock atractivo", "stock", "alimentación", "electronica", "electrónica", "joyeria", "joyería"],
+      step: () =>
+        "La visibilidad de stock o valor incrementa el atractivo objetivo; reducir exposición y reforzar rutinas de cierre suele disminuir riesgo percibido."
+    },
+    {
+      id: "blind_spots_lighting",
+      priority: 65,
+      appliesTo: "any",
+      match: ["iluminacion", "iluminación", "puntos ciegos", "punto ciego", "visibilidad"],
+      step: () =>
+        "Eliminar puntos ciegos (iluminación y líneas de visión) mejora vigilancia natural y reduce oportunidades de aproximación."
+    },
+    {
+      id: "predictable_absence",
+      priority: 75,
+      appliesTo: "any",
+      match: ["ausencia", "muchas horas vacio", "muchas horas vacío", "rutina previsible", "previsible"],
+      step: () =>
+        "La previsibilidad operativa incrementa la oportunidad en franjas sin presencia; romper patrones suele reducir exposición."
+    }
   ];
 
   function buildPlanFromFactors(evaluation) {
-    const level = String(evaluation?.risk_level || "MODERADA").toUpperCase();
-    const tone = tonePrefix(level);
-    const tipo = evaluation?.tipo_inmueble || evaluation?.business_type || "";
+    const level = evaluation?.risk_level || "";
+    const axis = evaluation?.dominant_axis || "";
+    const tipo = normalizeText(evaluation?.tipo_inmueble || evaluation?.business_type || "");
 
     const topFactors = getTopFactors(evaluation, 5);
+    const top1Text = (topFactors[0]?.texto || topFactors[0]?.text || "").trim();
 
+    // generar candidatos: por cada factor, intentar casar reglas
     const candidates = [];
-    for (const factor of topFactors) {
-      const rawText = factor?.texto || factor?.text || "";
-      const normalized = normalizeText(rawText);
-      const factorPts = getFactorPoints(factor);
+    for (const f of topFactors) {
+      const t = normalizeText(f?.texto || f?.text || "");
+      const pts = Number(f?.puntos || 0);
 
-      for (const rule of RULES) {
-        const matches = (rule.match || []).some((m) => (m instanceof RegExp ? m.test(normalized) : normalized.includes(normalizeText(m))));
-        if (!matches) continue;
-
-        const text = rule.step(tipo, tone);
-        if (!text) continue;
-
-        candidates.push({
-          text,
-          priority: Number(rule.priority) || 0,
-          factorPoints: factorPts,
-        });
+      for (const r of RULES) {
+        if (r.appliesTo !== "any") {
+          if (r.appliesTo === "comercio" && !tipo.includes("comercio")) continue;
+          if (r.appliesTo === "vivienda" && !tipo.includes("vivienda")) continue;
+        }
+        if (r.match.some(k => t.includes(normalizeText(k)))) {
+          candidates.push({
+            text: r.step(tipo),
+            priority: r.priority,
+            puntos: pts
+          });
+        }
       }
     }
 
-    candidates.sort((a, b) => (b.priority - a.priority) || (b.factorPoints - a.factorPoints));
-
-    const steps = [];
+    // dedupe por texto
+    const deduped = [];
     const seen = new Set();
-    for (const candidate of candidates) {
-      const key = normalizeText(candidate.text);
-      if (!key || seen.has(key)) continue;
-      seen.add(key);
-      steps.push(candidate.text);
-      if (steps.length >= 3) break;
+    for (const c of candidates.sort((a, b) => (b.priority - a.priority) || (b.puntos - a.puntos))) {
+      const key = normalizeText(c.text);
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(c);
+      }
     }
 
-    const t = normalizeText(tipo);
-    const fallbacks = t.includes("comercio")
-      ? [
-          `${tone}: revisa accesos y cierre principal (puerta, persiana/cierre, cristal) y puntos secundarios.`,
-          `${tone}: mejora detección + verificación + protocolo de respuesta para reducir la ventana operativa.`,
-          `${tone}: refuerza disuasión visible y elimina puntos ciegos (iluminación y líneas de visión).`,
-        ]
-      : t.includes("vivienda")
-        ? [
-            `${tone}: revisa accesos principales y secundarios (puerta, ventanas, balcones) y su resistencia real.`,
-            `${tone}: añade detección temprana (sensores perimetrales/interiores) y un protocolo claro de aviso/respuesta.`,
-            `${tone}: mejora disuasión y elimina puntos ciegos (iluminación exterior, visibilidad, orden).`,
-          ]
-        : [
-            `${tone}: revisa accesos/cerramientos y puntos secundarios para reducir vulnerabilidad estructural.`,
-            `${tone}: mejora detección y respuesta para reducir oportunidad operativa.`,
-            `${tone}: refuerza disuasión y elimina puntos ciegos (iluminación y visibilidad).`,
-          ];
+    // fallback si faltan pasos
+    const fallback = [
+      "Revisar accesos y cerramientos reduce vulnerabilidad estructural en los puntos más expuestos.",
+      "Mejorar detección temprana y protocolo de aviso/refuerzo incrementa capacidad de respuesta.",
+      "Disuasión visible y reducción de puntos ciegos suelen disminuir oportunidad y atractivo percibido."
+    ];
 
-    for (const fallback of fallbacks) {
-      if (steps.length >= 3) break;
-      const key = normalizeText(fallback);
-      if (seen.has(key)) continue;
-      seen.add(key);
-      steps.push(fallback);
-    }
+    const steps = deduped.slice(0, 3).map(x => x.text);
+    while (steps.length < 3) steps.push(fallback[steps.length]);
 
     return {
-      title: "Plan en 3 pasos (según tus puntos débiles)",
-      steps: steps.slice(0, 3),
+      title: "Qué hacer ahora (plan en 3 pasos)",
+      steps,
+      closing: closingRecommendation(level, axis, top1Text)
     };
   }
 
@@ -272,7 +266,7 @@
     } else if (level === "ELEVADA") {
       base = "Hay varios puntos de exposición que conviene revisar con criterio técnico para reducir exposición.";
     } else if (level === "MODERADA") {
-      base = "Se aprecian puntos mejorables habituales. Ajustarlos suele reducir oportunidad sin grandes cambios.";
+      base = "Se aprecian puntos mejorables habituales. Revisarlos suele reducir oportunidad sin grandes cambios.";
     } else {
       base = "No se detecta exposición relevante actualmente, aunque conviene mantener revisión periódica.";
     }
@@ -363,14 +357,15 @@
   const factorsTop = getTopFactors(evaluation, 3);
 
   const plan = buildPlanFromFactors(evaluation);
-  recommendationsNode.innerHTML = (plan.steps || [])
-    .map((item, index) => `
+  recommendationsNode.innerHTML = `
+    ${(plan.steps || []).map((step, i) => `
       <div class="step-card">
-        <div class="step-n">${index + 1}</div>
-        <div class="step-txt">${item}</div>
+        <div class="step-n">${i + 1}</div>
+        <div class="step-txt">${escapeHtml(step)}</div>
       </div>
-    `.trim())
-    .join("");
+    `).join("")}
+    <div class="plan-closing">${escapeHtml(plan.closing)}</div>
+  `.trim();
 
   topFactorsNode.innerHTML = factorsTop.length > 0
     ? factorsTop.map((factor) => `<span class="chip">${factor.texto || factor.text || "Factor de exposición detectado"}</span>`).join("")

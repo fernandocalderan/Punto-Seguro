@@ -212,12 +212,10 @@
   const recommendationsNode = document.getElementById("recommendations-list");
   const topFactorsNode = document.getElementById("top-factors-list");
   const humanTextNode = document.getElementById("risk-human-text");
-  const intentBlockNode = document.getElementById("intent-block");
-  const intentSelectNode = document.getElementById("intent-plazo");
-  const intentConfirmNode = document.getElementById("intent-confirm");
   const ctaRequestNode = document.getElementById("cta-request");
   const ctaKeepNode = document.getElementById("cta-keep");
   const decisionFeedbackNode = document.getElementById("decision-feedback");
+  const barFillNode = document.getElementById("iei-bar-fill");
 
   scoreNode.textContent = `${score} / 100`;
   levelNode.textContent = level;
@@ -242,20 +240,35 @@
     tier,
   });
 
+  if (barFillNode) {
+    const pct = Math.max(0, Math.min(100, Number.isFinite(score) ? score : 0));
+    // Allow CSS transition from 0% to value.
+    barFillNode.style.width = "0%";
+    window.requestAnimationFrame(() => {
+      barFillNode.style.width = `${pct}%`;
+    });
+  }
+
   const factorsTop = Array.isArray(evaluation.factores_top) ? evaluation.factores_top.slice(0, 3) : [];
 
-  recommendationsNode.innerHTML = recommendations({
+  const recs = recommendations({
     level,
     tipoInmueble,
     factorsTop,
     dominantAxisCode,
-  })
-    .map((item) => `<li>${item}</li>`)
+  });
+  recommendationsNode.innerHTML = recs
+    .map((item, index) => `
+      <div class="step-card">
+        <div class="step-n">${index + 1}</div>
+        <div class="step-txt">${item}</div>
+      </div>
+    `.trim())
     .join("");
 
   topFactorsNode.innerHTML = factorsTop.length > 0
-    ? factorsTop.map((factor) => `<li>${factor.texto || "Factor de exposición detectado"}</li>`).join("")
-    : "<li>No se detectaron factores destacados en esta simulación.</li>";
+    ? factorsTop.map((factor) => `<span class="chip">${factor.texto || "Factor de exposición detectado"}</span>`).join("")
+    : "<span class=\"chip\">Sin factores destacados en esta simulación.</span>";
 
   const resumen = (evaluation.factores_top || [])
     .map((factor) => factor.texto)
@@ -297,34 +310,34 @@
     dominant_axis: dominantAxisCode || null,
   });
 
-  try {
-    const rawIntent = window.sessionStorage.getItem("puntoSeguro.intent");
-    if (rawIntent) {
-      const parsedIntent = JSON.parse(rawIntent);
-      if (parsedIntent?.plazo && intentSelectNode) {
-        intentSelectNode.value = parsedIntent.plazo;
-      }
-    }
-  } catch (_error) {
-    // Ignore stale/invalid intent state in sessionStorage.
-  }
-
-  if (intentBlockNode) {
-    // Ensure the intent UI is hidden by default and only shown after request CTA.
-    intentBlockNode.classList.add("ps-hidden");
-  }
-
-  function showIntentBlock() {
-    if (!intentBlockNode) return;
-    intentBlockNode.classList.remove("ps-hidden");
-    intentBlockNode.scrollIntoView({ behavior: "smooth", block: "start" });
-    setTimeout(() => {
-      intentSelectNode && intentSelectNode.focus();
-    }, 250);
-  }
-
   ctaRequestNode?.addEventListener("click", () => {
-    showIntentBlock();
+    const inferredPlazo = (level === "CRÍTICA" || level === "ELEVADA")
+      ? "esta_semana"
+      : level === "MODERADA"
+        ? "1_3_meses"
+        : "informativo";
+
+    window.sessionStorage.setItem(
+      "puntoSeguro.intent",
+      JSON.stringify({
+        plazo: inferredPlazo,
+        inferred: true,
+        selected_at: new Date().toISOString(),
+      })
+    );
+
+    window.PuntoSeguroAnalytics?.trackEvent("cta_proposals_click", {
+      plazo: inferredPlazo,
+      risk_level: level,
+      risk_score: score,
+      iei_level: level,
+      iei_score: score,
+      model_version: modelVersion || null,
+      tier: tier || null,
+      dominant_axis: dominantAxisCode || null,
+    });
+
+    window.location.href = "/solicitar-propuesta";
   });
 
   ctaKeepNode?.addEventListener("click", () => {
@@ -341,31 +354,5 @@
       tier: tier || null,
       dominant_axis: dominantAxisCode || null,
     });
-  });
-
-  intentConfirmNode?.addEventListener("click", () => {
-    const plazo = String(intentSelectNode?.value || "").trim();
-    if (!plazo) return;
-
-    window.sessionStorage.setItem(
-      "puntoSeguro.intent",
-      JSON.stringify({
-        plazo,
-        selected_at: new Date().toISOString(),
-      })
-    );
-
-    window.PuntoSeguroAnalytics?.trackEvent("lead_intent_selected", {
-      plazo,
-      risk_level: level,
-      risk_score: score,
-      iei_level: level,
-      iei_score: score,
-      model_version: modelVersion || null,
-      tier: tier || null,
-      dominant_axis: dominantAxisCode || null,
-    });
-
-    window.location.href = "/solicitar-propuesta";
   });
 })();

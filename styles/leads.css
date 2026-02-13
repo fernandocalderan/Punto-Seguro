@@ -138,6 +138,144 @@ a {
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
+.iei-hero {
+  padding: 0.35rem 0 0.25rem;
+}
+
+.iei-hero-head h1 {
+  margin-bottom: 0.45rem;
+}
+
+.iei-hero-metrics {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.iei-score {
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--brand-secondary);
+}
+
+.iei-bar {
+  margin-top: 0.8rem;
+  height: 10px;
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.iei-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(43, 92, 255, 0.95), rgba(43, 92, 255, 0.55));
+  transition: width 0.35s ease;
+}
+
+.iei-human {
+  margin-top: 0.75rem;
+}
+
+.iei-section {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.iei-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.iei-chips .chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: #f9fafb;
+  border: 1px solid var(--border-soft);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--brand-secondary);
+}
+
+.iei-steps {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.iei-steps .step-card {
+  display: flex;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+}
+
+.iei-steps .step-n {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(43, 92, 255, 0.12);
+  color: var(--brand-primary);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.iei-steps .step-txt {
+  color: var(--brand-secondary);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.iei-tech {
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+}
+
+.iei-tech summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--brand-secondary);
+  list-style: none;
+}
+
+.iei-tech summary::-webkit-details-marker {
+  display: none;
+}
+
+.iei-tech summary:focus-visible {
+  outline: 3px solid rgba(43, 92, 255, 0.18);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.iei-tech #risk-explanation {
+  margin-top: 0.75rem;
+  white-space: pre-wrap;
+}
+
+.iei-cta-trust {
+  margin-top: -0.25rem;
+  margin-bottom: 0;
+  font-size: 0.88rem;
+}
+
 h1,
 h2,
 h3 {
@@ -455,5 +593,11 @@ p {
 
   .main {
     padding-bottom: 5.5rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .iei-score {
+    font-size: 2.4rem;
   }
 }

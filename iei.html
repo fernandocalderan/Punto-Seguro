@@ -23,13 +23,85 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles/leads.css" />
-  <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
-</head>
-<body>
+	  <link rel="preconnect" href="https://fonts.googleapis.com" />
+	  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	  <link rel="stylesheet" href="styles/leads.css" />
+	  <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
+
+<style>
+/* ===== FAQ premium (solo /iei) ===== */
+details.ps-faq{
+  border: 1px solid rgba(15,23,42,0.10);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.05rem 1.2rem;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+details.ps-faq + details.ps-faq{ margin-top: .9rem; }
+
+details.ps-faq summary{
+  position: relative;
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--brand-secondary);
+  letter-spacing: -0.01em;
+  list-style: none;
+  padding-right: 2.2rem;
+}
+details.ps-faq summary::-webkit-details-marker{ display:none; }
+
+/* indicador + / – */
+details.ps-faq summary::after{
+  content: "+";
+  position: absolute;
+  right: .2rem;
+  top: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: rgba(15,23,42,0.55);
+  transition: transform .18s ease, color .18s ease, opacity .18s ease;
+  opacity: .9;
+}
+details.ps-faq[open] summary::after{
+  content: "–";
+  color: rgba(15,23,42,0.75);
+}
+
+/* hover sobrio */
+details.ps-faq:hover{
+  border-color: rgba(43,92,255,0.18);
+  box-shadow: 0 14px 36px rgba(15,23,42,0.06);
+  transform: translateY(-1px);
+}
+details.ps-faq:hover summary{ color: var(--brand-primary); }
+
+/* separador al abrir */
+details.ps-faq[open] summary{
+  padding-bottom: .7rem;
+  margin-bottom: .75rem;
+  border-bottom: 1px dashed rgba(15,23,42,0.12);
+}
+
+/* animación contenido */
+details.ps-faq > *:not(summary){
+  margin-top: .7rem;
+  animation: psFaqFade .18s ease;
+}
+@keyframes psFaqFade{
+  from{ opacity: 0; transform: translateY(-3px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* foco accesible */
+details.ps-faq summary:focus-visible{
+  outline: 2px solid rgba(43,92,255,0.35);
+  outline-offset: 3px;
+}
+</style>
+	</head>
+	<body>
   <header class="header">
     <div class="container header-inner">
       <a class="brand ps-brand" href="/">
@@ -105,29 +177,29 @@
         </div>
       </section>
 
-      <section class="card stack">
-        <h2>Preguntas frecuentes</h2>
-        <details>
-          <summary>¿IEI™ es una alarma o un producto?</summary>
-          <p>No. Es un índice orientativo para estimar exposición y priorizar decisiones. Punto Seguro no vende alarmas directamente.</p>
-        </details>
-        <details>
-          <summary>¿Necesito dejar mis datos para ver el resultado?</summary>
-          <p>No. El diagnóstico no pide datos personales al inicio. Solo se comparten datos si solicitas propuestas y das consentimiento explícito.</p>
-        </details>
-        <details>
-          <summary>¿Compartís mis datos con terceros?</summary>
-          <p>Solo si envías una solicitud. En ese caso se comparten con hasta 2 proveedores para recibir propuestas.</p>
-        </details>
-        <details>
-          <summary>¿Cuánto tarda?</summary>
-          <p>La evaluación suele completarse en 2 minutos.</p>
-        </details>
-        <details>
-          <summary>¿Qué hago si mi IEI™ es elevado?</summary>
-          <p>Prioriza revisión de accesos, hábitos y medidas de detección/respuesta. Si quieres, solicita propuestas para contrastar opciones y decidir con criterio.</p>
-        </details>
-      </section>
+	      <section class="card stack">
+	        <h2>Preguntas frecuentes</h2>
+	        <details class="ps-faq">
+	          <summary>¿IEI™ es una alarma o un producto?</summary>
+	          <p>No. Es un índice orientativo para estimar exposición y priorizar decisiones. Punto Seguro no vende alarmas directamente.</p>
+	        </details>
+	        <details class="ps-faq">
+	          <summary>¿Necesito dejar mis datos para ver el resultado?</summary>
+	          <p>No. El diagnóstico no pide datos personales al inicio. Solo se comparten datos si solicitas propuestas y das consentimiento explícito.</p>
+	        </details>
+	        <details class="ps-faq">
+	          <summary>¿Compartís mis datos con terceros?</summary>
+	          <p>Solo si envías una solicitud. En ese caso se comparten con hasta 2 proveedores para recibir propuestas.</p>
+	        </details>
+	        <details class="ps-faq">
+	          <summary>¿Cuánto tarda?</summary>
+	          <p>La evaluación suele completarse en 2 minutos.</p>
+	        </details>
+	        <details class="ps-faq">
+	          <summary>¿Qué hago si mi IEI™ es elevado?</summary>
+	          <p>Prioriza revisión de accesos, hábitos y medidas de detección/respuesta. Si quieres, solicita propuestas para contrastar opciones y decidir con criterio.</p>
+	        </details>
+	      </section>
 
       <section class="card stack">
         <h2>Haz tu evaluación IEI™</h2>

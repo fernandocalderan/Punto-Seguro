@@ -143,62 +143,40 @@
 }
 
 
-/* === PREMIUM PRINT OVERRIDES === */
+/* === PRINT STABLE (PDF limpio y consistente) === */
 @media print {
-  /* 1) Quitar sufijos de links tipo “(/iei)” */
+  /* No imprimir sufijos de enlaces (evita “(/iei)”) */
   a[href]:after { content: "" !important; }
 
-  /* 2) Watermark premium: centrado, grande y constante en TODAS las páginas */
-  html::before {
+  /* Oculta header del sitio, deja el hero del resultado */
+  header.ps-header { display: none !important; }
+  header.iei-hero { display: block !important; break-inside: avoid !important; page-break-inside: avoid !important; }
+
+  /* Oculta acciones/botones */
+  .actions, button, .btn, .cta, .cta-row, #cta-proposals, #cta-keep { display: none !important; }
+
+  /* Evita cortes feos en secciones */
+  header.iei-hero, .iei-section, section, .card, .panel, .result-card, .ps-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Watermark sutil (premium pero sin romper layout) */
+  body::before {
     content: "";
     position: fixed;
     left: 50%;
     top: 55%;
     transform: translate(-50%, -50%);
-    width: 520px;
-    height: 520px;
+    width: 420px;
+    height: 420px;
     background: url("logo-punto-seguro.png") no-repeat center;
     background-size: contain;
-    opacity: 0.12;          /* sube/baja: 0.10–0.16 */
+    opacity: 0.08;
     z-index: 0;
     pointer-events: none;
   }
-
-  /* 3) Asegura que el contenido va por encima */
-  body, main, .container, .wrap, .content, section, header, article, div {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* 4) Oculta elementos web (botones/CTAs) */
-  .actions, button, .btn, .cta, .cta-row, #cta-proposals, #cta-keep {
-    display: none !important;
-  }
-
-  /* 5) Look & feel “informe” */
-  h1 { font-size: 20pt !important; letter-spacing: .2px !important; }
-  h2 { font-size: 13.5pt !important; margin-top: 8mm !important; }
-  p, li, div { font-size: 10.5pt !important; line-height: 1.35 !important; color:#111 !important; }
-
-  /* 6) Secciones sin cortes feos */
-  header.iei-hero, .iei-section, .card, .panel, .result-card, .ps-card {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* 7) Hero más “certificado” */
-  header.iei-hero {
-    border: 1px solid #e6e6e6 !important;
-    border-radius: 14px !important;
-    box-shadow: none !important;
-    padding: 10mm !important;
-  }
-
-  /* 8) Chips/pills más sobrios en PDF */
-  .pill, .tag, .badge {
-    border: 1px solid #ddd !important;
-    background: #f7f7f7 !important;
-  }
+  body, main, .container, .wrap, .content { position: relative; z-index: 1; }
 }
 
 </style>

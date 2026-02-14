@@ -24,10 +24,13 @@
   <link rel="stylesheet" href="styles/leads.css" />
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 
-  <style id="ps-print-css">
-  @media print {
-    /* Página */
-    @page { margin: 12mm; }
+	  <style id="ps-print-css">
+	  /* Elemento watermark: solo visible al imprimir */
+	  .watermark-print { display: none; }
+
+	  @media print {
+	    /* Página */
+	    @page { margin: 12mm; }
 
     /* Oculta todo lo que no sea el informe */
     header, nav, footer,
@@ -162,32 +165,63 @@
   }
 
   /* Watermark sutil (premium pero sin romper layout) */
-  body::before {
-    content: "";
-    position: fixed;
-    left: 50%;
-    top: 55%;
-    transform: translate(-50%, -50%);
-    width: 420px;
-    height: 420px;
-    background: url("logo-punto-seguro.png") no-repeat center;
-    background-size: contain;
-    opacity: 0.08;
-    z-index: 0;
-    pointer-events: none;
-  }
+  
   body, main, .container, .wrap, .content { position: relative; z-index: 1; }
 }
 
+
+@media print {
+
+  @page { margin: 18mm; }
+
+  /* Oculta header del sitio */
+  header.ps-header { display: none !important; }
+
+  /* Oculta botones */
+  .actions, button, .btn, .cta, #cta-proposals, #cta-keep {
+    display: none !important;
+  }
+
+  /* Evita cortes feos */
+  header.iei-hero,
+  .iei-section,
+  section {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+	  /* Watermark profesional sin afectar layout */
+	  .watermark-print {
+	    display: block !important;
+	    position: fixed;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    width: 480px;
+    opacity: 0.07;
+    z-index: 0;
+  }
+
+  body, main {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Quitar sufijos tipo (/iei) */
+  a[href]:after { content: "" !important; }
+}
+
 </style>
-</head>
-<body class="ps-mode-inflow">
+	</head>
+	<body class="ps-mode-inflow">
+	<img src="/logo-punto-seguro.png" class="watermark-print" alt="">
+
   <header class="ps-header">
     <div class="container ps-header-inner">
-      <a class="brand ps-brand" href="/" aria-label="Volver a inicio">
-        <div class="logo">
-          <img class="ps-logo" src="logo-punto-seguro.png" alt="Punto Seguro">
-        </div>
+	      <a class="brand ps-brand" href="/" aria-label="Volver a inicio">
+	        <div class="logo">
+	          <img class="ps-logo" src="/logo-punto-seguro.png" alt="Punto Seguro">
+	        </div>
         <div class="brand-text">
           <strong class="ps-brand-title">Punto Seguro</strong>
           <span class="ps-brand-subtitle">Evaluación IEI™ neutral</span>
@@ -207,11 +241,11 @@
 
   <main class="main">
     <!-- PRINT HEADER (solo para PDF) -->
-    <div class="ps-print-header" aria-hidden="true">
-      <div class="ps-print-brand">
-        <img class="ps-print-logo" src="logo-punto-seguro.png" alt="Punto Seguro">
-        <span class="ps-print-name">Punto Seguro</span>
-      </div>
+	    <div class="ps-print-header" aria-hidden="true">
+	      <div class="ps-print-brand">
+	        <img class="ps-print-logo" src="/logo-punto-seguro.png" alt="Punto Seguro">
+	        <span class="ps-print-name">Punto Seguro</span>
+	      </div>
       <div class="ps-print-url">www.puntoseguro.com.es</div>
     </div>
 

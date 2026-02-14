@@ -574,24 +574,85 @@
     .step h3 { color: var(--brand-secondary); margin-bottom: .5rem; }
     .step p { color: var(--text-muted); font-size: .96rem; }
 
-    /* FAQ */
-    details {
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
+    /* ===== FAQ – Expandible claro, sobrio, sin scroll ===== */
+    details{
+      border: 1px solid rgba(15,23,42,0.10);
+      background: #ffffff;
       border-radius: 16px;
-      padding: 1.1rem 1.2rem;
+      padding: 1.05rem 1.2rem;
       box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+      transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease;
     }
-    details + details { margin-top: .9rem; }
-    summary {
+
+    details + details{ margin-top: .9rem; }
+
+    summary{
+      position: relative;
       cursor: pointer;
       font-weight: 800;
       color: var(--brand-secondary);
       letter-spacing: -0.01em;
       list-style: none;
+      padding-right: 2.2rem; /* espacio para el indicador */
     }
-    summary::-webkit-details-marker { display: none; }
-    details p { margin-top: .7rem; color: var(--text-muted); }
+
+    /* quitar marcador nativo */
+    summary::-webkit-details-marker{ display:none; }
+
+    /* Indicador: + / – (sutil) */
+    summary::after{
+      content: "+";
+      position: absolute;
+      right: .2rem;
+      top: 0;
+      line-height: 1.1;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: rgba(15,23,42,0.55);
+      transition: transform .18s ease, color .18s ease, opacity .18s ease;
+      opacity: .9;
+    }
+
+    details[open] summary::after{
+      content: "–";
+      color: rgba(15,23,42,0.75);
+    }
+
+    /* Hover: deja claro que es interactivo, sin parecer botón */
+    details:hover{
+      border-color: rgba(43,92,255,0.18);
+      box-shadow: 0 14px 36px rgba(15,23,42,0.06);
+      transform: translateY(-1px);
+    }
+
+    details:hover summary{
+      color: var(--brand-primary);
+    }
+
+    /* Separador interno al abrir */
+    details[open] summary{
+      padding-bottom: .7rem;
+      margin-bottom: .75rem;
+      border-bottom: 1px dashed rgba(15,23,42,0.12);
+    }
+
+    /* Contenido: animación suave */
+    details > *:not(summary){
+      color: var(--text-muted);
+      margin-top: .7rem;
+      animation: faqFade .18s ease;
+    }
+
+    @keyframes faqFade{
+      from{ opacity: 0; transform: translateY(-3px); }
+      to{ opacity: 1; transform: translateY(0); }
+    }
+
+    /* Accesibilidad: foco visible */
+    summary:focus-visible{
+      outline: 2px solid rgba(43,92,255,0.35);
+      outline-offset: 3px;
+    }
 
     /* Footer */
     footer {
@@ -952,6 +1013,7 @@
         opacity: .95;
       }
     }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>

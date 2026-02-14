@@ -654,3 +654,19 @@ body.ps-mode-inflow .ps-blog-link { display: none !important; }
     scroll-margin-top: 90px;
   }
 }
+
+/* ===== Enlaces externos (nueva pestaña) – Indicador profesional ===== */
+
+a[data-external="1"]::after {
+  content: "↗";
+  display: inline-block;
+  margin-left: .28rem;
+  font-size: .85em;
+  opacity: .6;
+  transform: translateY(-0.05em);
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+a[data-external="1"]:hover::after {
+  opacity: .9;
+}

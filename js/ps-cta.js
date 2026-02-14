@@ -49,3 +49,64 @@
     });
   });
 })();
+
+/* ===== Punto Seguro: política profesional de enlaces ===== */
+(function () {
+  function isExternalUrl(url) {
+    try {
+      const u = new URL(url, window.location.href);
+      return u.origin !== window.location.origin;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function isPdf(url) {
+    try {
+      const u = new URL(url, window.location.href);
+      return (u.pathname || "").toLowerCase().endsWith(".pdf");
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function shouldOpenNewTab(a) {
+    const href = a.getAttribute("href") || "";
+    if (!href) return false;
+
+    // Ignorar anclas y pseudo-links
+    if (href.startsWith("#")) return false;
+    if (href.startsWith("javascript:")) return false;
+    if (href.startsWith("mailto:")) return false;
+    if (href.startsWith("tel:")) return false;
+
+    // Forzado manual
+    if (a.dataset && a.dataset.newtab === "1") return true;
+
+    // Externo o PDF
+    if (isExternalUrl(href)) return true;
+    if (isPdf(href)) return true;
+
+    return false;
+  }
+
+  function enhanceLink(a) {
+    if (!shouldOpenNewTab(a)) return;
+
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener noreferrer");
+
+    // Marcar para estilo (icono ↗)
+    a.dataset.external = "1";
+
+    // Accesibilidad: aviso de nueva pestaña
+    const label = a.getAttribute("aria-label") || a.textContent.trim();
+    if (label && !label.toLowerCase().includes("nueva pestaña")) {
+      a.setAttribute("aria-label", label + " (se abre en una nueva pestaña)");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("a[href]").forEach(enhanceLink);
+  });
+})();

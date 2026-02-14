@@ -129,7 +129,7 @@
     dominant_axis: evaluation.dominant_axis || null,
   });
 
-  ["name", "phone", "postal_code"].forEach((id) => {
+  ["name", "phone", "email", "postal_code"].forEach((id) => {
     const node = document.getElementById(id);
     node?.addEventListener("focus", trackStartedOnce, { once: true });
     node?.addEventListener("input", trackStartedOnce, { once: true });
@@ -193,7 +193,11 @@
 
     const emailNode = document.getElementById("email");
     const email = emailNode.value.trim();
-    if (email && !emailNode.checkValidity()) {
+    if (!email) {
+      submitError("missing_email", "Indica un email de contacto.", "email");
+      return;
+    }
+    if (!emailNode.checkValidity()) {
       submitError("invalid_email", "Revisa el email (formato no válido).", "email");
       return;
     }

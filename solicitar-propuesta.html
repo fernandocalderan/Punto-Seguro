@@ -14,11 +14,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Punto Seguro | Solicitar propuestas</title>
   <meta name="description" content="Solicita propuestas adaptadas en Punto Seguro. Compartimos tus datos con hasta 2 proveedores." />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/leads.css" />
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
+
+  <style>
+    /* Make optional details summary look like a subtle button */
+    details.optional-details > summary.ps-details-cta{
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .55rem .8rem;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,0.10);
+      background: rgba(15,23,42,0.03);
+      user-select: none;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+    details.optional-details > summary.ps-details-cta::-webkit-details-marker{ display:none; }
+    details.optional-details > summary.ps-details-cta::after{
+      content: "▾";
+      opacity: .85;
+      transform: translateY(-1px);
+      transition: transform .15s ease;
+    }
+    details.optional-details[open] > summary.ps-details-cta::after{
+      transform: rotate(180deg);
+    }
+    details.optional-details > summary.ps-details-cta:hover{
+      background: rgba(43,92,255,0.06);
+      border-color: rgba(43,92,255,0.18);
+    }
+    details.optional-details > summary.ps-details-cta:focus{
+      outline: 2px solid rgba(43,92,255,0.22);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body class="ps-mode-inflow">
   <header class="header">
@@ -35,11 +78,6 @@
           <strong class="ps-brand-title">Punto Seguro</strong>
         </div>
       </a>
-      <nav class="nav" aria-label="Navegación principal">
-        <a href="/diagnostico">Evaluación IEI™</a>
-        <a href="/resultado">Resultado</a>
-        <a href="/iei">Qué es IEI™</a>
-      </nav>
       <div class="ps-header-cta-wrap">
         <a class="ps-cta-primary ps-header-cta" href="/diagnostico" data-ps-placement="header" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
         <div class="ps-trustline">Sin llamadas. Solo compartimos datos si tú lo decides (hasta 2 proveedores).</div>
@@ -69,19 +107,21 @@
               <input id="phone" name="phone" autocomplete="tel" required />
             </div>
             <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
               <label for="postal_code">Código postal</label>
               <input id="postal_code" name="postal_code" autocomplete="postal-code" required />
             </div>
           </div>
 
           <details class="optional-details">
-            <summary>Añadir detalles (opcional)</summary>
+            <summary class="ps-details-cta" role="button" aria-label="Añadir detalles opcionales">
+              Añadir detalles (opcional)
+            </summary>
             <div class="optional-details-body stack">
               <div class="grid">
-                <div class="field">
-                  <label for="email">Email (opcional)</label>
-                  <input id="email" name="email" type="email" autocomplete="email" />
-                </div>
                 <div class="field">
                   <label for="city">Ciudad (opcional)</label>
                   <input id="city" name="city" autocomplete="address-level2" />
@@ -137,7 +177,6 @@
 
           <div class="actions">
             <button type="submit" class="btn btn-primary">Enviar solicitud</button>
-            <a class="btn btn-secondary" href="/resultado">Volver al resultado</a>
           </div>
           <p class="cta-primary-note">Tardarás menos de 30 segundos.</p>
         </form>

@@ -106,6 +106,42 @@
   }
 }
 
+/* --- Print header: logo + marca + url --- */
+.ps-print-header { display: none; }
+
+@media print {
+  .ps-print-header {
+    display: block !important;
+    margin: 0 0 6mm 0 !important;
+    padding: 0 0 4mm 0 !important;
+    border-bottom: 1px solid #eaeaea !important;
+    text-align: center !important;
+  }
+
+  .ps-print-brand {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-weight: 700 !important;
+    font-size: 11pt !important;
+    line-height: 1 !important;
+  }
+
+  .ps-print-logo {
+    height: 18px !important;
+    width: auto !important;
+    display: inline-block !important;
+  }
+
+  .ps-print-name { display: inline-block !important; }
+
+  .ps-print-url {
+    margin-top: 2mm !important;
+    font-size: 9.5pt !important;
+    color: #444 !important;
+  }
+}
+
 </style>
 </head>
 <body class="ps-mode-inflow">
@@ -133,6 +169,15 @@
   </header>
 
   <main class="main">
+    <!-- PRINT HEADER (solo para PDF) -->
+    <div class="ps-print-header" aria-hidden="true">
+      <div class="ps-print-brand">
+        <img class="ps-print-logo" src="logo-punto-seguro.png" alt="Punto Seguro">
+        <span class="ps-print-name">Punto Seguro</span>
+      </div>
+      <div class="ps-print-url">www.puntoseguro.com.es</div>
+    </div>
+
     <div class="container stack">
       <section class="card stack">
         <header class="iei-hero" aria-label="Resultado IEI™">

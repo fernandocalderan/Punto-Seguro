@@ -68,7 +68,45 @@
       font-size: 9pt;
     }
   }
-  </style>
+
+
+/* --- FIX: imprimir el hero IEI y ocultar solo header del sitio --- */
+@media print {
+  /* Oculta la cabecera del sitio (logo/nav) */
+  header.ps-header { display: none !important; }
+
+  /* Asegura que el hero con score SI aparece */
+  header.iei-hero {
+    display: block !important;
+    margin: 0 0 10mm 0 !important;
+    padding: 10mm 10mm 8mm 10mm !important;
+    border: 1px solid #e6e6e6 !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Evita que la barra/chip se “descoloque” */
+  header.iei-hero * { break-inside: avoid !important; }
+
+  /* Opcional: mejora jerarquía visual del score */
+  header.iei-hero .score,
+  header.iei-hero .iei-score,
+  header.iei-hero .result-score {
+    font-size: 28pt !important;
+    font-weight: 700 !important;
+  }
+
+  /* Si tu chip usa clase .badge/.pill */
+  header.iei-hero .badge,
+  header.iei-hero .pill,
+  header.iei-hero .tag {
+    border: 1px solid #ddd !important;
+  }
+}
+
+</style>
 </head>
 <body class="ps-mode-inflow">
   <header class="ps-header">

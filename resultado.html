@@ -24,197 +24,142 @@
   <link rel="stylesheet" href="styles/leads.css" />
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 
-	  <style id="ps-print-css">
-	  /* Elemento watermark: solo visible al imprimir */
-	  .watermark-print { display: none; }
+  <style id="ps-print-css">
+    /* Print-only heading */
+    .ps-print-only { display: none; }
 
-	  @media print {
-	    /* Página */
-	    @page { margin: 12mm; }
+    /* Print header hidden on screen */
+    .ps-print-header { display: none; }
 
-    /* Oculta todo lo que no sea el informe */
-    header, nav, footer,
-    .ps-sticky, .ps-sticky-bar, .ps-cta, .cta, .cta-row,
-    #cta-proposals, #cta-request, #cta-keep,
-    .actions, .iei-cta-trust,
-    .no-print,
-    .cookie, .cookie-banner,
-    .whatsapp, .floating, .fab {
-      display: none !important;
+    @media print {
+      @page { margin: 14mm; }
+
+      /* Hide web chrome + actions */
+      header.ps-header,
+      footer.footer,
+      .ps-sticky,
+      .ps-sticky-bar,
+      .actions,
+      .iei-cta-trust,
+      #decision-feedback {
+        display: none !important;
+      }
+
+      /* Don't append URLs to links */
+      a[href]:after { content: "" !important; }
+
+      body {
+        background: #fff !important;
+        color: #111 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      main.main { padding: 0 !important; }
+
+      .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* Flatten shadows on paper */
+      .card,
+      .iei-steps .step-card {
+        box-shadow: none !important;
+      }
+
+      /* Avoid weird "card border" when it splits across pages */
+      section.card.stack {
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      /* Print header (brand + url) */
+      .ps-print-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 12px !important;
+        margin: 0 0 6mm 0 !important;
+        padding: 0 0 4mm 0 !important;
+        border-bottom: 1px solid #eaeaea !important;
+        break-after: avoid !important;
+      }
+
+      .ps-print-brand {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-weight: 700 !important;
+        font-size: 11pt !important;
+        line-height: 1 !important;
+      }
+
+      .ps-print-logo {
+        height: 18px !important;
+        width: auto !important;
+        display: inline-block !important;
+      }
+
+      .ps-print-name { display: inline-block !important; }
+
+      .ps-print-url {
+        font-size: 9.5pt !important;
+        color: #444 !important;
+        margin-top: 0 !important;
+      }
+
+      /* Keep key blocks together (but let sections flow) */
+      header.iei-hero,
+      .iei-steps .step-card {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      header.iei-hero {
+        display: block !important;
+        margin: 0 0 6mm 0 !important;
+        padding: 6mm !important;
+        border: 1px solid #e6e6e6 !important;
+        border-radius: 14px !important;
+        break-after: avoid !important;
+      }
+
+      .iei-score {
+        font-size: 26pt !important;
+        font-weight: 800 !important;
+      }
+
+      /* Print the "tech" content without the accordion UI */
+      .ps-print-only { display: block !important; }
+      details.iei-tech {
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      details.iei-tech > summary { display: none !important; }
+      details.iei-tech:not([open]) > *:not(summary) { display: block !important; }
+      details.iei-tech .ps-print-only {
+        margin: 6mm 0 3mm 0 !important;
+      }
+      #risk-explanation {
+        margin-top: 0 !important;
+        border: 1px solid #eaeaea !important;
+        border-radius: 12px !important;
+        padding: 4mm !important;
+        background: #fff !important;
+        color: #111 !important;
+        white-space: pre-wrap !important;
+      }
+
+      /* Hide conversion notices in PDF */
+      .notice { display: none !important; }
     }
-
-    /* Evita fondos oscuros o degradados */
-    body {
-      background: #fff !important;
-      color: #111 !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    /* Asegura que el contenedor principal ocupe todo */
-    main, .container, .wrap, .content {
-      max-width: 100% !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    /* Si tu tarjeta/resultado tiene sombras o bordes fuertes, suaviza */
-    .card, .panel, .result-card, .ps-card {
-      box-shadow: none !important;
-      border: 1px solid #ddd !important;
-    }
-
-    /* Links: muestra URL (opcional). Comenta si no lo quieres */
-    a[href]:after {
-      content: " (" attr(href) ")";
-      font-size: 9pt;
-    }
-  }
-
-
-/* --- FIX: imprimir el hero IEI y ocultar solo header del sitio --- */
-@media print {
-  /* Oculta la cabecera del sitio (logo/nav) */
-  header.ps-header { display: none !important; }
-
-  /* Asegura que el hero con score SI aparece */
-  header.iei-hero {
-    display: block !important;
-    margin: 0 0 10mm 0 !important;
-    padding: 10mm 10mm 8mm 10mm !important;
-    border: 1px solid #e6e6e6 !important;
-    border-radius: 14px !important;
-    box-shadow: none !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Evita que la barra/chip se “descoloque” */
-  header.iei-hero * { break-inside: avoid !important; }
-
-  /* Opcional: mejora jerarquía visual del score */
-  header.iei-hero .score,
-  header.iei-hero .iei-score,
-  header.iei-hero .result-score {
-    font-size: 28pt !important;
-    font-weight: 700 !important;
-  }
-
-  /* Si tu chip usa clase .badge/.pill */
-  header.iei-hero .badge,
-  header.iei-hero .pill,
-  header.iei-hero .tag {
-    border: 1px solid #ddd !important;
-  }
-}
-
-/* --- Print header: logo + marca + url --- */
-.ps-print-header { display: none; }
-
-@media print {
-  .ps-print-header {
-    display: block !important;
-    margin: 0 0 6mm 0 !important;
-    padding: 0 0 4mm 0 !important;
-    border-bottom: 1px solid #eaeaea !important;
-    text-align: center !important;
-  }
-
-  .ps-print-brand {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    font-weight: 700 !important;
-    font-size: 11pt !important;
-    line-height: 1 !important;
-  }
-
-  .ps-print-logo {
-    height: 18px !important;
-    width: auto !important;
-    display: inline-block !important;
-  }
-
-  .ps-print-name { display: inline-block !important; }
-
-  .ps-print-url {
-    margin-top: 2mm !important;
-    font-size: 9.5pt !important;
-    color: #444 !important;
-  }
-}
-
-
-/* === PRINT STABLE (PDF limpio y consistente) === */
-@media print {
-  /* No imprimir sufijos de enlaces (evita “(/iei)”) */
-  a[href]:after { content: "" !important; }
-
-  /* Oculta header del sitio, deja el hero del resultado */
-  header.ps-header { display: none !important; }
-  header.iei-hero { display: block !important; break-inside: avoid !important; page-break-inside: avoid !important; }
-
-  /* Oculta acciones/botones */
-  .actions, button, .btn, .cta, .cta-row, #cta-proposals, #cta-keep { display: none !important; }
-
-  /* Evita cortes feos en secciones */
-  header.iei-hero, .iei-section, section, .card, .panel, .result-card, .ps-card {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Watermark sutil (premium pero sin romper layout) */
-  
-  body, main, .container, .wrap, .content { position: relative; z-index: 1; }
-}
-
-
-@media print {
-
-  @page { margin: 18mm; }
-
-  /* Oculta header del sitio */
-  header.ps-header { display: none !important; }
-
-  /* Oculta botones */
-  .actions, button, .btn, .cta, #cta-proposals, #cta-keep {
-    display: none !important;
-  }
-
-  /* Evita cortes feos */
-  header.iei-hero,
-  .iei-section,
-  section {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-	  /* Watermark profesional sin afectar layout */
-	  .watermark-print {
-	    display: block !important;
-	    position: fixed;
-	    top: 50%;
-	    left: 50%;
-	    transform: translate(-50%, -50%);
-	    width: 480px;
-    opacity: 0.07;
-    z-index: 0;
-  }
-
-  body, main {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Quitar sufijos tipo (/iei) */
-  a[href]:after { content: "" !important; }
-}
-
-</style>
-	</head>
-	<body class="ps-mode-inflow">
-	<img src="/logo-punto-seguro.png" class="watermark-print" alt="">
+  </style>
+</head>
+<body class="ps-mode-inflow">
 
   <header class="ps-header">
     <div class="container ps-header-inner">
@@ -286,6 +231,7 @@
 
         <details class="iei-tech">
           <summary>Ver análisis técnico</summary>
+          <h2 class="ps-print-only section-title">Análisis técnico</h2>
           <div id="risk-explanation" class="muted">Completa la evaluación IEI™ para generar tu resultado.</div>
         </details>
 

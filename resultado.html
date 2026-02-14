@@ -142,6 +142,31 @@
   }
 }
 
+
+/* --- Watermark IEI (sello profesional) --- */
+@media print {
+  /* Quita “(/iei)” y cualquier sufijo de links al imprimir */
+  a[href]:after { content: "" !important; }
+
+  /* Marca de agua */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("logo-punto-seguro.png") no-repeat center;
+    background-size: 320px 320px; /* ajusta tamaño si quieres */
+    opacity: 0.08;               /* 0.06-0.10 suele ser perfecto */
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Asegura que todo el contenido va por encima */
+  body, main, .container, .wrap, .content, section, header, article, div {
+    position: relative;
+    z-index: 1;
+  }
+}
+
 </style>
 </head>
 <body class="ps-mode-inflow">

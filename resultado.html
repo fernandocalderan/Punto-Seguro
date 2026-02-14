@@ -23,6 +23,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/leads.css" />
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
+
+  <style id="ps-print-css">
+  @media print {
+    /* Página */
+    @page { margin: 12mm; }
+
+    /* Oculta todo lo que no sea el informe */
+    header, nav, footer,
+    .ps-sticky, .ps-sticky-bar, .ps-cta, .cta, .cta-row,
+    #cta-proposals, #cta-request, #cta-keep,
+    .actions, .iei-cta-trust,
+    .no-print,
+    .cookie, .cookie-banner,
+    .whatsapp, .floating, .fab {
+      display: none !important;
+    }
+
+    /* Evita fondos oscuros o degradados */
+    body {
+      background: #fff !important;
+      color: #111 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Asegura que el contenedor principal ocupe todo */
+    main, .container, .wrap, .content {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Si tu tarjeta/resultado tiene sombras o bordes fuertes, suaviza */
+    .card, .panel, .result-card, .ps-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+    }
+
+    /* Links: muestra URL (opcional). Comenta si no lo quieres */
+    a[href]:after {
+      content: " (" attr(href) ")";
+      font-size: 9pt;
+    }
+  }
+  </style>
 </head>
 <body class="ps-mode-inflow">
   <header class="ps-header">
@@ -121,5 +167,18 @@
   <script src="/js/ps-cta.js"></script>
   <script src="/js/iei-meta.js"></script>
   <script src="/js/iei-ui.js"></script>
+
+  <script id="ps-print-js">
+  document.addEventListener('DOMContentLoaded', () => {
+    const keepBtn = document.getElementById('cta-keep');
+    if (!keepBtn) return;
+
+    keepBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Abre el diálogo de impresión del navegador (el usuario elige "Guardar como PDF")
+      window.print();
+    });
+  });
+  </script>
 </body>
 </html>

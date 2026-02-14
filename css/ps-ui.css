@@ -670,3 +670,120 @@ a[data-external="1"]::after {
 a[data-external="1"]:hover::after {
   opacity: .9;
 }
+
+/* =======================================================
+   FAQ / Details Global Style – Punto Seguro (Premium)
+   ======================================================= */
+
+details.ps-faq,
+.ps-faq details,
+section.faq details,
+details.faq {
+  border: 1px solid rgba(15,23,42,0.10);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.05rem 1.2rem;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.04);
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+details.ps-faq + details.ps-faq,
+.ps-faq details + details,
+section.faq details + details,
+details.faq + details.faq {
+  margin-top: .9rem;
+}
+
+details.ps-faq summary,
+.ps-faq details summary,
+section.faq details summary,
+details.faq summary {
+  position: relative;
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--brand-secondary);
+  letter-spacing: -0.01em;
+  list-style: none;
+  padding-right: 2.2rem;
+}
+
+details.ps-faq summary::-webkit-details-marker,
+.ps-faq details summary::-webkit-details-marker,
+section.faq details summary::-webkit-details-marker,
+details.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Indicador + / – */
+details.ps-faq summary::after,
+.ps-faq details summary::after,
+section.faq details summary::after,
+details.faq summary::after {
+  content: "+";
+  position: absolute;
+  right: .2rem;
+  top: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: rgba(15,23,42,0.55);
+  transition: transform .18s ease, color .18s ease, opacity .18s ease;
+  opacity: .9;
+}
+
+details.ps-faq[open] summary::after,
+.ps-faq details[open] summary::after,
+section.faq details[open] summary::after,
+details.faq[open] summary::after {
+  content: "–";
+  color: rgba(15,23,42,0.75);
+}
+
+/* Hover sutil */
+details.ps-faq:hover,
+.ps-faq details:hover,
+section.faq details:hover,
+details.faq:hover {
+  border-color: rgba(43,92,255,0.18);
+  box-shadow: 0 14px 36px rgba(15,23,42,0.06);
+  transform: translateY(-1px);
+}
+
+details.ps-faq:hover summary,
+.ps-faq details:hover summary,
+section.faq details:hover summary,
+details.faq:hover summary {
+  color: var(--brand-primary);
+}
+
+/* Separador interno al abrir */
+details.ps-faq[open] summary,
+.ps-faq details[open] summary,
+section.faq details[open] summary,
+details.faq[open] summary {
+  padding-bottom: .7rem;
+  margin-bottom: .75rem;
+  border-bottom: 1px dashed rgba(15,23,42,0.12);
+}
+
+/* Animación suave */
+details.ps-faq > *:not(summary),
+.ps-faq details > *:not(summary),
+section.faq details > *:not(summary),
+details.faq > *:not(summary) {
+  margin-top: .7rem;
+  animation: psFaqFade .18s ease;
+}
+
+@keyframes psFaqFade {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Accesibilidad */
+details.ps-faq summary:focus-visible,
+.ps-faq details summary:focus-visible,
+section.faq details summary:focus-visible,
+details.faq summary:focus-visible {
+  outline: 2px solid rgba(43,92,255,0.35);
+  outline-offset: 3px;
+}

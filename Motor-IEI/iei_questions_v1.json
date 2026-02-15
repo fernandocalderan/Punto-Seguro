@@ -40,14 +40,14 @@
     {
       "id": "E1",
       "block": "E",
-      "text": "Tu zona suele tener robos o intentos de robo?",
-      "help": "No hace falta ser experto: vale tu experiencia, la del vecindario y noticias locales.",
+      "text": "En los últimos 12 meses, ¿ha habido robos o intentos de robo cerca de tu vivienda o local?",
+      "help": "Piensa en tu calle o calles colindantes. Los robos recientes en la zona aumentan la probabilidad de repetición.",
       "options": [
         { "key": "0", "label": "Raro o casi nunca se oye" },
         { "key": "1", "label": "Ocurre a veces" },
         { "key": "2", "label": "Ocurre con cierta frecuencia" },
         { "key": "3", "label": "Ocurre mucho / es un tema habitual" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -60,7 +60,7 @@
         { "key": "1", "label": "Bastante controlado (puerta cerrada + videoportero/portero)" },
         { "key": "2", "label": "Poco controlado (entra cualquiera con facilidad)" },
         { "key": "3", "label": "Nada controlado (acceso abierto o puerta suele quedar abierta)" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -73,20 +73,20 @@
         { "key": "1", "label": "Se ve bastante, con algun punto ciego" },
         { "key": "2", "label": "Hay varios puntos ciegos" },
         { "key": "3", "label": "Casi no se ve (muy escondido/aislado)" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "R4",
       "block": "R",
-      "text": "Puerta principal: que tan 'dificil de forzar' te parece?",
-      "help": "Fijate en: robustez, marco, holguras, y si la cerradura parece moderna.",
+      "text": "Si alguien intentara forzar la puerta principal, ¿cuánto resistiría realmente?",
+      "help": "No pienses en cómo se ve, sino en su resistencia real ante intentos habituales como apalancamiento o manipulación del cilindro.",
       "options": [
-        { "key": "0", "label": "Muy dificil: puerta acorazada/robusta + cerradura moderna" },
-        { "key": "1", "label": "Bastante dificil: puerta buena + cerradura decente" },
-        { "key": "2", "label": "Normal: puerta y cerradura tipicas" },
-        { "key": "3", "label": "Facil: puerta vieja/holguras/cerradura antigua o bombin muy expuesto" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "0", "label": "Muy difícil: puerta acorazada/robusta + cerradura moderna" },
+        { "key": "1", "label": "Bastante difícil: puerta buena + cerradura decente" },
+        { "key": "2", "label": "Normal: puerta y cerradura típicas" },
+        { "key": "3", "label": "Fácil: puerta vieja/holguras/cerradura antigua o bombín muy expuesto" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -99,7 +99,7 @@
         { "key": "1", "label": "Algo protegidas (alguna medida, pero no en todas)" },
         { "key": "2", "label": "Poca proteccion (faciles de forzar en general)" },
         { "key": "3", "label": "Sin proteccion (nada extra)" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -112,20 +112,20 @@
         { "key": "1", "label": "Hay alguno, pero bastante controlado" },
         { "key": "2", "label": "Hay varios y alguno es vulnerable" },
         { "key": "3", "label": "Hay varios y son faciles (poco control/proteccion)" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "D7",
       "block": "D",
-      "text": "Tienes alarma? (anti-intrusion)",
-      "help": "Si no sabes si hay 'central', marca 'No lo se'.",
+      "text": "Si alguien entrara ahora mismo, ¿se detectaría antes de que pasen 60 segundos?",
+      "help": "Una detección temprana (y, si aplica, aviso verificado) reduce drásticamente el tiempo de exposición.",
       "options": [
-        { "key": "0", "label": "Si, conectada a central (CRA) + sensores en entradas" },
-        { "key": "1", "label": "Si, conectada a central (CRA), pero no se si cubre todo" },
-        { "key": "2", "label": "Si, pero sin central (solo suena/avisa al movil) o es muy basica" },
+        { "key": "0", "label": "Sí, conectada a central (CRA) + sensores en entradas" },
+        { "key": "1", "label": "Sí, conectada a central (CRA), pero no sé si cubre todo" },
+        { "key": "2", "label": "Sí, pero sin central (solo suena/avisa al móvil) o es muy básica" },
         { "key": "3", "label": "No tengo alarma" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -138,7 +138,7 @@
         { "key": "1", "label": "Si: graban, pero cobertura parcial (zonas ciegas)" },
         { "key": "2", "label": "Hay alguna camara, pero no se si graba o es disuasoria" },
         { "key": "3", "label": "No tengo camaras" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -151,20 +151,20 @@
         { "key": "1", "label": "Buena: iluminacion suficiente, alguna zona mejorable" },
         { "key": "2", "label": "Regular: hay zonas oscuras claras" },
         { "key": "3", "label": "Mala: varias zonas oscuras o casi sin luz" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "P10",
       "block": "P",
-      "text": "Si saltara una alarma o un vecino avisara, cuanto tardaria alguien en actuar?",
-      "help": "Actuar = ir a mirar, llamar a seguridad/policia, o presentarse alguien.",
+      "text": "Si se produjera una intrusión, ¿quién actuaría en los primeros minutos?",
+      "help": "En seguridad, los primeros 5–10 minutos son decisivos. La rapidez de respuesta cambia el resultado.",
       "options": [
         { "key": "0", "label": "Menos de 10 minutos" },
         { "key": "1", "label": "Entre 10 y 20 minutos" },
         { "key": "2", "label": "Entre 20 y 40 minutos" },
-        { "key": "3", "label": "Mas de 40 minutos" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "3", "label": "Más de 40 minutos" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -177,20 +177,20 @@
         { "key": "1", "label": "Si: algo visible" },
         { "key": "2", "label": "Poco visible" },
         { "key": "3", "label": "Nada visible" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "H12",
       "block": "H",
-      "text": "Tus ausencias son previsibles (se nota cuando no estas)?",
-      "help": "Ej.: siempre mismo horario, siempre fin de semana fuera, etc.",
+      "text": "¿Tus horarios y ausencias son fácilmente previsibles desde fuera?",
+      "help": "Las rutinas repetidas permiten detectar patrones y elegir el momento con menor riesgo.",
       "options": [
         { "key": "0", "label": "No: casi siempre hay alguien o la rutina cambia" },
-        { "key": "1", "label": "A veces: algunas ausencias tipicas" },
-        { "key": "2", "label": "Si: horarios bastante predecibles" },
-        { "key": "3", "label": "Si: se queda vacio periodos largos" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "1", "label": "A veces: algunas ausencias típicas" },
+        { "key": "2", "label": "Sí: horarios bastante predecibles" },
+        { "key": "3", "label": "Sí: se queda vacío períodos largos" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -203,7 +203,7 @@
         { "key": "1", "label": "Bastante controlado (algunas personas, buen control)" },
         { "key": "2", "label": "Poco controlado (varias copias/codigos)" },
         { "key": "3", "label": "Descontrolado (muchas llaves/codigos circulando)" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     }
   ],
@@ -218,20 +218,20 @@
         { "key": "1", "label": "1-2 veces al año" },
         { "key": "2", "label": "Varias veces al año" },
         { "key": "3", "label": "Frecuentemente / largas temporadas" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "O15V",
       "block": "O",
-      "text": "Se nota desde fuera que podria estar vacia? (buzon lleno, persianas siempre igual, etc.)",
-      "help": "Los okupas suelen detectar patrones y señales repetidas.",
+      "text": "Cuando la vivienda queda vacía, ¿desde fuera se nota fácilmente?",
+      "help": "Persianas siempre bajadas, buzón lleno o ausencia prolongada de movimiento pueden convertir una vivienda en objetivo.",
       "options": [
         { "key": "0", "label": "No: hay medidas para que no se note" },
         { "key": "1", "label": "A veces: alguna señal puntual" },
-        { "key": "2", "label": "Si: varias señales o patrones" },
-        { "key": "3", "label": "Si: es muy evidente" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "2", "label": "Sí: varias señales o patrones" },
+        { "key": "3", "label": "Sí: es muy evidente" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -244,7 +244,7 @@
         { "key": "1", "label": "Medio: a veces se nota, pero no siempre" },
         { "key": "2", "label": "Bajo: casi nadie presta atencion" },
         { "key": "3", "label": "Nulo: nadie controla nada" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -257,7 +257,7 @@
         { "key": "1", "label": "Bastante: suele estar cerrado y funciona bien" },
         { "key": "2", "label": "Poco: se cuela gente o queda abierto" },
         { "key": "3", "label": "Nada: entra cualquiera" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -270,7 +270,7 @@
         { "key": "1", "label": "Algo: se que haria, pero no esta todo preparado" },
         { "key": "2", "label": "Poco: improvisaria" },
         { "key": "3", "label": "No: no sabria que hacer" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     }
   ],
@@ -285,46 +285,46 @@
         { "key": "1", "label": "Valor medio / parcialmente revendible" },
         { "key": "2", "label": "Alto valor / bastante revendible" },
         { "key": "3", "label": "Muy alto valor / muy revendible" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "T15C",
       "block": "T",
-      "text": "Se maneja efectivo (caja) con frecuencia?",
-      "help": "Incluye guardado de efectivo fuera de la caja durante el dia.",
+      "text": "¿El efectivo queda protegido adecuadamente al cerrar?",
+      "help": "El manejo o almacenamiento de efectivo visible incrementa el atractivo del local como objetivo.",
       "options": [
         { "key": "0", "label": "No: casi todo es tarjeta/transferencia" },
-        { "key": "1", "label": "Poco: importes pequenos y controlados" },
+        { "key": "1", "label": "Poco: importes pequeños y controlados" },
         { "key": "2", "label": "Frecuente: bastante efectivo" },
         { "key": "3", "label": "Alto: mucho efectivo habitualmente" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "R16C",
       "block": "R",
-      "text": "Cierre del local (persiana/rejas/cristal): que tan dificil seria entrar de noche?",
-      "help": "Piensa en si un intruso podria forzar rapidamente el cierre sin hacer demasiado ruido.",
+      "text": "Fuera de horario, ¿cuánto resistiría el cierre o la persiana ante un intento real?",
+      "help": "Muchos accesos se producen en pocos minutos. La resistencia real del frente del local es determinante.",
       "options": [
-        { "key": "0", "label": "Muy dificil: persiana/rejas robustas o cristal de seguridad bien protegido" },
-        { "key": "1", "label": "Bastante dificil: buen cierre, aunque mejorable" },
-        { "key": "2", "label": "Normal: cierre tipico, podria forzarse" },
-        { "key": "3", "label": "Facil: cierre debil o con puntos vulnerables claros" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "0", "label": "Muy difícil: persiana/rejas robustas o cristal de seguridad bien protegido" },
+        { "key": "1", "label": "Bastante difícil: buen cierre, aunque mejorable" },
+        { "key": "2", "label": "Normal: cierre típico, podría forzarse" },
+        { "key": "3", "label": "Fácil: cierre débil o con puntos vulnerables claros" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "D17C",
       "block": "D",
-      "text": "Fuera de horario, si alguien entra, se detecta y queda registro?",
-      "help": "Lo ideal: alarma (mejor con CRA) + camaras que graben + notificacion.",
+      "text": "Si alguien accediera de noche, ¿se detectaría y registraría de forma inmediata?",
+      "help": "Detectar, registrar y avisar son pasos distintos. Si uno falla, el riesgo aumenta.",
       "options": [
-        { "key": "0", "label": "Si: alarma + camaras que graban + aviso (idealmente con central)" },
+        { "key": "0", "label": "Sí: alarma + cámaras que graban + aviso (idealmente con central)" },
         { "key": "1", "label": "Tengo 2 de estas 3 cosas" },
-        { "key": "2", "label": "Solo tengo 1 (o muy basico)" },
-        { "key": "3", "label": "No: practicamente nada" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "2", "label": "Solo tengo 1 (o muy básico)" },
+        { "key": "3", "label": "No: prácticamente nada" },
+        { "key": "U", "label": "No lo sé" }
       ]
     },
     {
@@ -337,7 +337,7 @@
         { "key": "1", "label": "Ocasional: algun cierre corto" },
         { "key": "2", "label": "Frecuente: cierres repetidos" },
         { "key": "3", "label": "Si: temporadas largas cerrado o aspecto de abandono" },
-        { "key": "U", "label": "No lo se" }
+        { "key": "U", "label": "No lo sé" }
       ]
     }
   ],

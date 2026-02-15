@@ -1,0 +1,302 @@
+{
+  "meta": {
+    "id": "iei_premium_v1",
+    "version": "1.0.0",
+    "audience": "usuario",
+    "language": "es",
+    "scale": "0-100",
+    "property_types": ["vivienda", "comercio"],
+    "ui_rules": {
+      "allow_unknown_option": true,
+      "unknown_key": "U",
+      "unknown_default_score_key": "2",
+      "unknown_note": "Si el usuario no sabe, puede marcar 'No lo sé'. El sistema lo puntúa como riesgo medio-alto (0.66) y aumenta la incertidumbre."
+    }
+  },
+  "mapping": {
+    "score_map": {
+      "0": 0.0,
+      "1": 0.33,
+      "2": 0.66,
+      "3": 1.0,
+      "U": 0.66
+    }
+  },
+  "blocks": {
+    "E": "Exposicion_entorno",
+    "R": "Resistencia_fisica",
+    "D": "Deteccion_verificacion",
+    "P": "Respuesta_disuasion",
+    "H": "Habitos_operativa",
+    "T": "Atractivo_objetivo",
+    "O": "Ocupacion_senales"
+  },
+  "tooltips": {
+    "CRA": "Central Receptora de Alarmas: si salta la alarma, una empresa verifica y avisa (policía/propietario/seguridad).",
+    "Perimetral": "Protección antes de que entren: sensores en puertas/ventanas/terraza/patio.",
+    "CCTV_util": "Cámara que graba y permite ver desde el móvil, cubriendo entradas principales sin grandes zonas ciegas."
+  },
+  "questions_common": [
+    {
+      "id": "E1",
+      "block": "E",
+      "text": "En los últimos 12 meses, ¿ha habido robos o intentos de robo cerca de tu vivienda o local?",
+      "help": "Piensa en tu calle o calles colindantes. Los robos recientes en la zona aumentan la probabilidad de repetición.",
+      "options": [
+        { "key": "0", "label": "Raro o casi nunca se oye" },
+        { "key": "1", "label": "Ocurre a veces" },
+        { "key": "2", "label": "Ocurre con cierta frecuencia" },
+        { "key": "3", "label": "Ocurre mucho / es un tema habitual" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "E2",
+      "block": "E",
+      "text": "¿El acceso principal es visible y controlado desde la calle o presenta puntos ciegos y aproximación fácil?",
+      "help": "Puntos ciegos y aproximación fácil aumentan la oportunidad de intrusión, especialmente en franjas sin presencia.",
+      "options": [
+        { "key": "0", "label": "Muy visible y controlado (sin puntos ciegos, aproximación difícil)" },
+        { "key": "1", "label": "Bastante visible (algún punto ciego, control razonable)" },
+        { "key": "2", "label": "Poco visible/controlado (varios puntos ciegos o aproximación fácil)" },
+        { "key": "3", "label": "Nada visible/controlado (puntos ciegos claros y aproximación muy fácil)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "R1",
+      "block": "R",
+      "text": "Si alguien intentara forzar la puerta principal, ¿cuánto resistiría realmente?",
+      "help": "No pienses en cómo se ve, sino en su resistencia real ante intentos habituales como apalancamiento o manipulación del cilindro.",
+      "options": [
+        { "key": "0", "label": "Muy difícil: puerta acorazada/robusta + cerradura moderna" },
+        { "key": "1", "label": "Bastante difícil: puerta buena + cerradura decente" },
+        { "key": "2", "label": "Normal: puerta y cerradura típicas" },
+        { "key": "3", "label": "Fácil: puerta vieja/holguras/cerradura antigua o bombín muy expuesto" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "R2",
+      "block": "R",
+      "text": "Ventanas/puertas al exterior: ¿qué protección tienen?",
+      "help": "Ejemplos: rejas, persianas robustas, cierres extra, cristal laminado, etc.",
+      "options": [
+        { "key": "0", "label": "Muy protegidas (rejas/persianas robustas/cierres extra)" },
+        { "key": "1", "label": "Algo protegidas (alguna medida, pero no en todas)" },
+        { "key": "2", "label": "Poca protección (fáciles de forzar en general)" },
+        { "key": "3", "label": "Sin protección (nada extra)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "R3",
+      "block": "R",
+      "text": "¿Hay accesos secundarios vulnerables (garaje, patio, trastero, terraza, puerta trasera)?",
+      "help": "Si existe, cuenta como 'acceso secundario'.",
+      "options": [
+        { "key": "0", "label": "No hay, o están bien protegidos" },
+        { "key": "1", "label": "Hay alguno, pero bastante controlado" },
+        { "key": "2", "label": "Hay varios y alguno es vulnerable" },
+        { "key": "3", "label": "Hay varios y son fáciles (poco control/protección)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "D1",
+      "block": "D",
+      "text": "Si alguien entrara ahora mismo, ¿se detectaría antes de que pasen 60 segundos?",
+      "help": "Una detección temprana (y, si aplica, aviso verificado) reduce drásticamente el tiempo de exposición.",
+      "options": [
+        { "key": "0", "label": "Sí, conectada a central (CRA) + sensores en entradas" },
+        { "key": "1", "label": "Sí, conectada a central (CRA), pero no sé si cubre todo" },
+        { "key": "2", "label": "Sí, pero sin central (solo suena/avisa al móvil) o es muy básica" },
+        { "key": "3", "label": "No tengo alarma" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "D2",
+      "block": "D",
+      "text": "¿Tienes cámaras útiles (graban, son revisables y cubren entradas sin grandes puntos ciegos)?",
+      "help": "CCTV útil = graba, puedes ver desde el móvil y cubre entradas principales.",
+      "options": [
+        { "key": "0", "label": "Sí: graban + veo desde el móvil + cubren bien entradas" },
+        { "key": "1", "label": "Sí: graban, pero cobertura parcial (zonas ciegas)" },
+        { "key": "2", "label": "Hay alguna cámara, pero no sé si graba o es disuasoria" },
+        { "key": "3", "label": "No tengo cámaras" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "D3",
+      "block": "D",
+      "text": "¿Cómo es la iluminación exterior (entrada, accesos, puntos ciegos)?",
+      "help": "Lo mejor: luz con sensor de movimiento o automatizada al anochecer.",
+      "options": [
+        { "key": "0", "label": "Muy buena: sensores/automatización + sin zonas oscuras" },
+        { "key": "1", "label": "Buena: iluminación suficiente, alguna zona mejorable" },
+        { "key": "2", "label": "Regular: hay zonas oscuras claras" },
+        { "key": "3", "label": "Mala: varias zonas oscuras o casi sin luz" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "P1",
+      "block": "P",
+      "text": "Si se produjera una intrusión, ¿quién actuaría en los primeros minutos?",
+      "help": "En seguridad, los primeros 5–10 minutos son decisivos. La rapidez de respuesta cambia el resultado.",
+      "options": [
+        { "key": "0", "label": "Menos de 10 minutos" },
+        { "key": "1", "label": "Entre 10 y 20 minutos" },
+        { "key": "2", "label": "Entre 20 y 40 minutos" },
+        { "key": "3", "label": "Más de 40 minutos" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "P2",
+      "block": "P",
+      "text": "¿Hay elementos visibles que disuadan (placas de alarma, cámaras visibles, etc.)?",
+      "help": "No protege por sí solo, pero reduce intentos oportunistas.",
+      "options": [
+        { "key": "0", "label": "Sí: varios elementos muy visibles" },
+        { "key": "1", "label": "Sí: algo visible" },
+        { "key": "2", "label": "Poco visible" },
+        { "key": "3", "label": "Nada visible" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "H1",
+      "block": "H",
+      "text": "¿Desde fuera se puede prever cuándo el inmueble queda sin vigilancia o sin actividad?",
+      "help": "Rutinas repetidas y señales externas facilitan elegir el momento con menor riesgo.",
+      "options": [
+        { "key": "0", "label": "No: presencia/actividad variable o medidas para que no se note" },
+        { "key": "1", "label": "A veces: alguna señal puntual o rutina parcialmente predecible" },
+        { "key": "2", "label": "Sí: rutina/ausencias predecibles o señales frecuentes" },
+        { "key": "3", "label": "Sí: se nota claramente (ausencias largas o señales evidentes)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "H2",
+      "block": "H",
+      "text": "¿Cuánta gente puede acceder con llave/código (sin que lo controles bien)?",
+      "help": "Incluye: ex inquilinos/empleados, familiares, copias sin control o códigos compartidos.",
+      "options": [
+        { "key": "0", "label": "Muy controlado (pocas personas y control total)" },
+        { "key": "1", "label": "Bastante controlado (algunas personas, buen control)" },
+        { "key": "2", "label": "Poco controlado (varias copias/códigos)" },
+        { "key": "3", "label": "Descontrolado (muchas llaves/códigos circulando)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    }
+  ],
+  "questions_vivienda": [
+    {
+      "id": "O1V",
+      "block": "O",
+      "text": "¿Hay control del edificio/vecindario ante gente desconocida?",
+      "help": "Ej.: vecinos atentos, conserje, cámaras en portal, etc.",
+      "options": [
+        { "key": "0", "label": "Alto: se detecta rápido a desconocidos" },
+        { "key": "1", "label": "Medio: a veces se nota, pero no siempre" },
+        { "key": "2", "label": "Bajo: casi nadie presta atención" },
+        { "key": "3", "label": "Nulo: nadie controla nada" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "O2V",
+      "block": "O",
+      "text": "¿La vivienda puede dar sensación de abandono en ciertos periodos (señales externas, poca actividad, etc.)?",
+      "help": "Señales persistentes (buzón, persianas, mantenimiento, iluminación) incrementan intrusión y también riesgo de usurpación.",
+      "options": [
+        { "key": "0", "label": "No: siempre parece habitada" },
+        { "key": "1", "label": "A veces: alguna señal puntual" },
+        { "key": "2", "label": "Sí: se puede notar en ciertos periodos" },
+        { "key": "3", "label": "Sí: puede parecer abandonada por temporadas" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "T1V",
+      "block": "T",
+      "text": "Desde el exterior, ¿parece un objetivo atractivo (accesos discretos, valor percibido, poca vigilancia)?",
+      "help": "No es solo el valor real: es lo que se percibe desde fuera (facilidad, discreción y señales de valor).",
+      "options": [
+        { "key": "0", "label": "Bajo: difícil intuir valor y hay vigilancia natural" },
+        { "key": "1", "label": "Medio: algo de atractivo, pero limitado" },
+        { "key": "2", "label": "Alto: parece accesible y con valor percibido" },
+        { "key": "3", "label": "Muy alto: accesos discretos + poco control + valor percibido" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    }
+  ],
+  "questions_comercio": [
+    {
+      "id": "O1C",
+      "block": "O",
+      "text": "¿El local queda cerrado muchos días seguidos o parece abandonado por temporadas?",
+      "help": "El abandono aparente aumenta intrusiones y también riesgo de usurpación en algunos casos.",
+      "options": [
+        { "key": "0", "label": "No: actividad regular" },
+        { "key": "1", "label": "Ocasional: algún cierre corto" },
+        { "key": "2", "label": "Frecuente: cierres repetidos" },
+        { "key": "3", "label": "Sí: temporadas largas cerrado o aspecto de abandono" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "T1C",
+      "block": "T",
+      "text": "¿El stock o productos son fáciles de revender y de alto valor?",
+      "help": "Ej.: electrónica, teléfonos, joyería, herramientas caras, etc.",
+      "options": [
+        { "key": "0", "label": "Bajo valor / poco revendible" },
+        { "key": "1", "label": "Valor medio / parcialmente revendible" },
+        { "key": "2", "label": "Alto valor / bastante revendible" },
+        { "key": "3", "label": "Muy alto valor / muy revendible" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "T2C",
+      "block": "T",
+      "text": "¿El efectivo queda protegido adecuadamente al cerrar?",
+      "help": "El manejo o almacenamiento de efectivo visible incrementa el atractivo del local como objetivo.",
+      "options": [
+        { "key": "0", "label": "No: casi todo es tarjeta/transferencia" },
+        { "key": "1", "label": "Poco: importes pequeños y controlados" },
+        { "key": "2", "label": "Frecuente: bastante efectivo" },
+        { "key": "3", "label": "Alto: mucho efectivo habitualmente" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    }
+  ],
+  "alignment": {
+    "block_by_id": {
+      "E1": "E",
+      "E2": "E",
+      "R1": "R",
+      "R2": "R",
+      "R3": "R",
+      "D1": "D",
+      "D2": "D",
+      "D3": "D",
+      "P1": "P",
+      "P2": "P",
+      "H1": "H",
+      "H2": "H",
+      "O1V": "O",
+      "O2V": "O",
+      "T1V": "T",
+      "O1C": "O",
+      "T1C": "T",
+      "T2C": "T"
+    }
+  }
+}
+

@@ -25,27 +25,25 @@ export function calculateIEI(answers, propertyType) {
     throw new Error("propertyType invalido. Usa 'vivienda' o 'comercio'.");
   }
 
-  // Mapeo simple: key "0".."3" -> s en [0,1]
-  const scoreMap = { "0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0 };
+  // Mapeo simple: key "0".."3" (y "U") -> s en [0,1]
+  const scoreMap = { "0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0, "U": 0.66 };
 
   // Asignación de bloques por ID (debe coincidir con el JSON)
   const blockById = {
-    E1: "E", E2: "E", E3: "E",
-    R4: "R", R5: "R", R6: "R",
-    D7: "D", D8: "D", D9: "D",
-    P10: "P", P11: "P",
-    H12: "H", H13: "H",
+    // Common
+    E1: "E", E2: "E",
+    R1: "R", R2: "R", R3: "R",
+    D1: "D", D2: "D", D3: "D",
+    P1: "P", P2: "P",
+    H1: "H", H2: "H",
 
     // Vivienda
-    O14V: "O", O15V: "O", O16V: "O",
-    R17V: "R",
-    H18V: "H",
+    O1V: "O", O2V: "O",
+    T1V: "T",
 
     // Comercio
-    T14C: "T", T15C: "T",
-    R16C: "R",
-    D17C: "D",
-    O18C: "O"
+    O1C: "O",
+    T1C: "T", T2C: "T"
   };
 
   // Captura scores por bloque

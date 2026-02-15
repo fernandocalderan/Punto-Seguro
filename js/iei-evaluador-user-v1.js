@@ -1,11 +1,11 @@
 /* IEI Comercial (usuario v1)
-   - Render data-driven desde /Motor-IEI/iei_questions_v1.json
+   - Render data-driven desde /Motor-IEI/iei_questions_premium.json
    - Calcula con /Motor-IEI/calculateIEI.js (ESM) via import()
    - Bridge global window.calcularRiesgo() para mantener UX/handlers inline
    - NO toca resultado.js: respeta contrato sessionStorage → /resultado → lead flow
 */
 
-const QUESTIONS_URL = "/Motor-IEI/iei_questions_v1.json";
+const QUESTIONS_URL = "/Motor-IEI/iei_questions_premium.json";
 const MOTOR_URL = "/Motor-IEI/calculateIEI.js";
 
 const MODEL_VERSION = "IEI-user-v1";
@@ -25,17 +25,18 @@ const BLOCK_LABEL = {
 
 const QID_PRIORITY = {
   // Priorizar triggers para RULES (plan 3 pasos).
-  D7: 1000, // alarma
-  D8: 950, // camaras
-  R5: 900, // ventanas
-  D9: 850, // iluminacion
-  E3: 800, // puntos ciegos / visibilidad
-  H12: 780, // ausencias previsibles
-  R16C: 760, // cierre/persiana comercio
-  T14C: 740, // stock atractivo
-  O15V: 720, // se nota vacia
-  O18C: 710, // local cerrado
-  R6: 700, // accesos secundarios
+  D1: 1000, // alarma
+  D2: 950, // camaras
+  R2: 900, // ventanas
+  D3: 850, // iluminacion
+  E2: 800, // puntos ciegos / visibilidad
+  H1: 780, // ausencias previsibles
+  R1: 760, // puerta o cierre/persiana (comercio)
+  T1C: 740, // stock atractivo
+  O2V: 720, // abandono aparente vivienda
+  O1C: 710, // local cerrado
+  R3: 700, // accesos secundarios
+  T2C: 680, // efectivo
 };
 
 function clamp01(x) {
@@ -100,23 +101,22 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   if (qid === "E2") {
-    if (rk === "3") return "Acceso sin control";
-    if (rk === "2") return "Acceso poco controlado";
-    if (rk === "1") return "Acceso bastante controlado";
-    if (rk === "0") return "Acceso muy controlado";
-    return "Control de acceso (no lo sé)";
-  }
-
-  // Visibilidad (RULE: visibilidad / puntos ciegos)
-  if (qid === "E3") {
+    // Fusión: control + visibilidad. Disparar RULES de "puntos ciegos/visibilidad" en riesgo.
     if (rk === "3" || rk === "2") return "Puntos ciegos / visibilidad baja";
-    if (rk === "1") return "Entrada parcialmente oculta";
-    if (rk === "0") return "Entrada a la vista";
-    return "Entrada/exposición (no lo sé)";
+    if (rk === "1") return "Visibilidad parcial";
+    if (rk === "0") return "Acceso visible";
+    return "Visibilidad/control (no lo sé)";
   }
 
-  // Puerta principal
-  if (qid === "R4") {
+  // Puerta principal / frente del local
+  if (qid === "R1") {
+    if (type === "comercio") {
+      // Evitar falsos positivos en RULES ("cierre"/"persiana") cuando el frente es seguro.
+      if (rk === "3" || rk === "2") return "Cierre/persiana vulnerable";
+      if (rk === "1") return "Frente del local mejorable";
+      if (rk === "0") return "Frente del local protegido";
+      return "Frente del local (no lo sé)";
+    }
     if (rk === "3") return "Puerta principal vulnerable";
     if (rk === "2") return "Puerta principal estándar";
     if (rk === "1") return "Puerta principal robusta";
@@ -125,7 +125,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Alarma (RULE: "sin alarma" / "sin sistema de alarma" / "no tiene alarma")
-  if (qid === "D7") {
+  if (qid === "D1") {
     if (rk === "3") return "Sin alarma";
     if (rk === "2") return "Alarma básica";
     if (rk === "1" || rk === "0") return "Alarma presente";
@@ -133,7 +133,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Cámaras (RULE: "sin cámaras" / "sin videovigilancia" / "no hay cámaras")
-  if (qid === "D8") {
+  if (qid === "D2") {
     if (rk === "3") return "Sin cámaras";
     if (rk === "2") return "Cámaras básicas";
     if (rk === "1" || rk === "0") return "Cámaras presentes";
@@ -141,7 +141,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Ventanas (RULE vivienda incluye "ventanas", evitar falsos positivos en respuestas seguras)
-  if (qid === "R5") {
+  if (qid === "R2") {
     if (rk === "3") return "Ventanas sin protección";
     if (rk === "2") return "Ventanas con poca protección";
     if (rk === "1") return "Cerramientos exteriores mejorables";
@@ -150,7 +150,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Accesos secundarios vulnerables (texto solicitado; sin RULE directa)
-  if (qid === "R6") {
+  if (qid === "R3") {
     if (rk === "3") return "Accesos secundarios vulnerables";
     if (rk === "2") return "Accesos secundarios mejorables";
     if (rk === "1" || rk === "0") return "Accesos secundarios controlados";
@@ -158,15 +158,15 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Iluminación / puntos ciegos (RULE: iluminacion / puntos ciegos / visibilidad)
-  if (qid === "D9") {
+  if (qid === "D3") {
     if (rk === "3" || rk === "2") return "Iluminación deficiente / puntos ciegos";
     if (rk === "1") return "Luz exterior mejorable";
     if (rk === "0") return "Luz exterior suficiente";
     return "Luz exterior (no lo sé)";
   }
 
-  // Ausencias previsibles (RULE: ausencia / previsible)
-  if (qid === "H12") {
+  // Ausencias previsibles / falta de actividad (RULE: ausencia / previsible)
+  if (qid === "H1") {
     if (rk === "3" || rk === "2") return "Ausencias previsibles";
     if (rk === "1") return "Rutina algo predecible";
     if (rk === "0") return "Rutina variable";
@@ -174,7 +174,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Llaves/códigos
-  if (qid === "H13") {
+  if (qid === "H2") {
     if (rk === "3") return "Llaves/códigos descontrolados";
     if (rk === "2") return "Llaves/códigos poco controlados";
     if (rk === "1") return "Llaves/códigos bastante controlados";
@@ -183,7 +183,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Tiempo de respuesta
-  if (qid === "P10") {
+  if (qid === "P1") {
     if (rk === "3") return "Respuesta lenta (>40 min)";
     if (rk === "2") return "Respuesta lenta (20–40 min)";
     if (rk === "1") return "Respuesta media (10–20 min)";
@@ -192,7 +192,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Disuasión visible
-  if (qid === "P11") {
+  if (qid === "P2") {
     if (rk === "3") return "Sin disuasión visible";
     if (rk === "2") return "Poca disuasión visible";
     if (rk === "1") return "Algo de disuasión visible";
@@ -200,16 +200,8 @@ function factorTextFor(qid, type, rawKey) {
     return "Disuasión (no lo sé)";
   }
 
-  // Comercio: cierre/persiana (RULE comercio: persiana/cierre)
-  if (qid === "R16C") {
-    if (rk === "3" || rk === "2") return "Cierre/persiana vulnerable";
-    if (rk === "1") return "Frente del local mejorable";
-    if (rk === "0") return "Frente del local protegido";
-    return "Frente del local (no lo sé)";
-  }
-
   // Comercio: stock atractivo (RULE: stock / joyeria / electronica / etc.)
-  if (qid === "T14C") {
+  if (qid === "T1C") {
     if (rk === "3" || rk === "2") return "Stock atractivo";
     if (rk === "1") return "Valor comercial medio";
     if (rk === "0") return "Valor comercial bajo";
@@ -217,7 +209,7 @@ function factorTextFor(qid, type, rawKey) {
   }
 
   // Comercio: efectivo
-  if (qid === "T15C") {
+  if (qid === "T2C") {
     if (rk === "3") return "Manejo de efectivo alto";
     if (rk === "2") return "Manejo de efectivo frecuente";
     if (rk === "1") return "Manejo de efectivo limitado";
@@ -225,33 +217,8 @@ function factorTextFor(qid, type, rawKey) {
     return "Efectivo (no lo sé)";
   }
 
-  // Comercio: fuera de horario (detección/registro)
-  if (qid === "D17C") {
-    if (rk === "3") return "Sin registro fuera de horario";
-    if (rk === "2") return "Registro fuera de horario limitado";
-    if (rk === "1") return "Registro fuera de horario parcial";
-    if (rk === "0") return "Registro fuera de horario completo";
-    return "Registro fuera de horario (no lo sé)";
-  }
-
-  // Vivienda: vacía varios días/semanas
-  if (qid === "O14V") {
-    if (rk === "3" || rk === "2") return "Ausencias previsibles";
-    if (rk === "1") return "Vivienda vacía ocasionalmente";
-    if (rk === "0") return "Ocupación estable";
-    return "Ocupación (no lo sé)";
-  }
-
-  // Vivienda: señales de ausencia (reforzar predict_absence cuando aplica)
-  if (qid === "O15V") {
-    if (rk === "3" || rk === "2") return "Ausencia previsible (señales desde fuera)";
-    if (rk === "1") return "Señales puntuales (vivienda vacía)";
-    if (rk === "0") return "No se nota vacía desde fuera";
-    return "Señales desde fuera (no lo sé)";
-  }
-
   // Vivienda: control vecindario
-  if (qid === "O16V") {
+  if (qid === "O1V") {
     if (rk === "3") return "Vecindario sin control";
     if (rk === "2") return "Vecindario poco atento";
     if (rk === "1") return "Vecindario moderadamente atento";
@@ -259,26 +226,24 @@ function factorTextFor(qid, type, rawKey) {
     return "Vecindario (no lo sé)";
   }
 
-  // Vivienda: portal/entrada
-  if (qid === "R17V") {
-    if (rk === "3") return "Portal/entrada sin control";
-    if (rk === "2") return "Portal/entrada poco controlado";
-    if (rk === "1") return "Portal/entrada bastante controlado";
-    if (rk === "0") return "Portal/entrada muy controlado";
-    return "Portal/entrada (no lo sé)";
+  // Vivienda: abandono aparente (puede disparar RULES de ausencia)
+  if (qid === "O2V") {
+    if (rk === "3" || rk === "2") return "Ausencia prolongada / aspecto de abandono";
+    if (rk === "1") return "Señales puntuales de ausencia";
+    if (rk === "0") return "Señales de presencia";
+    return "Actividad (no lo sé)";
   }
 
-  // Vivienda: plan de reacción
-  if (qid === "H18V") {
-    if (rk === "3") return "Sin plan de reacción";
-    if (rk === "2") return "Plan de reacción improvisado";
-    if (rk === "1") return "Plan de reacción parcial";
-    if (rk === "0") return "Plan de reacción claro";
-    return "Plan de reacción (no lo sé)";
+  // Vivienda: atractivo objetivo
+  if (qid === "T1V") {
+    if (rk === "3" || rk === "2") return "Objetivo atractivo";
+    if (rk === "1") return "Atractivo medio";
+    if (rk === "0") return "Atractivo bajo";
+    return "Atractivo (no lo sé)";
   }
 
   // Comercio: cierres largos (predict_absence puede aplicar)
-  if (qid === "O18C") {
+  if (qid === "O1C") {
     if (rk === "3" || rk === "2") return "Ausencia prolongada (local cerrado)";
     if (rk === "1") return "Cerrado ocasionalmente";
     if (rk === "0") return "Actividad regular";
@@ -548,7 +513,17 @@ window.calcularRiesgo = () => {
     }
 
     const selects = getPanelSelects(tipo);
-    if (selects.length !== 18) {
+    const expectedCount = (() => {
+      const q = state.questionsJson;
+      if (!q) return null;
+      const common = Array.isArray(q.questions_common) ? q.questions_common.length : 0;
+      const specific = tipo === "vivienda"
+        ? (Array.isArray(q.questions_vivienda) ? q.questions_vivienda.length : 0)
+        : (Array.isArray(q.questions_comercio) ? q.questions_comercio.length : 0);
+      return common + specific;
+    })();
+
+    if (Number.isFinite(expectedCount) && expectedCount > 0 && selects.length !== expectedCount) {
       window.mostrarAlerta?.("No se pudo cargar el cuestionario IEI correctamente. Recarga la página e inténtalo de nuevo.");
       return;
     }
@@ -572,7 +547,18 @@ window.calcularRiesgo = () => {
     const engineResult = engine(answers, tipo);
 
     let riskScore = Number(engineResult?.ieiTotal ?? 0);
-    if (tipo === "vivienda") {
+    // Solo aplicar el fix de techo cuando el cuestionario NO tiene bloque T para vivienda.
+    const shouldAdaptCeiling = (() => {
+      if (tipo !== "vivienda") return false;
+      const q = state.questionsJson;
+      if (!q) return false;
+      const common = Array.isArray(q.questions_common) ? q.questions_common : [];
+      const viv = Array.isArray(q.questions_vivienda) ? q.questions_vivienda : [];
+      const hasT = [...common, ...viv].some((qq) => String(qq?.block || "").trim() === "T");
+      return !hasT;
+    })();
+
+    if (shouldAdaptCeiling) {
       const adjusted = adaptViviendaCeiling(engineResult);
       riskScore = adjusted.ieiTotal;
     }

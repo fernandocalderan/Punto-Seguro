@@ -1,6 +1,6 @@
 {
   "meta": {
-    "id": "iei_smart_v1",
+    "id": "iei_premium_15x2_v1",
     "version": "1.0.0",
     "audience": "usuario",
     "language": "es",
@@ -23,13 +23,13 @@
     }
   },
   "blocks": {
+    "S": "Segmento_tipo",
     "E": "Exposicion_entorno",
     "R": "Resistencia_fisica",
     "D": "Deteccion_cobertura",
     "P": "Respuesta_disuasion",
-    "H": "Habitos_control_accesos",
-    "T": "Atractivo_objetivo",
-    "O": "Ocupacion_senales"
+    "H": "Habitos_control",
+    "T": "Atractivo_objetivo"
   },
   "tooltips": {
     "CRA": "Central Receptora de Alarmas: verifica el salto de alarma y avisa (policía/propietario/seguridad) según protocolo.",
@@ -38,92 +38,175 @@
     "Cierre_robusto": "Cerradura/cilindro moderno + escudo/protección + ajuste de marco. En comercio: persiana metálica o cierre equivalente.",
     "Puntos_ciegos": "Zonas donde se puede acercar/actuar sin ser visto desde calle/vecinos/cámaras."
   },
-  "questions_common": [
+
+  "questions_common": [],
+
+  "questions_vivienda": [
     {
-      "id": "E1",
+      "id": "V01",
+      "block": "S",
+      "text": "Tipo de vivienda: ¿cuál describe mejor tu caso?",
+      "help": "La tipología cambia exposición y facilidad de acceso (bajo/ático/casa).",
+      "options": [
+        { "key": "0", "label": "Piso alto (3º o superior) sin terraza accesible" },
+        { "key": "1", "label": "Piso intermedio (1º–2º) o con accesos controlados" },
+        { "key": "2", "label": "Bajo / planta baja o con patio/terraza accesible" },
+        { "key": "3", "label": "Casa/chalet/adosado con accesos perimetrales" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "V02",
       "block": "E",
-      "text": "Entorno y visibilidad: ¿en tu zona hay robos y el acceso al inmueble es poco visible/controlado?",
-      "help": "Combinamos dos factores clave: actividad delictiva cercana y facilidad de aproximación sin ser visto.",
+      "text": "Exposición: ¿cómo de fácil es aproximarse sin ser visto (puntos ciegos, calle poco transitada, poca vigilancia natural)?",
+      "help": "A más puntos ciegos y menor vigilancia natural, más oportunidad de intrusión.",
       "options": [
-        { "key": "0", "label": "Bajo: robos raros y acceso muy visible/controlado" },
-        { "key": "1", "label": "Medio: robos ocasionales o algún punto ciego" },
-        { "key": "2", "label": "Alto: robos frecuentes o varios puntos ciegos/aproximación fácil" },
-        { "key": "3", "label": "Muy alto: robos habituales y acceso con puntos ciegos claros" },
+        { "key": "0", "label": "Difícil: acceso muy visible y con vigilancia natural" },
+        { "key": "1", "label": "Moderado: algún punto ciego, pero razonable visibilidad" },
+        { "key": "2", "label": "Fácil: varios puntos ciegos o aproximación discreta" },
+        { "key": "3", "label": "Muy fácil: puntos ciegos claros y poca vigilancia natural" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "R1",
-      "block": "R",
-      "text": "Acceso principal: si intentaran forzarlo, ¿qué tan difícil lo tendrían realmente?",
-      "help": "Evalúa resistencia real (apalancamiento, cilindro, marco). En comercio incluye persiana/cierre si existe.",
+      "id": "V03",
+      "block": "E",
+      "text": "Iluminación nocturna exterior (entrada/portal/acceso a puerta): ¿cómo está?",
+      "help": "La falta de luz aumenta tiempo de maniobra y reduce detección por terceros.",
       "options": [
-        { "key": "0", "label": "Muy difícil: acceso robusto + cerradura moderna + buen ajuste (cierre_robusto)" },
-        { "key": "1", "label": "Bastante difícil: buen acceso, pero con algún punto mejorable" },
+        { "key": "0", "label": "Excelente: muy bien iluminado" },
+        { "key": "1", "label": "Correcta: ilumina lo esencial" },
+        { "key": "2", "label": "Mejorable: zonas oscuras" },
+        { "key": "3", "label": "Deficiente: poca o ninguna iluminación" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "V04",
+      "block": "R",
+      "text": "Puerta principal: si intentaran forzarla, ¿qué tan difícil lo tendrían realmente?",
+      "help": "Evalúa resistencia real (marco, cerradura, cilindro, escudo).",
+      "options": [
+        { "key": "0", "label": "Muy difícil: acorazada/alta seguridad + buen ajuste (cierre_robusto)" },
+        { "key": "1", "label": "Bastante difícil: reforzada, con algún punto mejorable" },
         { "key": "2", "label": "Normal: estándar, sin refuerzos relevantes" },
-        { "key": "3", "label": "Fácil: acceso débil/viejo, holguras, cilindro expuesto o cierre pobre" },
+        { "key": "3", "label": "Fácil: vieja/débil, holguras, cilindro expuesto" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "R2",
+      "id": "V05",
       "block": "R",
-      "text": "Ventanas y accesos secundarios (patio, terraza, trastero, puerta trasera): ¿qué tan protegidos están?",
-      "help": "Muchos robos entran por el punto “menos heroico” del inmueble.",
+      "text": "Ventanas accesibles (calle/patio/terraza/tejado): ¿qué tan protegidas están?",
+      "help": "Muchos robos entran por el punto menos protegido.",
       "options": [
-        { "key": "0", "label": "Muy protegidos: cierres extra/rejas/persianas robustas o equivalentes" },
-        { "key": "1", "label": "Bastante protegidos: hay medidas, aunque no en todo" },
-        { "key": "2", "label": "Poca protección: varios puntos forzables con facilidad" },
-        { "key": "3", "label": "Sin protección real: accesos secundarios fáciles o desatendidos" },
+        { "key": "0", "label": "Muy protegidas: cierres extra/rejas/persianas robustas o equivalentes" },
+        { "key": "1", "label": "Bastante protegidas: hay medidas en la mayoría" },
+        { "key": "2", "label": "Poca protección: varios puntos forzables" },
+        { "key": "3", "label": "Sin protección real: accesos fáciles o desatendidos" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "D1",
-      "block": "D",
-      "text": "Detección rápida: si alguien intentara entrar, ¿se detectaría con alta probabilidad en menos de 60 segundos?",
-      "help": "No es “tener alarma” por tenerla: importa detección real y rapidez de aviso.",
+      "id": "V06",
+      "block": "R",
+      "text": "Accesos secundarios (patio/terraza/trastero/garaje): ¿qué tan controlados/protegidos están?",
+      "help": "El acceso secundario suele ser el punto de entrada real.",
       "options": [
-        { "key": "0", "label": "Sí, casi seguro: sensores bien puestos (ideal: perimetral/entradas) y aviso inmediato (CRA o móvil)" },
-        { "key": "1", "label": "Probablemente sí: hay sensores, pero cobertura/configuración parcial" },
-        { "key": "2", "label": "A veces: sistema básico, solo móvil/cámara o riesgo de retraso" },
-        { "key": "3", "label": "No: no hay detección fiable rápida (sensores/alerta)" },
+        { "key": "0", "label": "Muy protegidos: cerraduras robustas + control de acceso" },
+        { "key": "1", "label": "Protegidos: medidas razonables, alguna mejora pendiente" },
+        { "key": "2", "label": "Débiles: cierres básicos o zonas fáciles de acceder" },
+        { "key": "3", "label": "Muy débiles: prácticamente sin protección" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "V07",
+      "block": "D",
+      "text": "Detección rápida: si alguien intentara entrar, ¿se detectaría en menos de 60 segundos con alta probabilidad?",
+      "help": "Importa detección real y rapidez de aviso (ideal: perimetral/entradas + CRA o móvil).",
+      "options": [
+        { "key": "0", "label": "Sí, casi seguro: sensores bien puestos + aviso inmediato" },
+        { "key": "1", "label": "Probablemente: cobertura parcial pero funcional" },
+        { "key": "2", "label": "A veces: sistema básico o posible retraso" },
+        { "key": "3", "label": "No: no hay detección fiable rápida" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "D2",
+      "id": "V08",
       "block": "D",
-      "text": "Cobertura sin puntos ciegos: ¿las zonas críticas (entradas/almacén/zonas de paso) están bien cubiertas?",
-      "help": "Cobertura = sensores y/o CCTV útil (graba y es revisable) sin grandes puntos ciegos.",
+      "text": "Cobertura: ¿entradas y zonas críticas están bien cubiertas (sin grandes puntos ciegos)?",
+      "help": "Sensores y/o CCTV útil (CCTV_util) sin puntos ciegos relevantes.",
       "options": [
-        { "key": "0", "label": "Muy buena: cubre entradas y zonas críticas, sin grandes puntos ciegos" },
+        { "key": "0", "label": "Muy buena: entradas y zonas críticas sin puntos ciegos grandes" },
         { "key": "1", "label": "Buena: cobertura razonable, alguna zona mejorable" },
-        { "key": "2", "label": "Regular: hay puntos ciegos importantes o cobertura limitada" },
+        { "key": "2", "label": "Regular: puntos ciegos importantes" },
         { "key": "3", "label": "Mala: muchas zonas sin cubrir o no hay medios útiles" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "P1",
+      "id": "V09",
+      "block": "D",
+      "text": "Señales y disuasión visible: ¿desde fuera se nota que hay medidas de seguridad reales?",
+      "help": "La disuasión real reduce selección del objetivo.",
+      "options": [
+        { "key": "0", "label": "Sí, fuerte: señalización real + elementos visibles disuasorios" },
+        { "key": "1", "label": "Sí, moderada: alguna señal o cámara visible" },
+        { "key": "2", "label": "Poca: casi no se percibe seguridad" },
+        { "key": "3", "label": "Nula: no se ve nada" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "V10",
       "block": "P",
-      "text": "Respuesta real: si hubiera intrusión, ¿en cuánto tiempo habría actuación efectiva (verificación/aviso/intervención)?",
-      "help": "Los primeros 5–10 minutos suelen decidir el resultado (daño, robo, huida).",
+      "text": "Respuesta: si hubiera intrusión, ¿en cuánto tiempo habría actuación efectiva (verificación/aviso/intervención)?",
+      "help": "Los primeros 5–10 minutos suelen decidir el resultado.",
       "options": [
         { "key": "0", "label": "Menos de 10 minutos" },
         { "key": "1", "label": "Entre 10 y 20 minutos" },
         { "key": "2", "label": "Entre 20 y 40 minutos" },
-        { "key": "3", "label": "Más de 40 minutos / prácticamente nadie actúa a tiempo" },
+        { "key": "3", "label": "Más de 40 minutos / nadie actúa a tiempo" },
         { "key": "U", "label": "No lo sé" }
       ]
-    }
-  ],
-  "questions_vivienda": [
+    },
     {
-      "id": "H1V",
+      "id": "V11",
+      "block": "P",
+      "text": "Conectividad: ¿tu alarma (si existe) está conectada a CRA o solo avisa al móvil?",
+      "help": "CRA suele acelerar verificación y aviso; móvil depende de disponibilidad del usuario.",
+      "options": [
+        { "key": "0", "label": "Conectada a CRA con verificación" },
+        { "key": "1", "label": "Conectada a CRA sin verificación avanzada" },
+        { "key": "2", "label": "Solo aviso al móvil / sin CRA" },
+        { "key": "3", "label": "No hay alarma" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "V12",
+      "block": "P",
+      "text": "Verificación: si salta una alerta, ¿se puede verificar (cámara/audio/llamada) antes de actuar?",
+      "help": "Verificación reduce falsas alarmas y acelera respuesta real.",
+      "options": [
+        { "key": "0", "label": "Sí, verificación completa (cámara/audio) y protocolo" },
+        { "key": "1", "label": "Sí, verificación parcial (cámara o llamada)" },
+        { "key": "2", "label": "Limitado: difícil verificar o depende del usuario" },
+        { "key": "3", "label": "No hay verificación" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "V13",
       "block": "H",
       "text": "Rutinas: ¿desde fuera se puede prever cuándo la vivienda queda vacía o sin vigilancia?",
-      "help": "Rutinas previsibles + señales externas facilitan elegir el momento de menor riesgo.",
+      "help": "Rutinas previsibles + señales externas facilitan elegir el momento.",
       "options": [
         { "key": "0", "label": "No: horarios variables o medidas para que no se note" },
         { "key": "1", "label": "A veces: alguna señal puntual o rutina parcialmente predecible" },
@@ -133,10 +216,10 @@
       ]
     },
     {
-      "id": "H2V",
+      "id": "V14",
       "block": "H",
       "text": "Control de llaves/códigos: ¿cuánta gente podría acceder sin que lo controles bien?",
-      "help": "Incluye copias sin control, códigos compartidos, ex inquilinos/empleados, etc.",
+      "help": "Incluye copias, códigos compartidos, terceros con acceso histórico, etc.",
       "options": [
         { "key": "0", "label": "Muy controlado: pocas personas y control total" },
         { "key": "1", "label": "Bastante controlado: algunas personas, control razonable" },
@@ -146,38 +229,146 @@
       ]
     },
     {
-      "id": "O1V",
-      "block": "O",
-      "text": "Señales de ocupación: ¿en ciertos periodos la vivienda puede parecer deshabitada desde fuera?",
-      "help": "Buzón, persianas, luces, mantenimiento, rutinas visibles. También impacta riesgo de usurpación.",
-      "options": [
-        { "key": "0", "label": "No: siempre parece habitada" },
-        { "key": "1", "label": "A veces: alguna señal puntual" },
-        { "key": "2", "label": "Sí: puede notarse en ciertos periodos" },
-        { "key": "3", "label": "Sí: puede parecer deshabitada por temporadas" },
-        { "key": "U", "label": "No lo sé" }
-      ]
-    },
-    {
-      "id": "T1V",
+      "id": "V15",
       "block": "T",
-      "text": "Atractivo: desde fuera, ¿parece un objetivo fácil o con valor percibido (poca vigilancia, accesos discretos)?",
-      "help": "No es el valor real: es lo que se percibe desde fuera (facilidad, discreción y señales de valor).",
+      "text": "Atractivo percibido: desde fuera, ¿parece un objetivo fácil o con valor (poca vigilancia, accesos discretos, señales de valor)?",
+      "help": "No es el valor real: es lo que se percibe desde fuera (facilidad + discreción + señales).",
       "options": [
         { "key": "0", "label": "Bajo: difícil intuir valor y hay vigilancia natural" },
         { "key": "1", "label": "Medio: algo de atractivo, pero limitado" },
         { "key": "2", "label": "Alto: parece accesible y con valor percibido" },
-        { "key": "3", "label": "Muy alto: accesos discretos + poco control + valor percibido" },
+        { "key": "3", "label": "Muy alto: accesos discretos + poco control + señales claras de valor" },
         { "key": "U", "label": "No lo sé" }
       ]
     }
   ],
+
   "questions_comercio": [
     {
-      "id": "H1C",
+      "id": "C01",
+      "block": "S",
+      "text": "Sector del comercio: ¿qué tipo de negocio es?",
+      "help": "El sector cambia el atractivo del objetivo y patrones de intrusión.",
+      "options": [
+        { "key": "0", "label": "Despacho/oficina/servicios (bajo valor visible)" },
+        { "key": "1", "label": "Clínica/centro estético/farmacia (valor medio)" },
+        { "key": "2", "label": "Moda/retail estándar (valor medio-alto)" },
+        { "key": "3", "label": "Joyería/electrónica/alto valor (muy atractivo)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C02",
+      "block": "T",
+      "text": "Stock: ¿los productos son fáciles de revender y de alto valor?",
+      "help": "Electrónica, móviles, herramientas caras, cosmética premium, joyería, etc.",
+      "options": [
+        { "key": "0", "label": "Bajo: poco valor o poco revendible" },
+        { "key": "1", "label": "Medio: valor medio o parcialmente revendible" },
+        { "key": "2", "label": "Alto: bastante revendible y con valor" },
+        { "key": "3", "label": "Muy alto: muy revendible y alto valor" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C03",
+      "block": "T",
+      "text": "Visibilidad de valor: ¿desde fuera se percibe claramente mercancía o elementos valiosos (escaparate/almacén visible)?",
+      "help": "Más valor visible = mayor selección del local como objetivo.",
+      "options": [
+        { "key": "0", "label": "No: escaparate discreto o poco valor visible" },
+        { "key": "1", "label": "Algo: se percibe algo de valor" },
+        { "key": "2", "label": "Bastante: se ve valor con facilidad" },
+        { "key": "3", "label": "Mucho: exposición clara de alto valor" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "C04",
+      "block": "E",
+      "text": "Exposición: ¿cómo de fácil es aproximarse/actuar sin ser visto (puntos ciegos, calle poco transitada, poca vigilancia)?",
+      "help": "Más puntos ciegos y menos vigilancia natural elevan el riesgo.",
+      "options": [
+        { "key": "0", "label": "Difícil: zona visible y con vigilancia natural" },
+        { "key": "1", "label": "Moderado: algún punto ciego" },
+        { "key": "2", "label": "Fácil: varios puntos ciegos o zona discreta" },
+        { "key": "3", "label": "Muy fácil: puntos ciegos claros y poca vigilancia" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C05",
+      "block": "E",
+      "text": "Iluminación nocturna exterior (fachada/puerta/entorno inmediato): ¿cómo está?",
+      "help": "Menos luz = más tiempo de maniobra y menor detección por terceros.",
+      "options": [
+        { "key": "0", "label": "Excelente" },
+        { "key": "1", "label": "Correcta" },
+        { "key": "2", "label": "Mejorable" },
+        { "key": "3", "label": "Deficiente" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C06",
+      "block": "E",
+      "text": "Persiana/cierre exterior: ¿qué nivel de protección real hay al cerrar?",
+      "help": "En comercio, la barrera exterior cambia la dificultad de intrusión.",
+      "options": [
+        { "key": "0", "label": "Muy robusto: persiana reforzada + anclajes" },
+        { "key": "1", "label": "Robusto: persiana/cierre bueno, con alguna mejora pendiente" },
+        { "key": "2", "label": "Básico: persiana estándar o cierre simple" },
+        { "key": "3", "label": "No hay cierre exterior (o es muy débil)" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "C07",
+      "block": "R",
+      "text": "Puerta principal: si intentaran forzarla, ¿qué tan difícil lo tendrían realmente?",
+      "help": "Resistencia real: marco, cerradura, cilindro, escudo (cierre_robusto).",
+      "options": [
+        { "key": "0", "label": "Muy difícil: alta seguridad + buen ajuste (cierre_robusto)" },
+        { "key": "1", "label": "Bastante difícil: reforzada, algún punto mejorable" },
+        { "key": "2", "label": "Normal: estándar" },
+        { "key": "3", "label": "Fácil: débil/vieja o mal ajustada" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C08",
+      "block": "R",
+      "text": "Cristal/escaparate: ¿qué tan resistente es a rotura/ataque?",
+      "help": "El cristal es un punto crítico en intrusión rápida.",
+      "options": [
+        { "key": "0", "label": "Alta seguridad: laminado/antirrobo real" },
+        { "key": "1", "label": "Reforzado: mejora respecto estándar" },
+        { "key": "2", "label": "Estándar" },
+        { "key": "3", "label": "Débil: fácil de romper/forzar" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C09",
+      "block": "R",
+      "text": "Accesos traseros/almacén: ¿qué tan protegidos/controlados están?",
+      "help": "El acceso trasero es un punto típico de intrusión.",
+      "options": [
+        { "key": "0", "label": "Muy protegidos: difícil acceso + cerramientos robustos" },
+        { "key": "1", "label": "Protegidos: razonable, alguna mejora pendiente" },
+        { "key": "2", "label": "Débiles: cierres básicos o fácil acceso" },
+        { "key": "3", "label": "Muy débiles: sin protección real" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+
+    {
+      "id": "C10",
       "block": "H",
-      "text": "Control de accesos: ¿cuántas personas tienen llave/código (y no lo controlas de forma estricta)?",
-      "help": "Rotación de personal, copias, códigos compartidos, accesos de proveedores. Riesgo típico en comercio.",
+      "text": "Control de accesos: ¿cuántas personas tienen llave/código sin control estricto?",
+      "help": "Rotación de personal, copias, códigos compartidos, accesos de proveedores.",
       "options": [
         { "key": "0", "label": "Muy controlado: pocos accesos y control estricto" },
         { "key": "1", "label": "Bastante controlado: algunos accesos, control razonable" },
@@ -187,10 +378,23 @@
       ]
     },
     {
-      "id": "O1C",
-      "block": "O",
+      "id": "C11",
+      "block": "H",
+      "text": "Protocolos de cierre: ¿hay checklist y verificación al cerrar (persiana, alarmado, caja, accesos)?",
+      "help": "El error humano al cierre es una puerta abierta (literalmente).",
+      "options": [
+        { "key": "0", "label": "Sí, formal: checklist + doble verificación" },
+        { "key": "1", "label": "Sí, básico: checklist simple" },
+        { "key": "2", "label": "Informal: depende del responsable" },
+        { "key": "3", "label": "No: sin protocolo" },
+        { "key": "U", "label": "No lo sé" }
+      ]
+    },
+    {
+      "id": "C12",
+      "block": "H",
       "text": "Cierres prolongados: ¿el local queda cerrado varios días seguidos o parece sin actividad por temporadas?",
-      "help": "El abandono aparente aumenta intrusiones y, en algunos casos, riesgo de usurpación.",
+      "help": "El abandono aparente aumenta intrusiones y riesgo de ocupación/usurpación en algunos casos.",
       "options": [
         { "key": "0", "label": "No: actividad regular" },
         { "key": "1", "label": "Ocasional: algún cierre corto" },
@@ -199,63 +403,61 @@
         { "key": "U", "label": "No lo sé" }
       ]
     },
+
     {
-      "id": "T1C",
-      "block": "T",
-      "text": "Atractivo por stock: ¿los productos son fáciles de revender y de alto valor?",
-      "help": "Electrónica, herramientas caras, cosmética premium, joyería, móviles, etc.",
+      "id": "C13",
+      "block": "D",
+      "text": "Detección rápida: si alguien intentara entrar, ¿se detectaría en menos de 60 segundos con alta probabilidad?",
+      "help": "Ideal: sensores en accesos + aviso inmediato (CRA o móvil).",
       "options": [
-        { "key": "0", "label": "Bajo: poco valor o poco revendible" },
-        { "key": "1", "label": "Medio: valor medio o parcialmente revendible" },
-        { "key": "2", "label": "Alto: bastante revendible y con valor" },
-        { "key": "3", "label": "Muy alto: muy revendible y de alto valor" },
+        { "key": "0", "label": "Sí, casi seguro: cobertura fuerte + aviso inmediato" },
+        { "key": "1", "label": "Probablemente: cobertura parcial pero funcional" },
+        { "key": "2", "label": "A veces: sistema básico o posible retraso" },
+        { "key": "3", "label": "No: no hay detección fiable rápida" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "T2C",
-      "block": "T",
-      "text": "Efectivo al cerrar: ¿qué tan protegido queda el efectivo (si lo hay)?",
-      "help": "Lo crítico es protección/visibilidad. Si no manejas efectivo, el riesgo baja.",
+      "id": "C14",
+      "block": "D",
+      "text": "Cobertura: ¿entradas, caja/TPV, almacén y zonas críticas están cubiertas (sin grandes puntos ciegos)?",
+      "help": "Sensores y/o CCTV útil (CCTV_util) con cobertura real de zonas críticas.",
       "options": [
-        { "key": "0", "label": "No hay efectivo o se retira siempre (casi todo tarjeta/transferencia)" },
-        { "key": "1", "label": "Bastante protegido: importes bajos y guardado robusto (p. ej., caja fuerte/anclaje/protocolo)" },
-        { "key": "2", "label": "Poco protegido: a veces queda efectivo y el guardado es básico" },
-        { "key": "3", "label": "Nada protegido: queda efectivo accesible/visible o sin medidas reales" },
+        { "key": "0", "label": "Muy buena: zonas críticas sin puntos ciegos grandes" },
+        { "key": "1", "label": "Buena: cobertura razonable, alguna mejora pendiente" },
+        { "key": "2", "label": "Regular: puntos ciegos importantes" },
+        { "key": "3", "label": "Mala: muchas zonas sin cubrir o no hay medios útiles" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
-      "id": "T3C",
-      "block": "T",
-      "text": "Visibilidad de valor: ¿desde fuera se percibe claramente mercancía o elementos valiosos?",
-      "help": "Escaparates con alto valor visible aumentan la selección del local como objetivo.",
+      "id": "C15",
+      "block": "P",
+      "text": "Respuesta: si hubiera intrusión, ¿en cuánto tiempo habría actuación efectiva (verificación/aviso/intervención)?",
+      "help": "Los primeros 5–10 minutos suelen decidir el resultado.",
       "options": [
-        { "key": "0", "label": "No: poco valor visible o escaparate protegido/discreto" },
-        { "key": "1", "label": "Algo: se ve algo de valor, pero limitado" },
-        { "key": "2", "label": "Bastante: se ve valor con facilidad desde fuera" },
-        { "key": "3", "label": "Mucho: escaparate/almacén expone valor claramente" },
+        { "key": "0", "label": "Menos de 10 minutos" },
+        { "key": "1", "label": "Entre 10 y 20 minutos" },
+        { "key": "2", "label": "Entre 20 y 40 minutos" },
+        { "key": "3", "label": "Más de 40 minutos / nadie actúa a tiempo" },
         { "key": "U", "label": "No lo sé" }
       ]
     }
   ],
+
   "alignment": {
+    "expected_ids": {
+      "vivienda": ["V01","V02","V03","V04","V05","V06","V07","V08","V09","V10","V11","V12","V13","V14","V15"],
+      "comercio": ["C01","C02","C03","C04","C05","C06","C07","C08","C09","C10","C11","C12","C13","C14","C15"]
+    },
     "block_by_id": {
-      "E1": "E",
-      "R1": "R",
-      "R2": "R",
-      "D1": "D",
-      "D2": "D",
-      "P1": "P",
-      "H1V": "H",
-      "H2V": "H",
-      "O1V": "O",
-      "T1V": "T",
-      "H1C": "H",
-      "O1C": "O",
-      "T1C": "T",
-      "T2C": "T",
-      "T3C": "T"
+      "V01": "S", "V02": "E", "V03": "E", "V04": "R", "V05": "R", "V06": "R",
+      "V07": "D", "V08": "D", "V09": "D", "V10": "P", "V11": "P", "V12": "P",
+      "V13": "H", "V14": "H", "V15": "T",
+
+      "C01": "S", "C02": "T", "C03": "T", "C04": "E", "C05": "E", "C06": "E",
+      "C07": "R", "C08": "R", "C09": "R", "C10": "H", "C11": "H", "C12": "H",
+      "C13": "D", "C14": "D", "C15": "P"
     }
   }
 }

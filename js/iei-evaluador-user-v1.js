@@ -1,42 +1,65 @@
-/* IEI Comercial (usuario v1)
+/* IEI (usuario v1) – Premium 15x2
    - Render data-driven desde /Motor-IEI/iei_questions_premium.json
-   - Calcula con /Motor-IEI/calculateIEI.js (ESM) via import()
+   - Calcula con /Motor-IEI/calculateIEI.js (ESM)
    - Bridge global window.calcularRiesgo() para mantener UX/handlers inline
    - NO toca resultado.js: respeta contrato sessionStorage → /resultado → lead flow
+
+   ACTUALIZADO a:
+   - questions_vivienda (V01..V15)
+   - questions_comercio (C01..C15)
+   - bloques: S,E,R,D,P,H,T
 */
 
 const QUESTIONS_URL = "/Motor-IEI/iei_questions_premium.json";
 const MOTOR_URL = "/Motor-IEI/calculateIEI.js";
 
-const MODEL_VERSION = "IEI-user-v1";
+const MODEL_VERSION = "IEI-user-v1-premium-15x2";
 
-const SCORE_KEY_TO_POINTS = { "0": 0, "1": 33, "2": 66, "3": 100 };
+// Para chips/factores (resultado.js): 0..100
+const SCORE_KEY_TO_POINTS = { "0": 0, "1": 33, "2": 66, "3": 100, "U": 66 };
 
-const BLOCK_ORDER = ["E", "R", "D", "P", "H", "T", "O"];
+// Orden y nombres de bloques (alineado con JSON nuevo)
+const BLOCK_ORDER = ["S", "E", "R", "D", "P", "H", "T"];
 const BLOCK_LABEL = {
-  E: "Entorno",
-  R: "Accesos y resistencia",
-  D: "Detección y verificación",
+  S: "Segmento",
+  E: "Exposición y entorno",
+  R: "Resistencia física",
+  D: "Detección y cobertura",
   P: "Respuesta y disuasión",
-  H: "Hábitos y operativa",
+  H: "Hábitos / operativa",
   T: "Atractivo del objetivo",
-  O: "Ocupación y señales",
 };
 
+// Prioridades para top-factors (para que resultado.js “pille” lo importante)
 const QID_PRIORITY = {
-  // Priorizar triggers para RULES (plan 3 pasos).
-  D1: 1000, // alarma
-  D2: 950, // camaras
-  R2: 900, // ventanas
-  D3: 850, // iluminacion
-  E2: 800, // puntos ciegos / visibilidad
-  H1: 780, // ausencias previsibles
-  R1: 760, // puerta o cierre/persiana (comercio)
-  T1C: 740, // stock atractivo
-  O2V: 720, // abandono aparente vivienda
-  O1C: 710, // local cerrado
-  R3: 700, // accesos secundarios
-  T2C: 680, // efectivo
+  // Vivienda
+  V11: 1000, // alarma / CRA
+  V12: 950,  // verificación
+  V04: 920,  // puerta
+  V05: 900,  // ventanas
+  V03: 860,  // iluminación
+  V02: 840,  // puntos ciegos / exposición
+  V13: 820,  // rutinas/ausencias
+  V14: 780,  // llaves/códigos
+  V10: 740,  // tiempo respuesta
+  V09: 720,  // disuasión visible
+  V06: 700,  // accesos secundarios
+  V15: 680,  // atractivo percibido
+
+  // Comercio
+  C13: 1000, // detección rápida
+  C15: 960,  // tiempo respuesta
+  C06: 930,  // persiana/cierre exterior
+  C07: 900,  // puerta/frente
+  C08: 880,  // cristal/escaparate
+  C02: 860,  // stock revendible
+  C01: 840,  // sector
+  C03: 820,  // valor visible
+  C12: 780,  // cierres prolongados (ausencia)
+  C11: 740,  // protocolo cierre
+  C10: 720,  // control accesos
+  C14: 700,  // cobertura CCTV/zonas
+  C09: 680,  // acceso trasero
 };
 
 function clamp01(x) {
@@ -49,11 +72,6 @@ function riskLevelFromScore(score) {
   if (s <= 50) return "MODERADA";
   if (s <= 75) return "ELEVADA";
   return "CRÍTICA";
-}
-
-function normalizeKeyForMotor(rawKey) {
-  // Nunca dejar que "U" llegue al motor.
-  return rawKey === "U" ? "2" : rawKey;
 }
 
 function pointsForKey(key) {
@@ -86,37 +104,37 @@ function safeText(s) {
   return String(s || "").replace(/\s+/g, " ").trim();
 }
 
+/**
+ * Textos compatibles con RULES de /js/resultado.js (sin tocarlo).
+ * IMPORTANTE:
+ * - Mantener frases “gatillo” conocidas (Sin alarma, Sin cámaras, Ventanas sin protección, etc.)
+ * - Evitar falsos positivos cuando respuesta es segura ("0"/"1") o "U".
+ */
 function factorTextFor(qid, type, rawKey) {
-  // Generar textos compatibles con RULES de /js/resultado.js sin tocarlo.
-  // Importante: no disparar triggers cuando rawKey es "U" o respuestas seguras.
   const rk = String(rawKey || "");
 
-  // Entorno
-  if (qid === "E1") {
-    if (rk === "3") return "Zona con robos frecuentes";
-    if (rk === "2") return "Zona con robos habituales";
-    if (rk === "1") return "Zona con robos ocasionales";
-    if (rk === "0") return "Zona tranquila";
-    return "Riesgo en la zona (no lo sé)";
+  // Helpers
+  const isUnknown = rk === "U";
+  const isHigh = rk === "3" || rk === "2";
+  const isMed = rk === "1";
+  const isLow = rk === "0";
+
+  // ---- VIVIENDA ----
+  if (qid === "V03") { // iluminación
+    if (isHigh) return "Iluminación deficiente / puntos ciegos";
+    if (isMed) return "Luz exterior mejorable";
+    if (isLow) return "Luz exterior suficiente";
+    return "Luz exterior (no lo sé)";
   }
 
-  if (qid === "E2") {
-    // Fusión: control + visibilidad. Disparar RULES de "puntos ciegos/visibilidad" en riesgo.
-    if (rk === "3" || rk === "2") return "Puntos ciegos / visibilidad baja";
-    if (rk === "1") return "Visibilidad parcial";
-    if (rk === "0") return "Acceso visible";
+  if (qid === "V02") { // exposición / puntos ciegos
+    if (isHigh) return "Puntos ciegos / visibilidad baja";
+    if (isMed) return "Visibilidad parcial";
+    if (isLow) return "Acceso visible";
     return "Visibilidad/control (no lo sé)";
   }
 
-  // Puerta principal / frente del local
-  if (qid === "R1") {
-    if (type === "comercio") {
-      // Evitar falsos positivos en RULES ("cierre"/"persiana") cuando el frente es seguro.
-      if (rk === "3" || rk === "2") return "Cierre/persiana vulnerable";
-      if (rk === "1") return "Frente del local mejorable";
-      if (rk === "0") return "Frente del local protegido";
-      return "Frente del local (no lo sé)";
-    }
+  if (qid === "V04") { // puerta
     if (rk === "3") return "Puerta principal vulnerable";
     if (rk === "2") return "Puerta principal estándar";
     if (rk === "1") return "Puerta principal robusta";
@@ -124,24 +142,7 @@ function factorTextFor(qid, type, rawKey) {
     return "Puerta principal (no lo sé)";
   }
 
-  // Alarma (RULE: "sin alarma" / "sin sistema de alarma" / "no tiene alarma")
-  if (qid === "D1") {
-    if (rk === "3") return "Sin alarma";
-    if (rk === "2") return "Alarma básica";
-    if (rk === "1" || rk === "0") return "Alarma presente";
-    return "Alarma (no lo sé)";
-  }
-
-  // Cámaras (RULE: "sin cámaras" / "sin videovigilancia" / "no hay cámaras")
-  if (qid === "D2") {
-    if (rk === "3") return "Sin cámaras";
-    if (rk === "2") return "Cámaras básicas";
-    if (rk === "1" || rk === "0") return "Cámaras presentes";
-    return "Cámaras (no lo sé)";
-  }
-
-  // Ventanas (RULE vivienda incluye "ventanas", evitar falsos positivos en respuestas seguras)
-  if (qid === "R2") {
+  if (qid === "V05") { // ventanas
     if (rk === "3") return "Ventanas sin protección";
     if (rk === "2") return "Ventanas con poca protección";
     if (rk === "1") return "Cerramientos exteriores mejorables";
@@ -149,50 +150,42 @@ function factorTextFor(qid, type, rawKey) {
     return "Cerramientos exteriores (no lo sé)";
   }
 
-  // Accesos secundarios vulnerables (texto solicitado; sin RULE directa)
-  if (qid === "R3") {
+  if (qid === "V06") { // accesos secundarios
     if (rk === "3") return "Accesos secundarios vulnerables";
     if (rk === "2") return "Accesos secundarios mejorables";
     if (rk === "1" || rk === "0") return "Accesos secundarios controlados";
     return "Accesos secundarios (no lo sé)";
   }
 
-  // Iluminación / puntos ciegos (RULE: iluminacion / puntos ciegos / visibilidad)
-  if (qid === "D3") {
-    if (rk === "3" || rk === "2") return "Iluminación deficiente / puntos ciegos";
-    if (rk === "1") return "Luz exterior mejorable";
-    if (rk === "0") return "Luz exterior suficiente";
-    return "Luz exterior (no lo sé)";
+  if (qid === "V11") { // alarma/conectividad (gatillo clave)
+    if (rk === "3") return "Sin alarma";
+    if (rk === "2") return "Alarma básica";
+    if (rk === "1" || rk === "0") return "Alarma presente";
+    return "Alarma (no lo sé)";
   }
 
-  // Ausencias previsibles / falta de actividad (RULE: ausencia / previsible)
-  if (qid === "H1") {
-    if (rk === "3" || rk === "2") return "Ausencias previsibles";
-    if (rk === "1") return "Rutina algo predecible";
-    if (rk === "0") return "Rutina variable";
-    return "Rutinas (no lo sé)";
+  if (qid === "V12") { // verificación
+    if (isHigh) return "Sin verificación";
+    if (isMed) return "Verificación limitada";
+    if (isLow) return "Verificación presente";
+    return "Verificación (no lo sé)";
   }
 
-  // Llaves/códigos
-  if (qid === "H2") {
-    if (rk === "3") return "Llaves/códigos descontrolados";
-    if (rk === "2") return "Llaves/códigos poco controlados";
-    if (rk === "1") return "Llaves/códigos bastante controlados";
-    if (rk === "0") return "Llaves/códigos muy controlados";
-    return "Llaves/códigos (no lo sé)";
+  if (qid === "V07") { // detección rápida (si falla, disparar estilo “sin detección”)
+    if (isHigh) return "Sin detección rápida";
+    if (isMed) return "Detección mejorable";
+    if (isLow) return "Detección rápida";
+    return "Detección (no lo sé)";
   }
 
-  // Tiempo de respuesta
-  if (qid === "P1") {
-    if (rk === "3") return "Respuesta lenta (>40 min)";
-    if (rk === "2") return "Respuesta lenta (20–40 min)";
-    if (rk === "1") return "Respuesta media (10–20 min)";
-    if (rk === "0") return "Respuesta rápida (<10 min)";
-    return "Tiempo de respuesta (no lo sé)";
+  if (qid === "V08") { // cobertura
+    if (isHigh) return "Cobertura deficiente / puntos ciegos";
+    if (isMed) return "Cobertura mejorable";
+    if (isLow) return "Cobertura adecuada";
+    return "Cobertura (no lo sé)";
   }
 
-  // Disuasión visible
-  if (qid === "P2") {
+  if (qid === "V09") { // disuasión visible
     if (rk === "3") return "Sin disuasión visible";
     if (rk === "2") return "Poca disuasión visible";
     if (rk === "1") return "Algo de disuasión visible";
@@ -200,74 +193,118 @@ function factorTextFor(qid, type, rawKey) {
     return "Disuasión (no lo sé)";
   }
 
-  // Comercio: stock atractivo (RULE: stock / joyeria / electronica / etc.)
-  if (qid === "T1C") {
-    if (rk === "3" || rk === "2") return "Stock atractivo";
-    if (rk === "1") return "Valor comercial medio";
-    if (rk === "0") return "Valor comercial bajo";
-    return "Valor comercial (no lo sé)";
+  if (qid === "V10") { // respuesta
+    if (rk === "3") return "Respuesta lenta (>40 min)";
+    if (rk === "2") return "Respuesta lenta (20–40 min)";
+    if (rk === "1") return "Respuesta media (10–20 min)";
+    if (rk === "0") return "Respuesta rápida (<10 min)";
+    return "Tiempo de respuesta (no lo sé)";
   }
 
-  // Comercio: efectivo
-  if (qid === "T2C") {
-    if (rk === "3") return "Manejo de efectivo alto";
-    if (rk === "2") return "Manejo de efectivo frecuente";
-    if (rk === "1") return "Manejo de efectivo limitado";
-    if (rk === "0") return "Sin efectivo relevante";
-    return "Efectivo (no lo sé)";
+  if (qid === "V13") { // rutinas/ausencias
+    if (isHigh) return "Ausencias previsibles";
+    if (isMed) return "Rutina algo predecible";
+    if (isLow) return "Rutina variable";
+    return "Rutinas (no lo sé)";
   }
 
-  // Vivienda: control vecindario
-  if (qid === "O1V") {
-    if (rk === "3") return "Vecindario sin control";
-    if (rk === "2") return "Vecindario poco atento";
-    if (rk === "1") return "Vecindario moderadamente atento";
-    if (rk === "0") return "Vecindario atento";
-    return "Vecindario (no lo sé)";
+  if (qid === "V14") { // llaves/códigos
+    if (rk === "3") return "Llaves/códigos descontrolados";
+    if (rk === "2") return "Llaves/códigos poco controlados";
+    if (rk === "1") return "Llaves/códigos bastante controlados";
+    if (rk === "0") return "Llaves/códigos muy controlados";
+    return "Llaves/códigos (no lo sé)";
   }
 
-  // Vivienda: abandono aparente (puede disparar RULES de ausencia)
-  if (qid === "O2V") {
-    if (rk === "3" || rk === "2") return "Ausencia prolongada / aspecto de abandono";
-    if (rk === "1") return "Señales puntuales de ausencia";
-    if (rk === "0") return "Señales de presencia";
-    return "Actividad (no lo sé)";
-  }
-
-  // Vivienda: atractivo objetivo
-  if (qid === "T1V") {
-    if (rk === "3" || rk === "2") return "Objetivo atractivo";
-    if (rk === "1") return "Atractivo medio";
-    if (rk === "0") return "Atractivo bajo";
+  if (qid === "V15") { // atractivo
+    if (isHigh) return "Objetivo atractivo";
+    if (isMed) return "Atractivo medio";
+    if (isLow) return "Atractivo bajo";
     return "Atractivo (no lo sé)";
   }
 
-  // Comercio: cierres largos (predict_absence puede aplicar)
-  if (qid === "O1C") {
-    if (rk === "3" || rk === "2") return "Ausencia prolongada (local cerrado)";
-    if (rk === "1") return "Cerrado ocasionalmente";
-    if (rk === "0") return "Actividad regular";
+  // ---- COMERCIO ----
+  if (qid === "C06") { // persiana/cierre
+    if (isHigh) return "Cierre/persiana vulnerable";
+    if (isMed) return "Frente del local mejorable";
+    if (isLow) return "Frente del local protegido";
+    return "Frente del local (no lo sé)";
+  }
+
+  if (qid === "C07") { // puerta principal (frente)
+    if (isHigh) return "Frente del local mejorable";
+    if (isLow || isMed) return "Frente del local protegido";
+    return "Frente del local (no lo sé)";
+  }
+
+  if (qid === "C08") { // cristal
+    if (isHigh) return "Cristal vulnerable";
+    if (isMed) return "Cristal mejorable";
+    if (isLow) return "Cristal resistente";
+    return "Cristal (no lo sé)";
+  }
+
+  if (qid === "C13") { // detección rápida
+    if (isHigh) return "Sin detección rápida";
+    if (isMed) return "Detección mejorable";
+    if (isLow) return "Detección rápida";
+    return "Detección (no lo sé)";
+  }
+
+  if (qid === "C14") { // cobertura
+    if (isHigh) return "Cobertura deficiente / puntos ciegos";
+    if (isMed) return "Cobertura mejorable";
+    if (isLow) return "Cobertura adecuada";
+    return "Cobertura (no lo sé)";
+  }
+
+  if (qid === "C15") { // respuesta
+    if (rk === "3") return "Respuesta lenta (>40 min)";
+    if (rk === "2") return "Respuesta lenta (20–40 min)";
+    if (rk === "1") return "Respuesta media (10–20 min)";
+    if (rk === "0") return "Respuesta rápida (<10 min)";
+    return "Tiempo de respuesta (no lo sé)";
+  }
+
+  if (qid === "C02") { // stock
+    if (isHigh) return "Stock atractivo";
+    if (isMed) return "Valor comercial medio";
+    if (isLow) return "Valor comercial bajo";
+    return "Valor comercial (no lo sé)";
+  }
+
+  if (qid === "C03") { // valor visible
+    if (isHigh) return "Valor visible alto";
+    if (isMed) return "Valor visible medio";
+    if (isLow) return "Valor visible bajo";
+    return "Valor visible (no lo sé)";
+  }
+
+  if (qid === "C12") { // cierres prolongados (ausencia)
+    if (isHigh) return "Ausencia prolongada (local cerrado)";
+    if (isMed) return "Cerrado ocasionalmente";
+    if (isLow) return "Actividad regular";
     return "Local cerrado (no lo sé)";
   }
 
-  // Fallback por tipo para evitar disparos accidentales de RULES en respuestas seguras.
-  if (rk === "U") return "Factor (no lo sé)";
+  // Fallback neutro (evita activar RULES por accidente)
+  if (isUnknown) return "Factor (no lo sé)";
   if (rk === "0") return "Factor controlado";
   if (rk === "1") return "Factor mejorable";
   if (rk === "2") return "Factor relevante";
   return "Factor crítico";
 }
 
-function buildFactors(type, questionsById) {
+function buildFactors(type) {
   const selects = getPanelSelects(type);
+
   const factors = selects.map((select, index) => {
     const qid = String(select.dataset.qid || "").trim();
     const rawKey = String(select.value || "");
-    const normalizedKey = normalizeKeyForMotor(rawKey);
-    const pts = pointsForKey(normalizedKey);
+
+    const pts = pointsForKey(rawKey);
     const text = factorTextFor(qid, type, rawKey);
 
-    // Mantener "texto" como campo principal para lead flow; duplicar "text" por compatibilidad.
     const merged = safeText(text);
     return {
       qid,
@@ -279,10 +316,10 @@ function buildFactors(type, questionsById) {
     };
   });
 
-  // Orden determinista: puntos desc, prioridad desc, orden original asc.
+  // Orden: puntos desc, prioridad desc, orden original asc
   factors.sort((a, b) => (b.puntos - a.puntos) || (b._priority - a._priority) || (a._index - b._index));
 
-  // No romper UX: entregar top 5 para mejor matching de RULES (resultado.js corta a 3 chips).
+  // Entregar top 5 (resultado.js suele recortar a 3 chips)
   return factors.slice(0, 5).map(({ qid, texto, text, puntos }) => ({ qid, texto, text, puntos }));
 }
 
@@ -305,7 +342,8 @@ function collectAnswersForMotor(type) {
   for (const select of selects) {
     const qid = String(select.dataset.qid || "").trim();
     const rawKey = String(select.value || "");
-    answers[qid] = normalizeKeyForMotor(rawKey);
+    // El motor ya soporta "U". No lo forzamos.
+    answers[qid] = rawKey;
   }
   return answers;
 }
@@ -396,6 +434,7 @@ function renderQuestionsInto(root, type, questions) {
         details.appendChild(body);
         field.appendChild(details);
       }
+
       grid.appendChild(field);
     }
 
@@ -408,12 +447,11 @@ function renderForms(questionsJson) {
   const viviendaRoot = getRootNode("vivienda");
   const comercioRoot = getRootNode("comercio");
 
-  const common = Array.isArray(questionsJson?.questions_common) ? questionsJson.questions_common : [];
   const viv = Array.isArray(questionsJson?.questions_vivienda) ? questionsJson.questions_vivienda : [];
   const com = Array.isArray(questionsJson?.questions_comercio) ? questionsJson.questions_comercio : [];
 
-  renderQuestionsInto(viviendaRoot, "vivienda", [...common, ...viv]);
-  renderQuestionsInto(comercioRoot, "comercio", [...common, ...com]);
+  renderQuestionsInto(viviendaRoot, "vivienda", viv);
+  renderQuestionsInto(comercioRoot, "comercio", com);
 
   // Reaplicar estado (disabled/display) con la lógica existente.
   const currentType = getActiveType();
@@ -425,74 +463,13 @@ function renderForms(questionsJson) {
   }
 }
 
-function indexQuestionsById(questionsJson) {
-  const map = Object.create(null);
-  const sections = ["questions_common", "questions_vivienda", "questions_comercio"];
-  for (const sec of sections) {
-    const arr = questionsJson?.[sec];
-    if (!Array.isArray(arr)) continue;
-    for (const q of arr) {
-      const id = String(q?.id || "").trim();
-      if (id) map[id] = q;
-    }
-  }
-  return map;
-}
-
-function adaptViviendaCeiling(engineResult) {
-  // Renormaliza Vr excluyendo T para vivienda, sin tocar el motor.
-  // Basado en subindexes + weights devueltos por calculateIEI().
-  const sub = engineResult?.subindexes || {};
-  const debug = engineResult?.debug || {};
-  const weights = debug?.weights || {};
-
-  const E = Number(sub.E ?? 0);
-  const R = Number(sub.R ?? 0);
-  const D = Number(sub.D ?? 0);
-  const P = Number(sub.P ?? 0);
-  const H = Number(sub.H ?? 0);
-  const O = Number(sub.O ?? 0);
-
-  const wE = Number(weights.wE ?? 0);
-  const wR = Number(weights.wR ?? 0);
-  const wH = Number(weights.wH ?? 0);
-  const wD = Number(weights.wD ?? 0);
-  const wP = Number(weights.wP ?? 0);
-
-  const denomVr = wE + wR + wH;
-  const Vr_adj = denomVr > 0 ? clamp01((wE * E + wR * R + wH * H) / denomVr) : 0;
-
-  const denomMr = wD + wP;
-  const Mr_protection = denomMr > 0
-    ? clamp01((wD * (1 - D) + wP * (1 - P)) / denomMr)
-    : 0;
-
-  const ieiR_adj = 100
-    * clamp01(0.15 + 0.85 * Vr_adj)
-    * clamp01(0.35 + 0.65 * (1 - Mr_protection));
-
-  // Mantener ieiO como lo devuelve el motor (ya aplica su propia formula/pesos).
-  const ieiO = Number(engineResult?.ieiO ?? 0);
-
-  const totalR = Number(weights.totalR ?? 0.75);
-  const totalO = Number(weights.totalO ?? 0.25);
-  const ieiTotal = (totalR * ieiR_adj) + (totalO * ieiO);
-
-  return {
-    ieiR_adj: Math.round(ieiR_adj),
-    ieiO: Math.round(ieiO),
-    ieiTotal: Math.round(Math.max(0, Math.min(100, ieiTotal))),
-  };
-}
-
 const state = {
   ready: false,
   calculateIEI: null,
   questionsJson: null,
-  questionsById: null,
 };
 
-// Bridge global: es la única fuente de verdad para calcularRiesgo().
+// Bridge global: única fuente de verdad para calcular.
 window.calcularRiesgo = () => {
   try {
     const tipo = getActiveType();
@@ -512,31 +489,16 @@ window.calcularRiesgo = () => {
       if (!window.validarFormularioActivo(tipo)) return;
     }
 
+    // Garantía de integridad: 15 selects por tipo
     const selects = getPanelSelects(tipo);
-    const expectedCount = (() => {
-      const q = state.questionsJson;
-      if (!q) return null;
-      const common = Array.isArray(q.questions_common) ? q.questions_common.length : 0;
-      const specific = tipo === "vivienda"
-        ? (Array.isArray(q.questions_vivienda) ? q.questions_vivienda.length : 0)
-        : (Array.isArray(q.questions_comercio) ? q.questions_comercio.length : 0);
-      return common + specific;
-    })();
+    const expectedCount = 15;
 
-    if (Number.isFinite(expectedCount) && expectedCount > 0 && selects.length !== expectedCount) {
+    if (selects.length !== expectedCount) {
       window.mostrarAlerta?.("No se pudo cargar el cuestionario IEI correctamente. Recarga la página e inténtalo de nuevo.");
       return;
     }
 
     const answers = collectAnswersForMotor(tipo);
-
-    // Hard guarantee: nunca pasar "U" al motor.
-    for (const v of Object.values(answers)) {
-      if (String(v) === "U") {
-        window.mostrarAlerta?.("Error interno: respuesta 'No lo sé' no normalizada. Recarga e inténtalo de nuevo.");
-        return;
-      }
-    }
 
     const engine = state.calculateIEI;
     if (typeof engine !== "function") {
@@ -546,27 +508,10 @@ window.calcularRiesgo = () => {
 
     const engineResult = engine(answers, tipo);
 
-    let riskScore = Number(engineResult?.ieiTotal ?? 0);
-    // Solo aplicar el fix de techo cuando el cuestionario NO tiene bloque T para vivienda.
-    const shouldAdaptCeiling = (() => {
-      if (tipo !== "vivienda") return false;
-      const q = state.questionsJson;
-      if (!q) return false;
-      const common = Array.isArray(q.questions_common) ? q.questions_common : [];
-      const viv = Array.isArray(q.questions_vivienda) ? q.questions_vivienda : [];
-      const hasT = [...common, ...viv].some((qq) => String(qq?.block || "").trim() === "T");
-      return !hasT;
-    })();
-
-    if (shouldAdaptCeiling) {
-      const adjusted = adaptViviendaCeiling(engineResult);
-      riskScore = adjusted.ieiTotal;
-    }
-
-    // IMPORTANTÍSIMO: nivel basado en score final.
+    const riskScore = Number(engineResult?.ieiTotal ?? 0);
     const riskLevel = riskLevelFromScore(riskScore);
 
-    const factorsTop = buildFactors(tipo, state.questionsById || {});
+    const factorsTop = buildFactors(tipo);
     const conf = confidenceScore(tipo);
 
     const evaluation = {
@@ -613,7 +558,6 @@ async function init() {
 
     state.calculateIEI = calculateIEI;
     state.questionsJson = questionsJson;
-    state.questionsById = indexQuestionsById(questionsJson);
 
     renderForms(questionsJson);
 

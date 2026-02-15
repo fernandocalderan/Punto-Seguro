@@ -1,6 +1,6 @@
-/* IEI – Evaluación Integral de Inmuebles (v1.1-p)
-   Adaptado para: iei_questions_premium.json
-   - Entrada: answers = { "E1":"2", "R1":"1", ... } (keys "0".."3" o "U")
+/* IEI – Evaluación Integral de Inmuebles (v1.0.0-premium-15x2)
+   Adaptado para: Motor-IEI/iei_questions_premium.json (15 Vivienda + 15 Comercio, sin comunes)
+   - Entrada: answers = { "V01":"2", "V02":"1", ... } (keys "0".."3" o "U")
    - propertyType: "vivienda" | "comercio"
    - Salida: { ieiR, ieiO, ieiTotal, level, levelLabel, subindexes, confidence, debug }
 */
@@ -26,46 +26,70 @@ function levelLabel(level) {
   return level;
 }
 
-export function calculateIEI(answers, propertyType) {
+function normalizeWeights(obj) {
+  const keys = Object.keys(obj);
+  const sum = keys.reduce((acc, k) => acc + (obj[k] || 0), 0);
+  if (sum <= 0) return obj;
+  const out = {};
+  for (const k of keys) out[k] = (obj[k] || 0) / sum;
+  return out;
+}
+
+/**
+ * Modelo IEI (seguridad integral):
+ * - Bloques de "riesgo/atractivo": S, E, R, H, T   (más alto = peor)
+ * - Bloques de "capacidad defensiva": D, P         (más alto = peor)
+ *
+ * Fórmula base (0..100):
+ *  IEI_R = 100 * (baseV + (1-baseV)*Vuln) * (baseM + (1-baseM)*(1-Protection))
+ *
+ * Donde:
+ *  Vuln ∈ [0,1] = riesgo/atractivo agregado
+ *  Protection ∈ [0,1] = "protección efectiva" agregada (a partir de D y P)
+ *
+ * Nota: D y P vienen como "inseguridad" (0=mejor, 1=peor). Por eso:
+ *  Protection = 1 - mean(D,P)
+ */
+export function calculateIEI(answers, propertyType, context = {}) {
   if (propertyType !== "vivienda" && propertyType !== "comercio") {
     throw new Error("propertyType invalido. Usa 'vivienda' o 'comercio'.");
   }
 
   const safeAnswers = answers && typeof answers === "object" ? answers : {};
 
-  // Mapeo premium: key "0".."3" (y "U") -> s en [0,1]
+  // Mapeo: key "0".."3" (y "U") -> s en [0,1]
+  // (U) se trata como riesgo medio-alto para evitar "regalar" seguridad sin datos.
   const scoreMap = { "0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0, "U": 0.66 };
   const UNKNOWN_KEY = "U";
 
-  // Asignación de bloques por ID (DEBE coincidir con iei_questions_premium.json)
+  // Bloques por ID (DEBE coincidir con el JSON)
   const blockById = {
-    // Common
-    E1: "E",
-    R1: "R", R2: "R",
-    D1: "D", D2: "D",
-    P1: "P",
+    // Vivienda V01..V15
+    V01: "S",
+    V02: "E", V03: "E",
+    V04: "R", V05: "R", V06: "R",
+    V07: "D", V08: "D", V09: "D",
+    V10: "P", V11: "P", V12: "P",
+    V13: "H", V14: "H",
+    V15: "T",
 
-    // Vivienda
-    H1V: "H", H2V: "H",
-    O1V: "O",
-    T1V: "T",
-
-    // Comercio
-    H1C: "H",
-    O1C: "O",
-    T1C: "T", T2C: "T", T3C: "T"
+    // Comercio C01..C15
+    C01: "S",
+    C02: "T", C03: "T",
+    C04: "E", C05: "E", C06: "E",
+    C07: "R", C08: "R", C09: "R",
+    C10: "H", C11: "H", C12: "H",
+    C13: "D", C14: "D",
+    C15: "P"
   };
 
-  // Preguntas esperadas (para no “regalar seguridad” con respuestas incompletas)
-  const expectedCommon = ["E1","R1","R2","D1","D2","P1"];
-  const expectedSpecific = (propertyType === "vivienda")
-    ? ["H1V","H2V","O1V","T1V"]
-    : ["H1C","O1C","T1C","T2C","T3C"];
-
-  const expectedAll = [...expectedCommon, ...expectedSpecific];
+  // Preguntas esperadas (15 exactas por tipo)
+  const expectedAll = (propertyType === "vivienda")
+    ? ["V01","V02","V03","V04","V05","V06","V07","V08","V09","V10","V11","V12","V13","V14","V15"]
+    : ["C01","C02","C03","C04","C05","C06","C07","C08","C09","C10","C11","C12","C13","C14","C15"];
 
   // Captura scores por bloque
-  const byBlock = { E: [], R: [], D: [], P: [], H: [], T: [], O: [] };
+  const byBlock = { S: [], E: [], R: [], D: [], P: [], H: [], T: [] };
 
   // Métricas de calidad de datos
   let missingCount = 0;
@@ -77,17 +101,15 @@ export function calculateIEI(answers, propertyType) {
     if (!block) continue;
 
     let optKey = safeAnswers[qid];
-
-    // Normalización
     optKey = (optKey === null || optKey === undefined) ? null : String(optKey);
 
-    // Si falta respuesta: tratar como "U" (riesgo medio-alto) + baja confianza
+    // Si falta respuesta: tratar como U (riesgo medio-alto) + baja confianza
     if (optKey === null) {
       missingCount += 1;
       optKey = UNKNOWN_KEY;
     }
 
-    // Si key no es válida: tratar como "U"
+    // Si key no es válida: tratar como U (dato sucio)
     if (!(optKey in scoreMap)) {
       invalidCount += 1;
       optKey = UNKNOWN_KEY;
@@ -100,83 +122,112 @@ export function calculateIEI(answers, propertyType) {
   }
 
   // Subíndices (0..1): media por bloque
+  const S = clamp01(mean(byBlock.S));
   const E = clamp01(mean(byBlock.E));
   const R = clamp01(mean(byBlock.R));
   const D = clamp01(mean(byBlock.D));
   const P = clamp01(mean(byBlock.P));
   const H = clamp01(mean(byBlock.H));
   const T = clamp01(mean(byBlock.T));
-  const O = clamp01(mean(byBlock.O));
 
-  // Pesos por tipo de inmueble (premium v1)
-  // Nota: D y P en este modelo son “inseguridad” (0 = mejor, 1 = peor),
-  // y se invierten en mitigación con (1 - D) y (1 - P).
-  const weights = (propertyType === "vivienda")
-    ? {
-        // IEI-R (Robo/Intrusión)
-        wE: 0.18, wR: 0.34, wH: 0.18, wT: 0.30,
-        wD: 0.55, wP: 0.45,
-        // IEI-O (Ocupación/Usurpación)
-        vE: 0.25, vO: 0.45, vH: 0.30,
-        uD: 0.40, uP: 0.60,
-        // Total
-        totalR: 0.75, totalO: 0.25
-      }
-    : {
-        // IEI-R
-        wE: 0.15, wR: 0.30, wH: 0.20, wT: 0.35,
-        wD: 0.50, wP: 0.50,
-        // IEI-O
-        vE: 0.20, vO: 0.35, vH: 0.45,
-        uD: 0.35, uP: 0.65,
-        // Total
-        totalR: 0.90, totalO: 0.10
-      };
+  // Protección efectiva (0..1): cuanto más cerca de 1, mejor protegido
+  // D y P son "inseguridad" (0 mejor, 1 peor).
+  const protection = clamp01(1 - mean([D, P]));
 
-  // Normalización defensiva
-  const sumVrW = weights.wE + weights.wR + weights.wH + weights.wT;
-  const sumMrW = weights.wD + weights.wP;
-  const sumVoW = weights.vE + weights.vO + weights.vH;
-  const sumMoW = weights.uD + weights.uP;
+  // FACTOR TERRITORIAL (opcional, no rompe nada)
+  // - Si mañana metes CCAA/ciudad en el flujo, puedes pasar:
+  //   context.territorialRisk01 ∈ [0,1]
+  // - 0 = zona tranquila, 1 = zona caliente
+  const territorialRisk01 = (typeof context.territorialRisk01 === "number")
+    ? clamp01(context.territorialRisk01)
+    : null;
 
-  // Vulnerabilidad robo/intrusión
-  const Vr = clamp01((weights.wE * E + weights.wR * R + weights.wH * H + weights.wT * T) / sumVrW);
+  // -------------------------
+  // PESOS POR TIPO (expertise)
+  // -------------------------
+  // Robo/Intrusión:
+  // - Vivienda: manda R (cerramientos) + E (exposición) + H (hábitos) + T (atractivo) + S (tipología)
+  // - Comercio: manda T (atractivo/sector/stock) + R (barrera física) + E (exposición) + H (operativa)
+  const weightsR = (propertyType === "vivienda")
+    ? normalizeWeights({ S: 0.10, E: 0.20, R: 0.30, H: 0.20, T: 0.20 })
+    : normalizeWeights({ S: 0.08, E: 0.18, R: 0.24, H: 0.18, T: 0.32 });
 
-  // Mitigación (protección) robo/intrusión: invertimos D y P porque en inputs 0=mejor
-  const Mr_protection = clamp01((weights.wD * (1 - D) + weights.wP * (1 - P)) / sumMrW);
+  // Ocupación/Usurpación:
+  // - Vivienda: pesa más H (rutinas/control/llaves) + E (baja vigilancia) + S (tipología)
+  // - Comercio: existe, pero menos relevante; aún así, cierres prolongados y control importan.
+  const weightsO = (propertyType === "vivienda")
+    ? normalizeWeights({ S: 0.20, E: 0.30, H: 0.40, R: 0.10 })
+    : normalizeWeights({ S: 0.15, E: 0.20, H: 0.50, R: 0.15 });
 
-  // Vulnerabilidad ocupación/usurpación
-  const Vo = clamp01((weights.vE * E + weights.vO * O + weights.vH * H) / sumVoW);
+  // Vulnerabilidad robo/intrusión (0..1)
+  let vulnR = clamp01(
+    weightsR.S * S +
+    weightsR.E * E +
+    weightsR.R * R +
+    weightsR.H * H +
+    weightsR.T * T
+  );
 
-  // Mitigación (protección) ocupación/usurpación
-  const Mo_protection = clamp01((weights.uD * (1 - D) + weights.uP * (1 - P)) / sumMoW);
+  // Vulnerabilidad ocupación/usurpación (0..1)
+  let vulnO = clamp01(
+    weightsO.S * S +
+    weightsO.E * E +
+    weightsO.H * H +
+    (weightsO.R ? weightsO.R * R : 0)
+  );
 
+  // Ajuste territorial (si se proporciona)
+  // Subimos vulnerabilidad (no protección) porque el entorno aumenta probabilidad.
+  // Impacto moderado para no “matar” el modelo sin datos: +0..+0.12
+  if (territorialRisk01 !== null) {
+    const bump = 0.12 * territorialRisk01;
+    vulnR = clamp01(vulnR + bump);
+    vulnO = clamp01(vulnO + (0.08 * territorialRisk01));
+  }
+
+  // -------------------------
   // Fórmulas IEI (0..100)
+  // -------------------------
+  // baseV: evita 0 absoluto (siempre hay riesgo residual)
+  // baseM: evita que una casa “muy protegida” marque 0 (riesgo residual existe)
+  const baseV_R = 0.18;
+  const baseM_R = 0.28;
+
+  const baseV_O = 0.12;
+  const baseM_O = 0.35;
+
+  // Robo/Intrusión: vulnerabilidad * (1 - protección)
   const ieiR = 100
-    * clamp01(0.15 + 0.85 * Vr)
-    * clamp01(0.35 + 0.65 * (1 - Mr_protection));
+    * clamp01(baseV_R + (1 - baseV_R) * vulnR)
+    * clamp01(baseM_R + (1 - baseM_R) * (1 - protection));
 
+  // Ocupación/Usurpación: más dependiente de hábitos/entorno, pero también de protección
   const ieiO = 100
-    * clamp01(0.10 + 0.90 * Vo)
-    * clamp01(0.40 + 0.60 * (1 - Mo_protection));
+    * clamp01(baseV_O + (1 - baseV_O) * vulnO)
+    * clamp01(baseM_O + (1 - baseM_O) * (1 - protection));
 
-  const ieiTotal = (weights.totalR * ieiR) + (weights.totalO * ieiO);
+  // Total ponderado (según tipo)
+  // - Vivienda: ocupación pesa más que en comercio.
+  // - Comercio: foco principal = robo/intrusión.
+  const totalWeights = (propertyType === "vivienda")
+    ? { R: 0.78, O: 0.22 }
+    : { R: 0.92, O: 0.08 };
 
-  // Confianza (0..100): penaliza faltantes, "U" e inválidos.
-  // - faltante: penaliza más que "U" explícito
-  // - inválido: penaliza parecido a faltante (dato sucio)
-  const totalQ = expectedAll.length;
+  const ieiTotal = (totalWeights.R * ieiR) + (totalWeights.O * ieiO);
+
+  // -------------------------
+  // Confianza (0..100)
+  // -------------------------
+  const totalQ = expectedAll.length; // 15
   const completion = clamp01((totalQ - missingCount) / totalQ);
 
-  // Penalizaciones calibradas para UX real:
-  // - U indica incertidumbre: reduce, pero no mata
-  // - faltante/invalid: reduce más (por consistencia de evaluación)
   const unknownRate = clamp01(unknownCount / totalQ);
   const dirtyRate = clamp01((missingCount + invalidCount) / totalQ);
 
+  // Penalización (más dura con missing/invalid que con U)
   const confidence01 = clamp01(
-    0.95 * completion
-    - 0.35 * unknownRate
+    0.98 * completion
+    - 0.28 * unknownRate
     - 0.55 * dirtyRate
   );
 
@@ -191,35 +242,35 @@ export function calculateIEI(answers, propertyType) {
     level: lvl,
     levelLabel: levelLabel(lvl),
     subindexes: {
+      S: Number(S.toFixed(2)),
       E: Number(E.toFixed(2)),
       R: Number(R.toFixed(2)),
       D: Number(D.toFixed(2)),
       P: Number(P.toFixed(2)),
       H: Number(H.toFixed(2)),
       T: Number(T.toFixed(2)),
-      O: Number(O.toFixed(2))
+      protection: Number(protection.toFixed(2))
     },
     confidence,
     debug: {
       expectedQuestions: expectedAll,
-      counts: {
-        totalQ,
-        missingCount,
-        unknownCount,
-        invalidCount
-      },
+      counts: { totalQ, missingCount, unknownCount, invalidCount },
       rates: {
         completion: Number(completion.toFixed(3)),
         unknownRate: Number(unknownRate.toFixed(3)),
         dirtyRate: Number(dirtyRate.toFixed(3))
       },
       core: {
-        Vr: Number(Vr.toFixed(3)),
-        Mr_protection: Number(Mr_protection.toFixed(3)),
-        Vo: Number(Vo.toFixed(3)),
-        Mo_protection: Number(Mo_protection.toFixed(3))
+        vulnR: Number(vulnR.toFixed(3)),
+        vulnO: Number(vulnO.toFixed(3)),
+        protection: Number(protection.toFixed(3)),
+        territorialRisk01: territorialRisk01
       },
-      weights
+      weights: {
+        weightsR,
+        weightsO,
+        totalWeights
+      }
     }
   };
 }

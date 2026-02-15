@@ -9,6 +9,8 @@
   --ps-shadow-hover: 0 14px 30px rgba(43, 92, 255, 0.36);
   --ps-gap-xs: 0.3rem;
   --ps-gap-sm: 0.5rem;
+  --ps-header-offset-desktop: 86px;
+  --ps-header-offset-mobile: 64px;
 }
 
 .ps-header {
@@ -475,6 +477,50 @@ body.ps-mode-inflow .ps-blog-link { display: none !important; }
 .ps-evaluador-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 860px) { .ps-evaluador-grid { grid-template-columns: 1fr; } }
 
+/* Help colapsable por pregunta (reduce "muro de texto") */
+.ps-qhelp{
+  margin-top: 6px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.ps-qhelp summary{
+  cursor: pointer;
+  list-style: none;
+  font-size: .82rem;
+  font-weight: 800;
+  color: rgba(15,23,42,0.62);
+  letter-spacing: -0.01em;
+}
+
+.ps-qhelp summary::-webkit-details-marker{ display:none; }
+
+.ps-qhelp summary::after{
+  content:"+";
+  float:right;
+  font-weight: 900;
+  color: rgba(15,23,42,0.45);
+}
+
+.ps-qhelp[open] summary::after{ content:"-"; }
+
+.ps-qhelp-body{
+  margin-top: 8px;
+  font-size: .86rem;
+  line-height: 1.35;
+  color: rgba(15,23,42,0.68);
+}
+
+/* Reduccion de ruido visual dentro del evaluador */
+body.ps-mode-inflow .evaluador-fieldset{
+  box-shadow: 0 6px 16px rgba(15,23,42,0.03) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+body.ps-mode-inflow .evaluador-field{ gap: .35rem !important; }
+body.ps-mode-inflow .evaluador-field label{ line-height: 1.25; }
+
 /* ------------------------------
    Stepbar sticky dentro del evaluador
 -------------------------------- */
@@ -492,9 +538,24 @@ body.ps-mode-inflow .ps-blog-link { display: none !important; }
   box-shadow: 0 10px 26px rgba(15,23,42,.06);
 }
 
-/* Header is sticky; keep the stepbar visible below it. */
-@media (min-width: 769px) { .ps-stepbar { top: 86px; } }
-@media (max-width: 768px) { .ps-stepbar { top: 64px; } }
+/* Funnel: sticky siempre visible, por encima del header + contenido */
+body.ps-mode-inflow #ps-progress { display: contents; }
+body.ps-mode-inflow #ps-progress,
+body.ps-mode-inflow .ps-evaluador-wrap,
+body.ps-mode-inflow #evaluador-punto-seguro{
+  overflow: visible !important;
+}
+body.ps-mode-inflow .ps-stepbar{
+  position: sticky !important;
+  top: var(--ps-header-offset-desktop) !important;
+  z-index: 999 !important;
+  background: rgba(255,255,255,.96) !important;
+  backdrop-filter: blur(10px);
+  margin-bottom: 14px;
+}
+@media (max-width: 768px){
+  body.ps-mode-inflow .ps-stepbar{ top: var(--ps-header-offset-mobile) !important; }
+}
 
 /* Utilities */
 .ps-hidden { display: none !important; }

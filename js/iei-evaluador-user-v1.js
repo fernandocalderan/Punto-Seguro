@@ -396,7 +396,6 @@ function renderQuestionsInto(root, type, questions) {
       select.required = true;
       select.tabIndex = 0;
       select.dataset.qid = qid;
-      select.setAttribute("aria-describedby", hintId);
 
       const opt0 = document.createElement("option");
       opt0.value = "";
@@ -410,14 +409,28 @@ function renderQuestionsInto(root, type, questions) {
         select.appendChild(o);
       }
 
-      const hint = document.createElement("small");
-      hint.id = hintId;
-      hint.className = "field-hint ps-evaluador-hint";
-      hint.textContent = safeText(q?.help);
-
       field.appendChild(label);
       field.appendChild(select);
-      field.appendChild(hint);
+
+      const helpText = safeText(q?.help);
+      if (helpText) {
+        select.setAttribute("aria-describedby", hintId);
+
+        const details = document.createElement("details");
+        details.className = "ps-qhelp";
+        details.id = hintId;
+
+        const summary = document.createElement("summary");
+        summary.textContent = "¿Por qué importa?";
+
+        const body = document.createElement("div");
+        body.className = "ps-qhelp-body";
+        body.textContent = helpText;
+
+        details.appendChild(summary);
+        details.appendChild(body);
+        field.appendChild(details);
+      }
       grid.appendChild(field);
     }
 

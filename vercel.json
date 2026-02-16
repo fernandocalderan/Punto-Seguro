@@ -12,6 +12,7 @@
           "*.jpeg",
           "*.webp",
           "Motor-IEI/**",
+          "assets/**",
           "js/**",
           "css/**",
           "styles/**",

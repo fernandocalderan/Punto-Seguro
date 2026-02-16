@@ -911,6 +911,14 @@ details.faq summary:focus-visible {
   font-weight: 700;
 }
 
+.ps-premium-coherence{
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: .9rem;
+  line-height: 1.4;
+  color: rgba(15,23,42,.62);
+}
+
 .ps-driver-list{
   display:grid;
   gap: 10px;

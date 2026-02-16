@@ -120,23 +120,6 @@
     return Math.round(Math.max(0, Math.min(100, boosted)));
   }
 
-  function urgencyLabel(score){
-    if(score >= 78) return "MUY ALTA";
-    if(score >= 58) return "ALTA";
-    if(score >= 38) return "MEDIA";
-    return "BAJA";
-  }
-
-  function urgencyText(label){
-    const map = {
-      "MUY ALTA": "Exposición operativa muy alta: actuar esta semana reduce probabilidad acumulada y ventanas de oportunidad.",
-      "ALTA": "Exposición operativa alta: actuar en 7–14 días suele reducir riesgo de forma clara.",
-      "MEDIA": "Exposición operativa moderada: aplicar mejoras por fases suele ser suficiente.",
-      "BAJA": "Exposición operativa contenida: mantener revisión y ajustes coste/beneficio."
-    };
-    return map[label] || "";
-  }
-
   function classifySignals(factorsTop){
     const txt = normalize((factorsTop || []).map((f) => f?.texto || f?.text || "").join(" | "));
 
@@ -176,6 +159,16 @@
           : "Exposición contenida; mantener control preventivo y optimización coste/beneficio.";
 
     return { ...p, idx, why };
+  }
+
+  function exposureInterpretation({signals, priorityIdx, baseScore}){
+    void signals;
+    void baseScore;
+    // No devuelve niveles tipo BAJA/MEDIA… devuelve una frase consistente con prioridad
+    if (priorityIdx >= 3) return "Interpretación: ventana operativa alta si no se corrige esta semana.";
+    if (priorityIdx >= 2) return "Interpretación: ventana operativa relevante; recortar detección/respuesta reduce riesgo a corto plazo.";
+    if (priorityIdx >= 1) return "Interpretación: margen de mejora por fases; ajustar puntos críticos reduce oportunidad.";
+    return "Interpretación: exposición contenida; optimizar coste/beneficio y revisar periódicamente.";
   }
 
   function meaningForLevel(level){
@@ -517,7 +510,6 @@
   });
 
   const urgencyScore = computeUrgencyScore(score, FA);
-  const urgencyLvl = urgencyLabel(urgencyScore);
   const factorsTop = getTopFactors(evaluation, 5);
   const factorsTopForView = factorsTop.slice(0, 3);
   const { signals, drivers: detectedDrivers } = classifySignals(factorsTop);
@@ -604,6 +596,7 @@
     </div>
     <p class="ps-premium-text">${escapeHtml(priority.why)}</p>
     <p class="ps-premium-microcta">${escapeHtml(priorityMicroCta)}</p>
+    <p class="ps-premium-coherence">Resumen: IEI describe el estado estructural; Prioridad define el plazo recomendado según señales operativas detectadas.</p>
   `.trim();
   if (factorsSectionNode?.parentNode) {
     factorsSectionNode.parentNode.insertBefore(priorityNode, factorsSectionNode);
@@ -643,12 +636,9 @@
 
   urgencyContainer.innerHTML = `
     <div class="urgency-title">Exposición operativa</div>
-    <div class="urgency-row">
-      <div class="urgency-score">${urgencyScore} / 100</div>
-      <span class="badge ${urgencyLvl === "BAJA" ? "badge-low" : urgencyLvl === "MEDIA" ? "badge-medium" : "badge-high"}">${urgencyLvl}</span>
-    </div>
-    <div class="urgency-text">${escapeHtml(urgencyText(urgencyLvl))}</div>
-    <div class="urgency-note">Nota: el IEI es estructural; la exposición operativa prioriza urgencia según probabilidad/impacto/sinergia y confianza.</div>
+    <div class="urgency-score">${urgencyScore} / 100</div>
+    <div class="urgency-text">${escapeHtml(exposureInterpretation({ signals, priorityIdx: priority.idx, baseScore: urgencyScore }))}</div>
+    <div class="urgency-note">Nota: el IEI es estructural; la prioridad traduce señales operativas (detección/respuesta/accesos) a un plazo recomendado.</div>
   `.trim();
 
   if (barFillNode) {

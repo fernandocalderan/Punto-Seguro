@@ -43,6 +43,24 @@
     return "badge";
   }
 
+  function techLevelFloor(levelUpper){
+    const lvl = String(levelUpper || "").toUpperCase();
+    // Piso mínimo de prioridad según nivel IEI
+    // CONTROLADA -> Baja, MODERADA -> Media, ELEVADA -> Alta, CRÍTICA -> Muy alta
+    if (lvl === "CRÍTICA" || lvl === "CRITICA") return 3;
+    if (lvl === "ELEVADA") return 2;
+    if (lvl === "MODERADA") return 1;
+    return 0;
+  }
+
+  function priorityFromIndex(idx){
+    // 0..3 -> etiqueta + plazo + justificación base
+    if (idx >= 3) return { level: "Muy alta", plazo: "Esta semana", baseJust: "Prioridad máxima por combinación de exposición y severidad." };
+    if (idx >= 2) return { level: "Alta", plazo: "7–14 días", baseJust: "Prioridad alta por exposición operativa relevante." };
+    if (idx >= 1) return { level: "Media", plazo: "30 días", baseJust: "Prioridad media: conviene ajustar por fases para reducir exposición." };
+    return { level: "Baja", plazo: "Revisión periódica", baseJust: "Sin presión operativa inmediata; mantener control preventivo." };
+  }
+
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
@@ -119,33 +137,53 @@
   }
 
   function computeInterventionPriority(meta){
-    const p = Number(meta?.probabilityIndex || 0);
-    const i = Number(meta?.impactIndex || 0);
-    const s = Number(meta?.synergyPoints || 0);
+    const levelUpper = String(meta?.riskLevel || "").toUpperCase();
+    const floor = techLevelFloor(levelUpper);
 
-    const composite = (0.6 * p + 0.3 * i + 0.1 * (s * 10));
+    const p = Number(meta?.probabilityIndex || 0); // 0..100
+    const i = Number(meta?.impactIndex || 0); // 0..100
+    const s = Number(meta?.synergyPoints || 0); // típicamente 0..?
+    const urg = Number(meta?.urgencyScore || 0); // 0..100
+    const score = Number(meta?.riskScore || 0); // 0..100
 
-    if (composite >= 75) {
-      return {
-        level: "Alta",
-        plazo: "7–14 días",
-        justification: "La combinación de probabilidad elevada y factores concurrentes incrementa exposición acumulada."
-      };
-    }
+    // Índice operativo (0..100) ponderado (defendible)
+    const opIndex = (0.55 * p + 0.30 * i + 0.15 * Math.min(100, s * 10));
 
-    if (composite >= 55) {
-      return {
-        level: "Media",
-        plazo: "30 días",
-        justification: "Existen factores mejorables que conviene abordar por fases para reducir previsibilidad."
-      };
-    }
+    // Convertir a escalas 0..3
+    const opBand = opIndex >= 75 ? 3 : opIndex >= 55 ? 2 : opIndex >= 35 ? 1 : 0;
+    const urgBand = urg >= 78 ? 3 : urg >= 58 ? 2 : urg >= 38 ? 1 : 0;
+    const scoreBand = score >= 76 ? 3 : score >= 51 ? 2 : score >= 26 ? 1 : 0;
 
-    return {
-      level: "Baja",
-      plazo: "Revisión periódica",
-      justification: "No se detecta presión operativa inmediata, aunque conviene mantener control preventivo."
-    };
+    // Bump por factores críticos (máx +1)
+    const factors = Array.isArray(meta?.factorsTop) ? meta.factorsTop : [];
+    const txt = factors.map((f) => String(f?.texto || f?.text || "")).join(" | ").toLowerCase();
+
+    const hasCriticalFactor =
+      txt.includes("sin detección") ||
+      txt.includes("sin deteccion") ||
+      txt.includes("sin detección rápida") ||
+      txt.includes("sin deteccion rapida") ||
+      txt.includes("respuesta lenta") ||
+      txt.includes("20–40") || txt.includes("20-40") ||
+      txt.includes("cierre/persiana") || txt.includes("persiana") ||
+      txt.includes("sin alarma") ||
+      txt.includes("sin cámaras") || txt.includes("sin camaras");
+
+    const bump = hasCriticalFactor ? 1 : 0;
+
+    // PRIORIDAD FINAL: nunca por debajo del suelo técnico
+    // y se alimenta de score, operativo y urgencia
+    const raw = Math.max(floor, scoreBand, opBand, urgBand) + bump;
+    const idx = Math.min(3, raw);
+
+    const base = priorityFromIndex(idx);
+
+    // Justificación más “consultora”, siempre coherente con nivel técnico
+    const just = hasCriticalFactor
+      ? "Se detectan factores operativos relevantes (detección/respuesta/cierres), lo que eleva la prioridad recomendada."
+      : base.baseJust;
+
+    return { level: base.level, plazo: base.plazo, justification: just };
   }
 
   function getTopFactors(evaluation, limit = 5) {
@@ -433,11 +471,6 @@
   const probabilityIndex = Number(evaluation.probability_index);
   const impactIndex = Number(evaluation.impact_index);
   const synergyPoints = Number(evaluation.synergy_points || 0);
-  const intervention = computeInterventionPriority({
-    probabilityIndex,
-    impactIndex,
-    synergyPoints
-  });
   const modelVersion = String(evaluation.model_version || "").trim();
   const dominantAxisCode = String(evaluation.dominant_axis || "").trim().toUpperCase();
   const tier = String(evaluation.tier || "").trim();
@@ -453,6 +486,16 @@
 
   const urgencyScore = computeUrgencyScore(score, FA);
   const urgencyLvl = urgencyLabel(urgencyScore);
+  const factorsTop = getTopFactors(evaluation, 3);
+  const intervention = computeInterventionPriority({
+    riskLevel: level,
+    riskScore: score,
+    probabilityIndex,
+    impactIndex,
+    synergyPoints,
+    urgencyScore: (typeof urgencyScore === "number" ? urgencyScore : score),
+    factorsTop
+  });
 
   const axisMix = evaluation.axis_mix && typeof evaluation.axis_mix === "object"
     ? {
@@ -540,8 +583,6 @@
     });
   }
 
-  const factorsTop = getTopFactors(evaluation, 3);
-
   const plan = buildPlanFromFactors(evaluation);
   recommendationsNode.innerHTML = `
     ${(plan.steps || []).map((step, i) => `
@@ -600,7 +641,8 @@
 
   ctaRequestNode?.addEventListener("click", () => {
     const inferredPlazo =
-      intervention.level === "Alta" ? "esta_semana" :
+      intervention.level === "Muy alta" ? "esta_semana" :
+      intervention.level === "Alta" ? "15_dias" :
       intervention.level === "Media" ? "30_dias" :
       "informativo";
 

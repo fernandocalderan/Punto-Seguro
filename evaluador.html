@@ -1006,11 +1006,18 @@
     /* ===== IEI Panel Strength Upgrade ===== */
 
     .ps-panel-head{
-      border: 1px solid rgba(15,23,42,0.10);
-      background: rgba(248,250,252,0.92);
-      border-radius: 14px;
-      padding: 14px 16px 12px;
-      margin: 10px 0 18px;
+      border: 1px solid rgba(15,23,42,0.14);
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,1) 0%,
+        rgba(248,250,252,1) 100%
+      );
+      border-radius: 16px;
+      padding: 16px 18px 14px;
+      margin: 14px 0 22px;
+      box-shadow:
+        0 6px 18px rgba(15,23,42,0.05),
+        0 1px 0 rgba(255,255,255,0.9) inset;
     }
 
     .ps-panel-kicker{
@@ -1080,6 +1087,30 @@
       background: rgba(255,255,255,0.9);
       font-weight: 800;
       font-size: .86rem;
+    }
+
+    .ps-start-title{
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -.01em;
+      margin-bottom: 14px;
+    }
+
+    .ps-panel-head::before{
+      content:"";
+      display:block;
+      height:3px;
+      width:42px;
+      border-radius:2px;
+      background: var(--brand-primary);
+      margin-bottom:10px;
+    }
+
+    .ps-panel-title{
+      font-weight: 900;
+      font-size: 1.15rem;
+      letter-spacing: -.02em;
     }
 
     /* CTA coherente con módulo */

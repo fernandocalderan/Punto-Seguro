@@ -1248,6 +1248,68 @@
       padding-bottom: 28px;
     }
 
+    /* ===== Botones tipo reforzados ===== */
+
+    .ps-type-btn{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      padding: 24px 20px;
+      border-radius: 20px;
+
+      background: #ffffff;
+      border: 2px solid rgba(15,23,42,0.18);
+
+      box-shadow: 
+        0 18px 40px rgba(15,23,42,0.10);
+
+      transition: 
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease,
+        background .18s ease;
+    }
+
+    /* Hover más expresivo */
+    .ps-type-btn:hover{
+      transform: translateY(-4px);
+      border-color: rgba(15,23,42,0.35);
+      box-shadow:
+        0 28px 60px rgba(15,23,42,0.18);
+      background: rgba(15,23,42,0.02);
+    }
+
+    /* Activo (cuando se selecciona) */
+    .ps-type-btn.ps-active{
+      border-color: var(--brand-primary);
+      box-shadow:
+        0 32px 70px rgba(15,23,42,0.22);
+    }
+
+    /* Click físico */
+    .ps-type-btn:active{
+      transform: translateY(-1px);
+      box-shadow:
+        0 16px 34px rgba(15,23,42,0.14);
+    }
+
+    /* Refuerzo tipográfico */
+    .ps-type-name{
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      margin-bottom: 6px;
+    }
+
+    .ps-type-desc{
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>

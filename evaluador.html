@@ -1003,6 +1003,90 @@
     .ps-page-evaluador .header-contact-group { display: none !important; }
     .ps-page-evaluador .header-contact { display: none !important; }
 
+    /* ===== IEI Panel Strength Upgrade ===== */
+
+    .ps-panel-head{
+      border: 1px solid rgba(15,23,42,0.10);
+      background: rgba(248,250,252,0.92);
+      border-radius: 14px;
+      padding: 14px 16px 12px;
+      margin: 10px 0 18px;
+    }
+
+    .ps-panel-kicker{
+      font-weight: 900;
+      letter-spacing: .14em;
+      font-size: .72rem;
+      color: rgba(15,23,42,.65);
+    }
+
+    .ps-panel-title{
+      font-weight: 900;
+      letter-spacing: -.02em;
+      font-size: 1.05rem;
+      color: var(--brand-secondary);
+      margin-top: 2px;
+    }
+
+    .ps-panel-sub{
+      margin-top: 6px;
+      font-size: .92rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Selector tipo como módulo técnico */
+    .ps-type-grid{
+      gap: .95rem;
+    }
+
+    .ps-type-btn{
+      text-align: left;
+      border: 1px solid rgba(15,23,42,0.16);
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 14px 16px 12px;
+      transition: border-color .12s ease,
+                  transform .12s ease,
+                  background .12s ease;
+    }
+
+    .ps-type-btn:hover{
+      background: rgba(15,23,42,0.03);
+      border-color: rgba(15,23,42,0.28);
+      transform: translateY(-1px);
+    }
+
+    .ps-type-btn.ps-active{
+      border-color: rgba(15,23,42,0.45);
+      box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+    }
+
+    .ps-type-name{
+      font-weight: 900;
+      letter-spacing: -.01em;
+      color: var(--brand-secondary);
+    }
+
+    .ps-type-desc{
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: .92rem;
+    }
+
+    /* Trustline más técnica */
+    .ps-start-trustline span{
+      border: 1px solid rgba(15,23,42,0.10);
+      background: rgba(255,255,255,0.9);
+      font-weight: 800;
+      font-size: .86rem;
+    }
+
+    /* CTA coherente con módulo */
+    .btn-evaluador{
+      border-radius: 12px;
+    }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>
@@ -1061,6 +1145,13 @@
           <form id="evaluador-form" onsubmit="event.preventDefault(); calcularRiesgo();" novalidate>
             <div class="ps-start">
               <div class="ps-start-title">Inicia tu evaluación</div>
+              <div class="ps-panel-head">
+                <div class="ps-panel-kicker">IEI™</div>
+                <div class="ps-panel-title">MÓDULO DE EVALUACIÓN</div>
+                <div class="ps-panel-sub">
+                  Seleccione el tipo de inmueble para iniciar el diagnóstico.
+                </div>
+              </div>
 
               <div class="ps-type-grid" role="group" aria-label="Tipo de inmueble">
                 <button type="button" class="ps-type-btn" data-type="vivienda">

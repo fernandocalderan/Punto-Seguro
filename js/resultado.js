@@ -782,5 +782,9 @@
       tier: tier || null,
       dominant_axis: dominantAxisCode || null,
     });
+
+    if (typeof window.print === "function") {
+      window.print();
+    }
   });
 })();

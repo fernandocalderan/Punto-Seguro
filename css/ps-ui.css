@@ -1116,3 +1116,51 @@ body.ps-mode-inflow .iei-cta-trust {
   opacity:.95;
 }
 .ps-mock-cta[aria-disabled="true"]{ opacity:.7; }
+
+.ps-preview{
+  margin-top: 12px;
+}
+
+.ps-preview-link{
+  display:block;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(15,23,42,.10);
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15,23,42,.06);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ps-preview-link:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(15,23,42,.08);
+}
+
+.ps-preview-link img{
+  display:block;
+  width: 100%;
+  height: auto;
+}
+
+.ps-preview-caption{
+  margin-top: 10px;
+  color: rgba(15,23,42,.65);
+  font-size: .92rem;
+}
+
+.ps-inline-cta{
+  display:inline-block;
+  margin-top: 6px;
+  font-weight: 800;
+  color: #0F172A;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(15,23,42,.20);
+}
+
+.ps-inline-cta:hover{
+  border-bottom-color: rgba(15,23,42,.45);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ps-preview-link{ transition: none !important; transform:none !important; }
+}

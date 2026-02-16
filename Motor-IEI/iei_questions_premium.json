@@ -45,39 +45,39 @@
     {
       "id": "V01",
       "block": "S",
-      "text": "Tipo de vivienda: ¿cuál describe mejor tu caso?",
+      "text": "¿Qué tipo de vivienda quieres evaluar?",
       "help": "La tipología cambia exposición y facilidad de acceso (bajo/ático/casa).",
       "options": [
-        { "key": "0", "label": "Piso alto (3º o superior) sin terraza accesible" },
-        { "key": "1", "label": "Piso intermedio (1º–2º) o con accesos controlados" },
-        { "key": "2", "label": "Bajo / planta baja o con patio/terraza accesible" },
-        { "key": "3", "label": "Casa/chalet/adosado con accesos perimetrales" },
+        { "key": "0", "label": "Piso alto (3º o superior), sin terraza accesible desde fuera" },
+        { "key": "1", "label": "Piso intermedio (1º–2º) o en edificio con accesos controlados" },
+        { "key": "2", "label": "Planta baja o vivienda con patio/terraza accesible desde el exterior" },
+        { "key": "3", "label": "Casa, chalet o adosado con accesos alrededor de la vivienda" },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V02",
       "block": "E",
-      "text": "Exposición: ¿cómo de fácil es aproximarse sin ser visto (puntos ciegos, calle poco transitada, poca vigilancia natural)?",
+      "text": "¿Es fácil que alguien se acerque a tu vivienda sin que nadie lo note?",
       "help": "A más puntos ciegos y menor vigilancia natural, más oportunidad de intrusión.",
       "options": [
-        { "key": "0", "label": "Difícil: acceso muy visible y con vigilancia natural" },
-        { "key": "1", "label": "Moderado: algún punto ciego, pero razonable visibilidad" },
-        { "key": "2", "label": "Fácil: varios puntos ciegos o aproximación discreta" },
-        { "key": "3", "label": "Muy fácil: puntos ciegos claros y poca vigilancia natural" },
+        { "key": "0", "label": "Difícil: Se ve desde la calle y/o vecinos; casi no hay puntos ciegos." },
+        { "key": "1", "label": "Algo fácil: Hay algún punto ciego, pero en general se ve bastante" },
+        { "key": "2", "label": "Fácil: Hay varios puntos ciegos o se puede llegar sin llamar la atención." },
+        { "key": "3", "label": "Muy fácil: Se puede acercar sin ser visto; poca visibilidad y pocos ojos alrededor." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V03",
       "block": "E",
-      "text": "Iluminación nocturna exterior (entrada/portal/acceso a puerta): ¿cómo está?",
+      "text": "Por la noche, ¿la entrada de tu vivienda está bien iluminada?",
       "help": "La falta de luz aumenta tiempo de maniobra y reduce detección por terceros.",
       "options": [
-        { "key": "0", "label": "Excelente: muy bien iluminado" },
-        { "key": "1", "label": "Correcta: ilumina lo esencial" },
-        { "key": "2", "label": "Mejorable: zonas oscuras" },
-        { "key": "3", "label": "Deficiente: poca o ninguna iluminación" },
+        { "key": "0", "label": "Muy bien iluminada: No hay zonas oscuras y se ve claramente el acceso." },
+        { "key": "1", "label": "Bien iluminada: Lo esencial se ve, aunque hay algún rincón menos visible." },
+        { "key": "2", "label": "Regular: Hay varias zonas oscuras o con poca luz." },
+        { "key": "3", "label": "Mal iluminada: Apenas hay luz o el acceso queda en sombra." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
@@ -85,79 +85,79 @@
     {
       "id": "V04",
       "block": "R",
-      "text": "Puerta principal: si intentaran forzarla, ¿qué tan difícil lo tendrían realmente?",
+      "text": "¿Qué tan segura dirías que es tu puerta principal?",
       "help": "Evalúa resistencia real (marco, cerradura, cilindro, escudo).",
       "options": [
-        { "key": "0", "label": "Muy difícil: acorazada/alta seguridad + buen ajuste (cierre_robusto)" },
-        { "key": "1", "label": "Bastante difícil: reforzada, con algún punto mejorable" },
-        { "key": "2", "label": "Normal: estándar, sin refuerzos relevantes" },
-        { "key": "3", "label": "Fácil: vieja/débil, holguras, cilindro expuesto" },
+        { "key": "0", "label": "Muy segura: Puerta acorazada o de alta seguridad, bien instalada y sin holguras." },
+        { "key": "1", "label": "Bastante segura: Puerta blindada o reforzada, con algún punto mejorable." },
+        { "key": "2", "label": "Seguridad básica: Puerta estándar, sin refuerzos adicionales." },
+        { "key": "3", "label": "Poco segura: Puerta antigua o débil, con holguras o cerradura vulnerable." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V05",
       "block": "R",
-      "text": "Ventanas accesibles (calle/patio/terraza/tejado): ¿qué tan protegidas están?",
+      "text": "Las ventanas a las que se puede acceder desde fuera, ¿qué nivel de protección tienen?",
       "help": "Muchos robos entran por el punto menos protegido.",
       "options": [
-        { "key": "0", "label": "Muy protegidas: cierres extra/rejas/persianas robustas o equivalentes" },
-        { "key": "1", "label": "Bastante protegidas: hay medidas en la mayoría" },
-        { "key": "2", "label": "Poca protección: varios puntos forzables" },
-        { "key": "3", "label": "Sin protección real: accesos fáciles o desatendidos" },
+        { "key": "0", "label": "Muy protegidas: Tienen rejas, cierres de seguridad o persianas robustas." },
+        { "key": "1", "label": "Bastante protegidas: La mayoría tiene alguna medida de refuerzo." },
+        { "key": "2", "label": "PPoco protegidas: Varias se podrían forzar con relativa facilidad." },
+        { "key": "3", "label": "Sin protección real: Son fácilmente accesibles y sin medidas adicionales." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V06",
       "block": "R",
-      "text": "Accesos secundarios (patio/terraza/trastero/garaje): ¿qué tan controlados/protegidos están?",
+      "text": "Los accesos secundarios (patio, terraza, garaje, trastero…), ¿qué nivel de seguridad tienen?",
       "help": "El acceso secundario suele ser el punto de entrada real.",
       "options": [
-        { "key": "0", "label": "Muy protegidos: cerraduras robustas + control de acceso" },
-        { "key": "1", "label": "Protegidos: medidas razonables, alguna mejora pendiente" },
-        { "key": "2", "label": "Débiles: cierres básicos o zonas fáciles de acceder" },
-        { "key": "3", "label": "Muy débiles: prácticamente sin protección" },
-        { "key": "U", "label": "No lo sé" }
+        { "key": "0", "label": "Muy seguros: Cerraduras robustas y buen control de acceso." },
+        { "key": "1", "label": "Bastante seguros: Tienen medidas razonables, aunque podrían mejorarse." },
+        { "key": "2", "label": "Poco seguros: Cierres básicos o zonas fáciles de acceder." },
+        { "key": "3", "label": "Muy vulnerables: Prácticamente sin protección o fácil acceso." },
+        { "key": "U", "label": "No lo sé / No hay" }
       ]
     },
 
     {
       "id": "V07",
       "block": "D",
-      "text": "Detección rápida: si alguien intentara entrar, ¿se detectaría en menos de 60 segundos con alta probabilidad?",
+      "text": "Si alguien intentara entrar, ¿lo sabrías casi de inmediato?",
       "help": "Importa detección real y rapidez de aviso (ideal: perimetral/entradas + CRA o móvil).",
       "options": [
-        { "key": "0", "label": "Sí, casi seguro: sensores bien puestos + aviso inmediato" },
-        { "key": "1", "label": "Probablemente: cobertura parcial pero funcional" },
-        { "key": "2", "label": "A veces: sistema básico o posible retraso" },
-        { "key": "3", "label": "No: no hay detección fiable rápida" },
+        { "key": "0", "label": "Sí, casi seguro: Sensores bien instalados y aviso inmediato (central o móvil)." },
+        { "key": "1", "label": "Probablemente: Sistema funcional, aunque no cubre todo." },
+        { "key": "2", "label": "Dudoso: Sistema básico o posible retraso en el aviso." },
+        { "key": "3", "label": "No: No hay detección rápida o no existe sistema fiable." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V08",
       "block": "D",
-      "text": "Cobertura: ¿entradas y zonas críticas están bien cubiertas (sin grandes puntos ciegos)?",
+      "text": "Las entradas y zonas importantes de tu vivienda, ¿están bien cubiertas por sensores o cámaras?",
       "help": "Sensores y/o CCTV útil (CCTV_util) sin puntos ciegos relevantes.",
       "options": [
-        { "key": "0", "label": "Muy buena: entradas y zonas críticas sin puntos ciegos grandes" },
-        { "key": "1", "label": "Buena: cobertura razonable, alguna zona mejorable" },
-        { "key": "2", "label": "Regular: puntos ciegos importantes" },
-        { "key": "3", "label": "Mala: muchas zonas sin cubrir o no hay medios útiles" },
+        { "key": "0", "label": "Muy bien cubiertas: Entradas y zonas clave sin puntos ciegos relevantes." },
+        { "key": "1", "label": "Bien cubiertas: La mayoría está protegida, aunque alguna zona podría mejorar." },
+        { "key": "2", "label": "Regular: Hay puntos ciegos importantes." },
+        { "key": "3", "label": "Mal cubiertas o sin sistema: Muchas zonas sin cubrir o no hay medios útiles." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V09",
       "block": "D",
-      "text": "Señales y disuasión visible: ¿desde fuera se nota que hay medidas de seguridad reales?",
+      "text": "Desde fuera, ¿se percibe que tu vivienda tiene medidas de seguridad?",
       "help": "La disuasión real reduce selección del objetivo.",
       "options": [
-        { "key": "0", "label": "Sí, fuerte: señalización real + elementos visibles disuasorios" },
-        { "key": "1", "label": "Sí, moderada: alguna señal o cámara visible" },
-        { "key": "2", "label": "Poca: casi no se percibe seguridad" },
-        { "key": "3", "label": "Nula: no se ve nada" },
+        { "key": "0", "label": "Sí, claramente: Se ven elementos disuasorios reales (placa, cámaras visibles, refuerzos, etc.)." },
+        { "key": "1", "label": "Sí, algo se percibe: Hay alguna señal o elemento visible." },
+        { "key": "2", "label": "Apenas se percibe: Desde fuera casi no se nota seguridad." },
+        { "key": "3", "label": "No se percibe nada: Parece una vivienda sin medidas visibles." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
@@ -165,38 +165,38 @@
     {
       "id": "V10",
       "block": "P",
-      "text": "Respuesta: si hubiera intrusión, ¿en cuánto tiempo habría actuación efectiva (verificación/aviso/intervención)?",
+      "text": "Si alguien entrara en tu vivienda, ¿en cuánto tiempo habría una reacción real?",
       "help": "Los primeros 5–10 minutos suelen decidir el resultado.",
       "options": [
-        { "key": "0", "label": "Menos de 10 minutos" },
-        { "key": "1", "label": "Entre 10 y 20 minutos" },
-        { "key": "2", "label": "Entre 20 y 40 minutos" },
-        { "key": "3", "label": "Más de 40 minutos / nadie actúa a tiempo" },
+        { "key": "0", "label": "En menos de 10 minutos." },
+        { "key": "1", "label": "Entre 10 y 20 minutos." },
+        { "key": "2", "label": "Entre 20 y 40 minutos." },
+        { "key": "3", "label": "Más de 40 minutos o probablemente nadie a tiempo." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V11",
       "block": "P",
-      "text": "Conectividad: ¿tu alarma (si existe) está conectada a CRA o solo avisa al móvil?",
+      "text": "¿Tu vivienda cuenta con algún sistema de alarma o aviso ante intrusión?",
       "help": "CRA suele acelerar verificación y aviso; móvil depende de disponibilidad del usuario.",
       "options": [
-        { "key": "0", "label": "Conectada a CRA con verificación" },
-        { "key": "1", "label": "Conectada a CRA sin verificación avanzada" },
-        { "key": "2", "label": "Solo aviso al móvil / sin CRA" },
-        { "key": "3", "label": "No hay alarma" },
+        { "key": "0", "label": "Sí, conectada a una central receptora (CRA) con verificación." },
+        { "key": "1", "label": "Sí, conectada a central pero con verificación limitada." },
+        { "key": "2", "label": "Sí, solo aviso al móvil." },
+        { "key": "3", "label": "No tengo ningún sistema de alarma." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V12",
       "block": "P",
-      "text": "Verificación: si salta una alerta, ¿se puede verificar (cámara/audio/llamada) antes de actuar?",
+      "text": "Cuando se activa una alerta, ¿se puede comprobar lo que ocurre antes de intervenir?",
       "help": "Verificación reduce falsas alarmas y acelera respuesta real.",
       "options": [
-        { "key": "0", "label": "Sí, verificación completa (cámara/audio) y protocolo" },
-        { "key": "1", "label": "Sí, verificación parcial (cámara o llamada)" },
-        { "key": "2", "label": "Limitado: difícil verificar o depende del usuario" },
+        { "key": "0", "label": "Sí, verificación completa (cámaras y/o audio con protocolo profesional)." },
+        { "key": "1", "label": "Sí, verificación parcial (cámara o llamada)." },
+        { "key": "2", "label": "Limitada: depende del usuario o no siempre es posible comprobarlo." },
         { "key": "3", "label": "No hay verificación" },
         { "key": "U", "label": "No lo sé" }
       ]
@@ -205,39 +205,39 @@
     {
       "id": "V13",
       "block": "H",
-      "text": "Rutinas: ¿desde fuera se puede prever cuándo la vivienda queda vacía o sin vigilancia?",
+      "text": "Desde fuera, ¿es fácil saber cuándo tu vivienda está vacía?",
       "help": "Rutinas previsibles + señales externas facilitan elegir el momento.",
       "options": [
-        { "key": "0", "label": "No: horarios variables o medidas para que no se note" },
-        { "key": "1", "label": "A veces: alguna señal puntual o rutina parcialmente predecible" },
-        { "key": "2", "label": "Sí: ausencias/horarios suelen ser predecibles" },
-        { "key": "3", "label": "Sí claramente: se nota mucho y con frecuencia" },
+        { "key": "0", "label": "No: Los horarios son variables o tomo medidas para que no se note." },
+        { "key": "1", "label": "A veces: Hay alguna rutina visible, pero no es evidente." },
+        { "key": "2", "label": "Sí: Las ausencias suelen ser predecibles." },
+        { "key": "3", "label": "Sí, claramente: Se nota con frecuencia cuándo no hay nadie." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V14",
       "block": "H",
-      "text": "Control de llaves/códigos: ¿cuánta gente podría acceder sin que lo controles bien?",
+      "text": "¿Tienes bien controladas las llaves y códigos de acceso a tu vivienda?",
       "help": "Incluye copias, códigos compartidos, terceros con acceso histórico, etc.",
       "options": [
-        { "key": "0", "label": "Muy controlado: pocas personas y control total" },
-        { "key": "1", "label": "Bastante controlado: algunas personas, control razonable" },
-        { "key": "2", "label": "Poco controlado: varias copias/códigos circulando" },
-        { "key": "3", "label": "Descontrolado: muchas llaves/códigos sin trazabilidad" },
+        { "key": "0", "label": "Sí, totalmente: Solo pocas personas autorizadas y control claro de copias." },
+        { "key": "1", "label": "Bastante controlado: Algunas personas tienen acceso, pero lo tengo localizado." },
+        { "key": "2", "label": "Poco controlado: Hay varias copias o códigos compartidos sin seguimiento claro." },
+        { "key": "3", "label": "Descontrolado: Muchas llaves o códigos circulando y sin trazabilidad." },
         { "key": "U", "label": "No lo sé" }
       ]
     },
     {
       "id": "V15",
       "block": "T",
-      "text": "Atractivo percibido: desde fuera, ¿parece un objetivo fácil o con valor (poca vigilancia, accesos discretos, señales de valor)?",
+      "text": "Desde fuera, ¿tu vivienda podría parecer un objetivo fácil o atractivo?",
       "help": "No es el valor real: es lo que se percibe desde fuera (facilidad + discreción + señales).",
       "options": [
-        { "key": "0", "label": "Bajo: difícil intuir valor y hay vigilancia natural" },
-        { "key": "1", "label": "Medio: algo de atractivo, pero limitado" },
-        { "key": "2", "label": "Alto: parece accesible y con valor percibido" },
-        { "key": "3", "label": "Muy alto: accesos discretos + poco control + señales claras de valor" },
+        { "key": "0", "label": "Poco probable: No parece fácil ni especialmente atractiva desde fuera." },
+        { "key": "1", "label": "Algo probable: Podría llamar algo la atención, pero no destaca." },
+        { "key": "2", "label": "Bastante probable: Parece accesible o con cierto valor visible." },
+        { "key": "3", "label": "Muy probable: Accesos discretos, poca vigilancia y señales claras de valor." },
         { "key": "U", "label": "No lo sé" }
       ]
     }

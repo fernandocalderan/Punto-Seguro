@@ -3,6 +3,12 @@
   --ps-primary: #2b5cff;
   --ps-primary-hover: #1f4df2;
   --ps-text-on-primary: #ffffff;
+  --ps-text-main: #0F172A;
+  --ps-text-secondary: rgba(15,23,42,.72);
+  --ps-border: rgba(15,23,42,.10);
+  --ps-bg-page: #F8FAFC;
+  --ps-cta-bg: #0F172A;
+  --ps-cta-hover: #1E293B;
   --ps-muted: #64748b;
   --ps-radius-pill: 999px;
   --ps-shadow: 0 10px 24px rgba(43, 92, 255, 0.28);
@@ -895,10 +901,10 @@ details.faq summary:focus-visible {
   align-items:center;
   padding: 7px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(15,23,42,.03);
+  border: 1px solid rgba(15,23,42,.20);
+  background: rgba(15,23,42,.06);
   font-weight: 900;
-  color: #0f172a;
+  color: #0F172A;
 }
 
 .ps-premium-deadline{
@@ -944,9 +950,28 @@ details.faq summary:focus-visible {
   font-size: .92rem;
 }
 
-#top-factors-list .chip.ps-chip-key{
-  border-color: rgba(43,92,255,.28) !important;
-  background: rgba(43,92,255,.06) !important;
+.chip.ps-chip-key{
+  background: rgba(43,92,255,.08);
+  border: 1px solid rgba(43,92,255,.30);
+  color: #1E3A8A;
+}
+
+body.ps-mode-inflow .badge-low{
+  background: rgba(15,23,42,.06);
+  border: 1px solid rgba(15,23,42,.18);
+  color: #0F172A;
+}
+
+body.ps-mode-inflow .badge-medium{
+  background: rgba(43,92,255,.10);
+  border: 1px solid rgba(43,92,255,.28);
+  color: #1E3A8A;
+}
+
+body.ps-mode-inflow .badge-high{
+  background: rgba(30,58,138,.12);
+  border: 1px solid rgba(30,58,138,.30);
+  color: #1E3A8A;
 }
 
 body.ps-mode-inflow .actions.actions-result {
@@ -966,14 +991,15 @@ body.ps-mode-inflow .ps-cta-primary-wrap {
 
 body.ps-mode-inflow #cta-request {
   min-width: 430px;
-  background: #0f172a;
-  border-color: #0f172a;
+  background: var(--ps-cta-bg);
+  border-color: var(--ps-cta-bg);
+  color: #fff;
   box-shadow: none;
 }
 
 body.ps-mode-inflow #cta-request:hover {
-  background: #111827;
-  border-color: #111827;
+  background: var(--ps-cta-hover);
+  border-color: var(--ps-cta-hover);
 }
 
 body.ps-mode-inflow #cta-keep {
@@ -1013,11 +1039,14 @@ body.ps-mode-inflow .iei-cta-trust {
 
 /* Premium micro-interactions (CTA) */
 #cta-request{
+  background: var(--ps-cta-bg);
+  color: #fff;
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
   will-change: transform;
 }
 
 #cta-request:hover{
+  background: var(--ps-cta-hover);
   transform: translateY(-2px);
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
   filter: brightness(1.02);

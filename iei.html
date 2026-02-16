@@ -144,7 +144,7 @@ details.ps-faq summary:focus-visible{
 
         <div class="ps-preview-grid">
           <figure class="ps-preview-figure">
-            <a class="ps-preview-link" href="/diagnostico" aria-label="Calcular mi IEI en 2 minutos">
+            <a class="ps-preview-link" href="#" data-preview-open="1" aria-haspopup="dialog" aria-controls="psPreviewModal" aria-label="Calcular mi IEI en 2 minutos">
               <img src="/assets/img/iei-preview.svg"
                    alt="Ejemplo ilustrativo del resultado IEI con prioridad de actuación y factores detectados."
                    loading="lazy">
@@ -283,6 +283,30 @@ details.ps-faq summary:focus-visible{
     </div>
   </footer>
 
+  <div id="psPreviewModal" class="ps-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ejemplo de informe IEI">
+    <div class="ps-modal-backdrop" data-preview-close="1"></div>
+
+    <div class="ps-modal-panel" role="document">
+      <div class="ps-modal-header">
+        <div class="ps-modal-title">Ejemplo de informe IEI™</div>
+        <button type="button" class="ps-modal-close" data-preview-close="1" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="ps-modal-body">
+        <iframe
+          class="ps-modal-frame"
+          src="/assets/pdf/ejemplo-resultado-iei.pdf#view=FitH"
+          title="Ejemplo de informe IEI"
+          loading="lazy"></iframe>
+      </div>
+
+      <div class="ps-modal-footer">
+        <div class="ps-modal-note">Ejemplo ilustrativo. El informe real se genera con tus respuestas.</div>
+        <a class="ps-modal-cta" href="/diagnostico">Calcular mi IEI™</a>
+      </div>
+    </div>
+  </div>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -362,6 +386,6 @@ details.ps-faq summary:focus-visible{
   <script src="/js/analytics.js"></script>
   <script src="/js/ps-cta.js"></script>
   <script src="/js/iei-meta.js"></script>
-  <script src="/js/iei-ui.js"></script>
+  <script src="/js/iei-ui.js" defer></script>
 </body>
 </html>

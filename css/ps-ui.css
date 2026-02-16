@@ -1117,41 +1117,77 @@ body.ps-mode-inflow .iei-cta-trust {
 }
 .ps-mock-cta[aria-disabled="true"]{ opacity:.7; }
 
-.ps-preview{
-  margin-top: 12px;
+.ps-preview-grid{
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 18px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.ps-preview-figure{
+  margin: 0;
 }
 
 .ps-preview-link{
-  display:block;
-  border-radius: 18px;
+  display: block;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(15,23,42,.10);
   background: #fff;
-  box-shadow: 0 12px 28px rgba(15,23,42,.06);
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
   transition: transform 180ms ease, box-shadow 180ms ease;
+  max-width: 100%;
 }
 
 .ps-preview-link:hover{
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(15,23,42,.08);
+  box-shadow: 0 14px 34px rgba(15,23,42,.08);
 }
 
 .ps-preview-link img{
-  display:block;
+  display: block;
   width: 100%;
   height: auto;
 }
 
-.ps-preview-caption{
+.ps-preview-copy{
+  color: rgba(15,23,42,.78);
+}
+
+.ps-preview-kicker{
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(15,23,42,.55);
+  margin-bottom: 10px;
+}
+
+.ps-preview-bullets{
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.ps-preview-bullets li{
+  line-height: 1.45;
+}
+
+.ps-preview-note{
   margin-top: 10px;
-  color: rgba(15,23,42,.65);
-  font-size: .92rem;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(15,23,42,.03);
+  color: rgba(15,23,42,.70);
 }
 
 .ps-inline-cta{
-  display:inline-block;
-  margin-top: 6px;
-  font-weight: 800;
+  display: inline-block;
+  margin-top: 12px;
+  font-weight: 900;
   color: #0F172A;
   text-decoration: none;
   border-bottom: 1px solid rgba(15,23,42,.20);
@@ -1159,6 +1195,12 @@ body.ps-mode-inflow .iei-cta-trust {
 
 .ps-inline-cta:hover{
   border-bottom-color: rgba(15,23,42,.45);
+}
+
+@media (max-width: 820px){
+  .ps-preview-grid{
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (prefers-reduced-motion: reduce){

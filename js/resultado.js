@@ -43,22 +43,19 @@
     return "badge";
   }
 
-  function techLevelFloor(levelUpper){
-    const lvl = String(levelUpper || "").toUpperCase();
-    // Piso mínimo de prioridad según nivel IEI
-    // CONTROLADA -> Baja, MODERADA -> Media, ELEVADA -> Alta, CRÍTICA -> Muy alta
-    if (lvl === "CRÍTICA" || lvl === "CRITICA") return 3;
-    if (lvl === "ELEVADA") return 2;
-    if (lvl === "MODERADA") return 1;
-    return 0;
+  function levelToFloorIdx(level){
+    const l = String(level || "").toUpperCase();
+    if (l === "CRÍTICA" || l === "CRITICA") return 3;
+    if (l === "ELEVADA") return 2;
+    if (l === "MODERADA") return 1;
+    return 0; // CONTROLADA
   }
 
-  function priorityFromIndex(idx){
-    // 0..3 -> etiqueta + plazo + justificación base
-    if (idx >= 3) return { level: "Muy alta", plazo: "Esta semana", baseJust: "Prioridad máxima por combinación de exposición y severidad." };
-    if (idx >= 2) return { level: "Alta", plazo: "7–14 días", baseJust: "Prioridad alta por exposición operativa relevante." };
-    if (idx >= 1) return { level: "Media", plazo: "30 días", baseJust: "Prioridad media: conviene ajustar por fases para reducir exposición." };
-    return { level: "Baja", plazo: "Revisión periódica", baseJust: "Sin presión operativa inmediata; mantener control preventivo." };
+  function idxToPriority(idx){
+    if (idx >= 3) return { label: "Muy alta", plazo: "Esta semana", intent: "esta_semana" };
+    if (idx >= 2) return { label: "Alta", plazo: "7–14 días", intent: "15_dias" };
+    if (idx >= 1) return { label: "Media", plazo: "30 días", intent: "30_dias" };
+    return { label: "Baja", plazo: "Revisión periódica", intent: "informativo" };
   }
 
   function escapeHtml(value) {
@@ -82,6 +79,10 @@
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, " ");
+  }
+
+  function normalize(s) {
+    return String(s || "").toLowerCase();
   }
 
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
@@ -136,54 +137,85 @@
     return map[label] || "";
   }
 
-  function computeInterventionPriority(meta){
-    const levelUpper = String(meta?.riskLevel || "").toUpperCase();
-    const floor = techLevelFloor(levelUpper);
+  function classifySignals(factorsTop){
+    const txt = normalize((factorsTop || []).map((f) => f?.texto || f?.text || "").join(" | "));
 
-    const p = Number(meta?.probabilityIndex || 0); // 0..100
-    const i = Number(meta?.impactIndex || 0); // 0..100
-    const s = Number(meta?.synergyPoints || 0); // típicamente 0..?
-    const urg = Number(meta?.urgencyScore || 0); // 0..100
-    const score = Number(meta?.riskScore || 0); // 0..100
+    const signals = {
+      detection: txt.includes("sin detección") || txt.includes("sin deteccion") || txt.includes("sin alarma"),
+      verification: txt.includes("sin verificación") || txt.includes("sin verificacion") || txt.includes("verificación limitada"),
+      response: txt.includes("respuesta lenta") || txt.includes("20–40") || txt.includes("20-40") || txt.includes(">40"),
+      access: txt.includes("persiana") || txt.includes("cierre/persiana") || txt.includes("puerta") || txt.includes("ventanas"),
+      visibility: txt.includes("puntos ciegos") || txt.includes("iluminación") || txt.includes("iluminacion") || txt.includes("visibilidad"),
+      attractiveness: txt.includes("objetivo atractivo") || txt.includes("stock atractivo") || txt.includes("valor visible")
+    };
 
-    // Índice operativo (0..100) ponderado (defendible)
-    const opIndex = (0.55 * p + 0.30 * i + 0.15 * Math.min(100, s * 10));
+    const drivers = [];
+    if (signals.detection) drivers.push({ key: "detection", title: "Detección temprana insuficiente", detail: "Si no se detecta en <60s, aumenta la ventana operativa y la probabilidad acumulada." });
+    if (signals.verification) drivers.push({ key: "verification", title: "Sin verificación fiable", detail: "Sin verificación, la respuesta suele ser menos efectiva y aumenta el tiempo hasta intervención real." });
+    if (signals.response) drivers.push({ key: "response", title: "Tiempo de respuesta mejorable", detail: "Un margen de 20–40 min deja una ventana operativa amplia incluso con medidas físicas." });
+    if (signals.access) drivers.push({ key: "access", title: "Accesos/cierres vulnerables", detail: "Cierres, persiana o cerramientos mejorables son vectores típicos de ataque por palanca o guía." });
+    if (signals.visibility) drivers.push({ key: "visibility", title: "Entorno favorable al intruso", detail: "Puntos ciegos/iluminación baja reducen fricción y aumentan oportunidad." });
+    if (signals.attractiveness) drivers.push({ key: "attractiveness", title: "Atractivo del objetivo", detail: "Valor visible o stock revendible incrementa motivación y selección del objetivo." });
 
-    // Convertir a escalas 0..3
-    const opBand = opIndex >= 75 ? 3 : opIndex >= 55 ? 2 : opIndex >= 35 ? 1 : 0;
-    const urgBand = urg >= 78 ? 3 : urg >= 58 ? 2 : urg >= 38 ? 1 : 0;
-    const scoreBand = score >= 76 ? 3 : score >= 51 ? 2 : score >= 26 ? 1 : 0;
+    return { signals, drivers: drivers.slice(0, 3) };
+  }
 
-    // Bump por factores críticos (máx +1)
-    const factors = Array.isArray(meta?.factorsTop) ? meta.factorsTop : [];
-    const txt = factors.map((f) => String(f?.texto || f?.text || "")).join(" | ").toLowerCase();
+  function computePriority(riskLevel, signals){
+    const floor = levelToFloorIdx(riskLevel);
 
-    const hasCriticalFactor =
-      txt.includes("sin detección") ||
-      txt.includes("sin deteccion") ||
-      txt.includes("sin detección rápida") ||
-      txt.includes("sin deteccion rapida") ||
-      txt.includes("respuesta lenta") ||
-      txt.includes("20–40") || txt.includes("20-40") ||
-      txt.includes("cierre/persiana") || txt.includes("persiana") ||
-      txt.includes("sin alarma") ||
-      txt.includes("sin cámaras") || txt.includes("sin camaras");
+    // bump “comercial defendible”: detección o respuesta o acceso => +1
+    const bump = (signals.detection || signals.response || signals.access) ? 1 : 0;
+    const idx = Math.min(3, floor + bump);
+    const p = idxToPriority(idx);
 
-    const bump = hasCriticalFactor ? 1 : 0;
+    const why =
+      idx >= 2
+        ? "Se detectan señales operativas (detección/respuesta/accesos) que justifican intervención prioritaria."
+        : idx === 1
+          ? "Hay puntos mejorables habituales; intervenir por fases reduce exposición sin sobredimensionar."
+          : "Exposición contenida; mantener control preventivo y optimización coste/beneficio.";
 
-    // PRIORIDAD FINAL: nunca por debajo del suelo técnico
-    // y se alimenta de score, operativo y urgencia
-    const raw = Math.max(floor, scoreBand, opBand, urgBand) + bump;
-    const idx = Math.min(3, raw);
+    return { ...p, idx, why };
+  }
 
-    const base = priorityFromIndex(idx);
+  function meaningForLevel(level){
+    const lvl = String(level || "").toUpperCase();
+    if (lvl === "CRÍTICA") {
+      return "El patrón actual concentra señales de exposición alta y ventana operativa amplia. La reducción de riesgo requiere priorizar medidas esta semana.";
+    }
+    if (lvl === "ELEVADA") {
+      return "El perfil combina vulnerabilidades y oportunidad operativa. Actuar por capas suele reducir exposición de forma tangible en el corto plazo.";
+    }
+    if (lvl === "MODERADA") {
+      return "Hay margen claro de mejora técnica. Un ajuste por fases bien priorizado reduce previsibilidad y oportunidad sin sobredimensionar.";
+    }
+    return "La exposición está contenida, pero mantener revisión periódica evita que pequeñas brechas evolucionen a riesgo operativo.";
+  }
 
-    // Justificación más “consultora”, siempre coherente con nivel técnico
-    const just = hasCriticalFactor
-      ? "Se detectan factores operativos relevantes (detección/respuesta/cierres), lo que eleva la prioridad recomendada."
-      : base.baseJust;
+  function salesStep1FromSignals(signals){
+    if (signals.detection) {
+      return "DIFERENCIAL: prioriza detección + verificación (sensores en accesos y validación de eventos) para recortar la ventana operativa inicial.";
+    }
+    if (signals.access) {
+      return "DIFERENCIAL: refuerza cierre/persiana/accesos expuestos para elevar resistencia real frente a ataque de oportunidad.";
+    }
+    if (signals.response) {
+      return "DIFERENCIAL: define protocolo de respuesta y tiempos objetivo para reducir el margen operativo tras una intrusión.";
+    }
+    return "DIFERENCIAL: realiza una revisión técnica de capas (acceso, detección y respuesta) para priorizar inversiones de mayor impacto.";
+  }
 
-    return { level: base.level, plazo: base.plazo, justification: just };
+  function factorSignalTag(factorText){
+    const txt = normalize(factorText);
+    if (txt.includes("sin detección") || txt.includes("sin deteccion") || txt.includes("sin alarma")) return "detection";
+    if (txt.includes("respuesta lenta") || txt.includes("20–40") || txt.includes("20-40") || txt.includes(">40")) return "response";
+    if (txt.includes("cierre/persiana") || txt.includes("persiana vulnerable") || txt.includes("persiana")) return "access";
+    return "";
+  }
+
+  function insertAfter(node, newNode){
+    if (!node || !node.parentNode) return;
+    node.parentNode.insertBefore(newNode, node.nextSibling);
   }
 
   function getTopFactors(evaluation, limit = 5) {
@@ -486,16 +518,13 @@
 
   const urgencyScore = computeUrgencyScore(score, FA);
   const urgencyLvl = urgencyLabel(urgencyScore);
-  const factorsTop = getTopFactors(evaluation, 3);
-  const intervention = computeInterventionPriority({
-    riskLevel: level,
-    riskScore: score,
-    probabilityIndex,
-    impactIndex,
-    synergyPoints,
-    urgencyScore: (typeof urgencyScore === "number" ? urgencyScore : score),
-    factorsTop
-  });
+  const factorsTop = getTopFactors(evaluation, 5);
+  const factorsTopForView = factorsTop.slice(0, 3);
+  const { signals, drivers: detectedDrivers } = classifySignals(factorsTop);
+  const drivers = detectedDrivers.length > 0
+    ? detectedDrivers
+    : [{ key: "baseline", title: "Perfil con exposición contenida", detail: "No aparecen señales operativas críticas en el top de factores; mantener revisión periódica preserva este nivel." }];
+  const priority = computePriority(level, signals);
 
   const axisMix = evaluation.axis_mix && typeof evaluation.axis_mix === "object"
     ? {
@@ -515,6 +544,9 @@
   const ctaKeepNode = document.getElementById("cta-keep");
   const decisionFeedbackNode = document.getElementById("decision-feedback");
   const barFillNode = document.getElementById("iei-bar-fill");
+  const heroNode = document.querySelector("header.iei-hero");
+  const factorsSectionNode = document.querySelector('section[aria-label="Factores principales"]');
+  const planSectionNode = document.querySelector('section[aria-label="Plan de acción"]');
 
   scoreNode.textContent = `${score} / 100`;
   levelNode.textContent = level;
@@ -539,20 +571,65 @@
     tier,
   });
 
-  let priorityContainer = document.getElementById("technical-priority");
-  if (!priorityContainer) {
-    priorityContainer = document.createElement("div");
-    priorityContainer.id = "technical-priority";
-    priorityContainer.className = "technical-priority-block";
-    humanTextNode.parentNode.insertBefore(priorityContainer, humanTextNode.nextSibling);
+  let meaningNode = document.getElementById("ps-premium-meaning");
+  if (!meaningNode) {
+    meaningNode = document.createElement("section");
+    meaningNode.id = "ps-premium-meaning";
+    meaningNode.className = "ps-premium-block";
+  }
+  meaningNode.innerHTML = `
+    <div class="ps-premium-kicker">Lectura rápida</div>
+    <div class="ps-premium-title">Qué significa este resultado</div>
+    <p class="ps-premium-text">${escapeHtml(meaningForLevel(level))}</p>
+  `.trim();
+  insertAfter(heroNode, meaningNode);
+
+  const priorityMicroCta = priority.idx >= 2
+    ? "Recomendado: recibir propuestas esta semana para reducir exposición operativa."
+    : priority.idx === 1
+      ? "Recomendado: comparar propuestas en 30 días para optimizar medidas."
+      : "Opcional: comparar propuestas para mejorar coste/beneficio.";
+
+  let priorityNode = document.getElementById("ps-premium-priority");
+  if (!priorityNode) {
+    priorityNode = document.createElement("section");
+    priorityNode.id = "ps-premium-priority";
+    priorityNode.className = "ps-premium-block ps-premium-priority";
+  }
+  priorityNode.innerHTML = `
+    <div class="ps-premium-kicker">Prioridad de actuación</div>
+    <div class="ps-premium-row">
+      <div class="ps-premium-pill">${escapeHtml(priority.label)}</div>
+      <div class="ps-premium-deadline">Plazo recomendado: <b>${escapeHtml(priority.plazo)}</b></div>
+    </div>
+    <p class="ps-premium-text">${escapeHtml(priority.why)}</p>
+    <p class="ps-premium-microcta">${escapeHtml(priorityMicroCta)}</p>
+  `.trim();
+  if (factorsSectionNode?.parentNode) {
+    factorsSectionNode.parentNode.insertBefore(priorityNode, factorsSectionNode);
   }
 
-  priorityContainer.innerHTML = `
-    <div class="priority-title">Prioridad de intervención técnica</div>
-    <div class="priority-level">Nivel: ${escapeHtml(intervention.level)}</div>
-    <div class="priority-deadline">Plazo recomendado: ${escapeHtml(intervention.plazo)}</div>
-    <div class="priority-justification">${escapeHtml(intervention.justification)}</div>
+  let driversNode = document.getElementById("ps-premium-drivers");
+  if (!driversNode) {
+    driversNode = document.createElement("section");
+    driversNode.id = "ps-premium-drivers";
+    driversNode.className = "ps-premium-block";
+  }
+  driversNode.innerHTML = `
+    <div class="ps-premium-kicker">Motivos principales</div>
+    <div class="ps-premium-title">Lo que más eleva tu exposición</div>
+    <div class="ps-driver-list">
+      ${drivers.map((d) => `
+        <div class="ps-driver">
+          <div class="ps-driver-title">${escapeHtml(d.title)}</div>
+          <div class="ps-driver-detail">${escapeHtml(d.detail)}</div>
+        </div>
+      `).join("")}
+    </div>
   `.trim();
+  if (planSectionNode?.parentNode) {
+    planSectionNode.parentNode.insertBefore(driversNode, planSectionNode);
+  }
 
   let urgencyContainer = document.getElementById("operational-exposure");
 
@@ -560,7 +637,7 @@
     urgencyContainer = document.createElement("div");
     urgencyContainer.id = "operational-exposure";
     urgencyContainer.className = "operational-exposure-block";
-    const insertionRef = priorityContainer ? priorityContainer.nextSibling : humanTextNode.nextSibling;
+    const insertionRef = humanTextNode.nextSibling;
     humanTextNode.parentNode.insertBefore(urgencyContainer, insertionRef);
   }
 
@@ -584,8 +661,19 @@
   }
 
   const plan = buildPlanFromFactors(evaluation);
+  const planSteps = Array.isArray(plan.steps) ? plan.steps.slice(0, 3) : [];
+  if (planSteps.length === 0) {
+    planSteps.push(
+      "DIFERENCIAL: realiza una revisión técnica de capas (acceso, detección y respuesta) para priorizar inversiones de mayor impacto.",
+      "Refuerza los puntos estructurales más expuestos según el perfil detectado para reducir el vector de entrada probable.",
+      "Formaliza protocolo operativo y rutina de revisión periódica para mantener el nivel bajo control."
+    );
+  } else {
+    planSteps[0] = salesStep1FromSignals(signals);
+  }
+
   recommendationsNode.innerHTML = `
-    ${(plan.steps || []).map((step, i) => `
+    ${planSteps.map((step, i) => `
       <div class="step-card">
         <div class="step-n">${i + 1}</div>
         <div class="step-txt">${escapeHtml(step)}</div>
@@ -594,38 +682,54 @@
     <div class="plan-closing">${escapeHtml(plan.closing)}</div>
   `.trim();
 
-  topFactorsNode.innerHTML = factorsTop.length > 0
-    ? factorsTop.map((factor) => `<span class="chip">${factor.texto || factor.text || "Factor de exposición detectado"}</span>`).join("")
+  topFactorsNode.innerHTML = factorsTopForView.length > 0
+    ? factorsTopForView.map((factor) => {
+      const text = factor.texto || factor.text || "Factor de exposición detectado";
+      const tag = factorSignalTag(text);
+      const dataSignal = tag ? ` data-signal="${escapeHtml(tag)}"` : "";
+      const classes = tag ? "chip ps-chip-key" : "chip";
+      return `<span class="${classes}"${dataSignal}>${escapeHtml(text)}</span>`;
+    }).join("")
     : "<span class=\"chip\">Sin factores destacados en esta simulación.</span>";
 
-  const resumen = factorsTop
+  const resumen = factorsTopForView
     .map((factor) => factor?.texto || factor?.text)
     .filter(Boolean)
-    .slice(0, 3)
     .join(" | ");
+
+  const evaluationSummaryPayload = {
+    risk_level: level,
+    risk_score: score,
+    model_version: modelVersion || null,
+    probability_index: Number.isFinite(probabilityIndex) ? probabilityIndex : null,
+    impact_index: Number.isFinite(impactIndex) ? impactIndex : null,
+    synergy_points: Number.isFinite(synergyPoints) ? synergyPoints : null,
+    axis_mix: axisMix && Number.isFinite(axisMix.Vn) && Number.isFinite(axisMix.On) && Number.isFinite(axisMix.An)
+      ? axisMix
+      : null,
+    dominant_axis: dominantAxisCode || null,
+    tier: tier || null,
+    confidence_score: Number.isFinite(confidence) ? confidence : null,
+    iei_base: Number.isFinite(ieiBase) ? ieiBase : null,
+    iei_raw: Number.isFinite(ieiRaw) ? ieiRaw : null,
+    summary: resumen,
+    tipo_inmueble: tipoInmueble || null,
+    factores_top: factorsTopForView,
+    top_factors: factorsTopForView,
+    priority: {
+      label: priority.label,
+      plazo: priority.plazo,
+      intent: priority.intent,
+      idx: priority.idx,
+      why: priority.why,
+    },
+    drivers,
+    generated_at: evaluation.generated_at || new Date().toISOString(),
+  };
 
   window.sessionStorage.setItem(
     "puntoSeguro.evaluationSummary",
-    JSON.stringify({
-      risk_level: level,
-      risk_score: score,
-      model_version: modelVersion || null,
-      probability_index: Number.isFinite(probabilityIndex) ? probabilityIndex : null,
-      impact_index: Number.isFinite(impactIndex) ? impactIndex : null,
-      synergy_points: Number.isFinite(synergyPoints) ? synergyPoints : null,
-      axis_mix: axisMix && Number.isFinite(axisMix.Vn) && Number.isFinite(axisMix.On) && Number.isFinite(axisMix.An)
-        ? axisMix
-        : null,
-      dominant_axis: dominantAxisCode || null,
-      tier: tier || null,
-      confidence_score: Number.isFinite(confidence) ? confidence : null,
-      iei_base: Number.isFinite(ieiBase) ? ieiBase : null,
-      iei_raw: Number.isFinite(ieiRaw) ? ieiRaw : null,
-      summary: resumen,
-      tipo_inmueble: tipoInmueble || null,
-      factores_top: factorsTop,
-      generated_at: evaluation.generated_at || new Date().toISOString(),
-    })
+    JSON.stringify(evaluationSummaryPayload)
   );
 
   window.PuntoSeguroAnalytics?.trackEvent("result_viewed", {
@@ -640,19 +744,22 @@
   });
 
   ctaRequestNode?.addEventListener("click", () => {
-    const inferredPlazo =
-      intervention.level === "Muy alta" ? "esta_semana" :
-      intervention.level === "Alta" ? "15_dias" :
-      intervention.level === "Media" ? "30_dias" :
-      "informativo";
+    const inferredPlazo = priority.intent;
 
     window.sessionStorage.setItem(
       "puntoSeguro.intent",
       JSON.stringify({
+        inferredPlazo,
         plazo: inferredPlazo,
+        priority_label: priority.label,
         source: "inferred",
         selected_at: new Date().toISOString(),
       })
+    );
+
+    window.sessionStorage.setItem(
+      "puntoSeguro.evaluationSummary",
+      JSON.stringify(evaluationSummaryPayload)
     );
 
     window.PuntoSeguroAnalytics?.trackEvent("cta_proposals_click", {
@@ -672,7 +779,7 @@
   ctaKeepNode?.addEventListener("click", () => {
     if (decisionFeedbackNode) {
       decisionFeedbackNode.style.display = "block";
-      decisionFeedbackNode.textContent = "Puedes mantener solo el resultado. Si más adelante cambias de idea, podrás pedir propuestas desde esta misma pantalla.";
+      decisionFeedbackNode.textContent = "Listo. Puedes guardar este informe en PDF. Si más adelante quieres comparar propuestas, vuelve a esta página.";
     }
     window.PuntoSeguroAnalytics?.trackEvent("lead_declined", {
       risk_level: level,

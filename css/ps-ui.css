@@ -848,3 +848,95 @@ details.faq summary:focus-visible {
   outline: 2px solid rgba(43,92,255,0.35);
   outline-offset: 3px;
 }
+
+.ps-premium-block{
+  margin-top: 16px;
+  padding: 18px 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(15,23,42,.10);
+  box-shadow: 0 10px 26px rgba(15,23,42,.04);
+}
+
+.ps-premium-kicker{
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(15,23,42,.55);
+  margin-bottom: 8px;
+}
+
+.ps-premium-title{
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.01em;
+}
+
+.ps-premium-text{
+  margin: 0;
+  color: rgba(15,23,42,.72);
+  line-height: 1.45;
+}
+
+.ps-premium-row{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ps-premium-pill{
+  display:inline-flex;
+  align-items:center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(15,23,42,.03);
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.ps-premium-deadline{
+  color: rgba(15,23,42,.72);
+}
+
+.ps-premium-microcta{
+  margin-top: 10px;
+  color: rgba(15,23,42,.78);
+  font-weight: 700;
+}
+
+.ps-driver-list{
+  display:grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ps-driver{
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px dashed rgba(15,23,42,.14);
+  background: rgba(255,255,255,.7);
+}
+
+.ps-driver-title{
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+.ps-driver-detail{
+  color: rgba(15,23,42,.70);
+  line-height: 1.4;
+  font-size: .92rem;
+}
+
+#top-factors-list .chip.ps-chip-key{
+  border-color: rgba(43,92,255,.28) !important;
+  background: rgba(43,92,255,.06) !important;
+}

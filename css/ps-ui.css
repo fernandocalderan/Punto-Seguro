@@ -948,3 +948,44 @@ details.faq summary:focus-visible {
   border-color: rgba(43,92,255,.28) !important;
   background: rgba(43,92,255,.06) !important;
 }
+
+body.ps-mode-inflow .actions.actions-result {
+  align-items: flex-start;
+  gap: 14px;
+}
+
+body.ps-mode-inflow .ps-cta-primary-wrap {
+  display: grid;
+  gap: 6px;
+}
+
+body.ps-mode-inflow #cta-request {
+  min-width: 390px;
+}
+
+body.ps-mode-inflow #cta-keep {
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.22);
+  color: #0f172a;
+}
+
+body.ps-mode-inflow .ps-cta-primary-note {
+  margin: 0;
+  font-size: .83rem;
+  line-height: 1.35;
+  color: rgba(15,23,42,.64);
+}
+
+@media (max-width: 768px) {
+  body.ps-mode-inflow .actions.actions-result {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  body.ps-mode-inflow #cta-request,
+  body.ps-mode-inflow #cta-keep {
+    width: 100%;
+    min-width: 0;
+  }
+}

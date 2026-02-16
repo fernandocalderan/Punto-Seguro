@@ -229,30 +229,14 @@
           <p class="muted">Recomendaciones generales, no constituyen un plan técnico ejecutable.</p>
         </section>
 
-        <details class="iei-tech">
-          <summary>Ver análisis técnico</summary>
-          <h2 class="ps-print-only section-title">Análisis técnico</h2>
-          <div id="risk-explanation" class="muted">Completa la evaluación IEI™ para generar tu resultado.</div>
-        </details>
-
-        <div class="notice">
-          En niveles MODERADA o superior, muchas personas piden una confirmación técnica para decidir si actuar o ajustar medidas.
-        </div>
-
-        <div class="notice">
-          Las solicitudes se gestionan por orden de entrada y zona.
-        </div>
-
         <div class="actions actions-result">
           <div class="ps-cta-primary-wrap">
             <button class="btn btn-primary" type="button" id="cta-request">Recibir propuestas técnicas para reducir exposición</button>
-            <p class="ps-cta-primary-note">Compararemos hasta 2 proveedores adecuados para tu perfil y zona.</p>
+            <p class="ps-cta-primary-note">Hasta 2 proveedores adecuados para tu perfil y zona.</p>
           </div>
           <button class="btn btn-secondary" type="button" id="cta-keep">Guardar informe y decidir más adelante</button>
         </div>
-        <p class="muted iei-cta-trust">Solo compartimos tus datos si lo solicitas (máx. 2 proveedores).</p>
-
-        <div id="decision-feedback" class="notice" style="display:none;"></div>
+        <p class="muted iei-cta-trust">Solo compartimos tus datos si lo solicitas.</p>
       </section>
     </div>
   </main>
@@ -271,17 +255,5 @@
   <script src="/js/iei-meta.js"></script>
   <script src="/js/iei-ui.js"></script>
 
-  <script id="ps-print-js">
-  document.addEventListener('DOMContentLoaded', () => {
-    const keepBtn = document.getElementById('cta-keep');
-    if (!keepBtn) return;
-
-    keepBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Abre el diálogo de impresión del navegador (el usuario elige "Guardar como PDF")
-      window.print();
-    });
-  });
-  </script>
 </body>
 </html>

@@ -543,18 +543,20 @@
   scoreNode.textContent = `${score} / 100`;
   levelNode.textContent = level;
   levelNode.className = badgeClass(level);
-  explanationNode.textContent = explanation(level, {
-    probabilityIndex,
-    impactIndex,
-    synergyPoints,
-    modelVersion,
-    axisMix,
-    dominantAxisCode,
-    tier,
-    confidenceScore: confidence,
-    ieiBase,
-    ieiRaw,
-  });
+  if (explanationNode) {
+    explanationNode.textContent = explanation(level, {
+      probabilityIndex,
+      impactIndex,
+      synergyPoints,
+      modelVersion,
+      axisMix,
+      dominantAxisCode,
+      tier,
+      confidenceScore: confidence,
+      ieiBase,
+      ieiRaw,
+    });
+  }
   humanTextNode.textContent = humanTranslation(level, {
     probabilityIndex,
     impactIndex,
@@ -769,7 +771,7 @@
   ctaKeepNode?.addEventListener("click", () => {
     if (decisionFeedbackNode) {
       decisionFeedbackNode.style.display = "block";
-      decisionFeedbackNode.textContent = "Listo. Puedes guardar este informe en PDF. Si más adelante quieres comparar propuestas, vuelve a esta página.";
+      decisionFeedbackNode.textContent = "Informe guardado. Puedes volver cuando quieras para comparar propuestas.";
     }
     window.PuntoSeguroAnalytics?.trackEvent("lead_declined", {
       risk_level: level,

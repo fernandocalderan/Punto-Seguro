@@ -41,6 +41,42 @@
       .replace(/\s+/g, " ");
   }
 
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  function computeActivationFactor(meta){
+    const p = Number(meta?.probabilityIndex || 0) / 100;
+    const i = Number(meta?.impactIndex || 0) / 100;
+    const s = Number(meta?.synergyPoints || 0) / 10; // escala moderada
+    const c = Number(meta?.confidenceScore || 70) / 100;
+
+    const exposure = clamp01(0.5*p + 0.3*i + 0.2*s);
+    const adjusted = clamp01(exposure * (0.85 + 0.15*c));
+
+    return adjusted;
+  }
+
+  function computeUrgencyScore(baseScore, FA){
+    const boost = baseScore * (1 + 0.30*FA);
+    return Math.round(Math.max(0, Math.min(100, boost)));
+  }
+
+  function urgencyLabel(score){
+    if(score >= 75) return "MUY ALTA";
+    if(score >= 55) return "ALTA";
+    if(score >= 35) return "MEDIA";
+    return "BAJA";
+  }
+
+  function urgencyText(label){
+    const map = {
+      "MUY ALTA": "La exposición operativa es elevada en escenarios habituales. Recomendable priorizar actuación inmediata.",
+      "ALTA": "La exposición operativa es relevante. Actuar en el corto plazo reduce probabilidad acumulada.",
+      "MEDIA": "Exposición operativa moderada. Ajustes técnicos por fases suelen reducir riesgo.",
+      "BAJA": "Exposición operativa contenida. Mantener revisión periódica."
+    };
+    return map[label] || "";
+  }
+
   function getTopFactors(evaluation, limit = 5) {
     const factors = evaluation?.factores_top || evaluation?.factors_top || [];
     if (!Array.isArray(factors)) return [];
@@ -332,6 +368,16 @@
   const confidence = Number(evaluation.confidence_score);
   const ieiBase = Number(evaluation.iei_base);
   const ieiRaw = Number(evaluation.iei_raw);
+  const FA = computeActivationFactor({
+    probabilityIndex,
+    impactIndex,
+    synergyPoints,
+    confidenceScore: confidence
+  });
+
+  const urgencyScore = computeUrgencyScore(score, FA);
+  const urgencyLvl = urgencyLabel(urgencyScore);
+
   const axisMix = evaluation.axis_mix && typeof evaluation.axis_mix === "object"
     ? {
         Vn: Number(evaluation.axis_mix.Vn),
@@ -373,6 +419,22 @@
     dominantAxisCode,
     tier,
   });
+
+  let urgencyContainer = document.getElementById("operational-exposure");
+
+  if(!urgencyContainer){
+    urgencyContainer = document.createElement("div");
+    urgencyContainer.id = "operational-exposure";
+    urgencyContainer.className = "operational-exposure-block";
+    humanTextNode.parentNode.insertBefore(urgencyContainer, humanTextNode.nextSibling);
+  }
+
+  urgencyContainer.innerHTML = `
+    <div class="urgency-title">Exposición operativa</div>
+    <div class="urgency-score">${urgencyScore} / 100</div>
+    <div class="urgency-label urgency-${urgencyLvl.toLowerCase()}">${urgencyLvl}</div>
+    <div class="urgency-text">${urgencyText(urgencyLvl)}</div>
+  `;
 
   if (barFillNode) {
     const pct = Math.max(0, Math.min(100, Number.isFinite(score) ? score : 0));
@@ -442,11 +504,11 @@
   });
 
   ctaRequestNode?.addEventListener("click", () => {
-    const inferredPlazo = (level === "CRÍTICA" || level === "ELEVADA")
-      ? "esta_semana"
-      : level === "MODERADA"
-        ? "1_3_meses"
-        : "informativo";
+    const inferredPlazo =
+      urgencyLvl === "MUY ALTA" ? "esta_semana" :
+      urgencyLvl === "ALTA" ? "15_dias" :
+      urgencyLvl === "MEDIA" ? "1_3_meses" :
+      "informativo";
 
     window.sessionStorage.setItem(
       "puntoSeguro.intent",

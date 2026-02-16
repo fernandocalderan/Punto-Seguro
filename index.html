@@ -13,9 +13,9 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Evaluación de Seguridad y Riesgo de Robo | Punto Seguro</title>
+  <title>IEI™: Diagnóstico de Seguridad en 15 Preguntas | Punto Seguro</title>
 
-  <meta name="description" content="Calcula en 2 minutos el riesgo de robo y tu nivel de exposición en vivienda o negocio. Recomendaciones claras. Solo compartimos datos si solicitas propuestas." />
+  <meta name="description" content="Evalúa el nivel real de exposición a intrusión en tu vivienda o negocio con 15 preguntas (3–5 min). Resultado inmediato y recomendaciones claras. Sin llamadas; solo compartimos datos si solicitas propuestas." />
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -389,6 +389,11 @@
       box-shadow: 0 10px 26px rgba(0,0,0,0.04);
     }
     .pill b { color: var(--brand-secondary); font-weight: 800; }
+    .hero-segment-pills {
+      margin-top: .85rem;
+      margin-bottom: 1rem;
+    }
+    .hero-segment-pills .pill { text-decoration: none; }
 
     /* Right hero card */
     .hero-panel {
@@ -800,6 +805,16 @@
         letter-spacing: .02em;
         margin-bottom: .4rem;
       }
+      .hero-segment-pills {
+        order: 2;
+        margin-top: .15rem;
+        margin-bottom: .85rem;
+      }
+      .hero-segment-pills .pill {
+        font-size: .82rem;
+        padding: .48rem .72rem;
+        box-shadow: none;
+      }
       .hero h1 {
         order: 3;
         font-size: 2.05rem;
@@ -1066,13 +1081,19 @@
             <img src="logo-punto-seguro.png" alt="Punto Seguro">
             <span class="hero-mobile-brand">Punto Seguro</span>
           </div>
-          <p class="hero-eyebrow">Evaluación de seguridad (IEI™) · Riesgo de robo y exposición a intrusión</p>
+          <p class="hero-eyebrow">IEI™ · Diagnóstico de exposición a intrusión (vivienda y negocio)</p>
+          <div class="microtrust hero-segment-pills" aria-label="Selecciona tu tipo de inmueble">
+            <a class="pill" href="/diagnostico?tipo=vivienda" data-ps-segment="vivienda" data-ps-placement="hero_segment">Vivienda</a>
+            <a class="pill" href="/diagnostico?tipo=comercio" data-ps-segment="comercio" data-ps-placement="hero_segment">Negocio</a>
+            <span class="pill">15 preguntas · 3–5 min</span>
+            <span class="pill">Sin llamadas</span>
+          </div>
           <h1>
-            <span class="hero-title-desktop">Evalúa el riesgo de robo en tu vivienda o negocio en 2 minutos.</span>
-            <span class="hero-title-mobile">Evalúa el riesgo de robo en 2 minutos.</span>
+            <span class="hero-title-desktop">Conoce el nivel real de exposición de tu vivienda o negocio.</span>
+            <span class="hero-title-mobile">Conoce tu exposición real.</span>
           </h1>
           <p class="hero-subcopy-mobile">
-            Detecta puntos vulnerables, hábitos de riesgo y factores del entorno.
+            15 preguntas (3–5 min) para detectar puntos vulnerables, rutinas de riesgo y señales del entorno.
           </p>
           <div class="hero-result-preview" aria-label="Resultado que recibirás (ejemplo orientativo)">
             <div class="hero-result-preview-title">Resultado que recibirás</div>
@@ -1087,10 +1108,10 @@
               </div>
             </div>
             <ul class="hero-result-preview-list">
-              <li>Puntos vulnerables detectados</li>
-              <li>Factores de entorno</li>
-              <li>Recomendaciones generales</li>
-              <li>Opción de solicitar propuestas</li>
+              <li>Nivel de exposición + índice IEI™ (0–100)</li>
+              <li>Top vulnerabilidades detectadas</li>
+              <li>Acciones prioritarias (impacto vs facilidad)</li>
+              <li>Opcional: solicitar propuestas</li>
             </ul>
           </div>
 
@@ -1118,6 +1139,33 @@
 	      </div>
 	    </section>
 
+    <section class="section-compact">
+      <div class="container">
+        <div class="section-title">
+          <h2>¿Te suena alguna de estas situaciones?</h2>
+          <p>Si respondes “sí” a una, el IEI™ te dará una referencia clara para actuar sin improvisar.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>Aquí nunca pasó nada</h3>
+            <p>La ausencia de incidentes previos suele generar confianza, pero no elimina exposición oculta.</p>
+          </article>
+          <article class="card">
+            <h3>Rutinas muy estables</h3>
+            <p>Horarios repetidos facilitan que terceros anticipen cuándo hay menor supervisión.</p>
+          </article>
+          <article class="card">
+            <h3>Medidas visibles, dudas reales</h3>
+            <p>Puede haber elementos de protección, pero sin claridad sobre su eficacia frente a un intento real.</p>
+          </article>
+          <article class="card">
+            <h3>Entorno cambiante</h3>
+            <p>Nuevos hábitos de la zona, obras o cambios de tránsito pueden alterar el riesgo sin avisar.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="how-it-works">
       <div class="container mobile-container">
         <div class="section-title">
@@ -1127,13 +1175,13 @@
         <div class="steps">
           <div class="step">
             <div class="n">1</div>
-            <h3>Responde 6–10 preguntas</h3>
-            <p>Completa la evaluación IEI™ en menos de 2 minutos para estimar tu exposición.</p>
+            <h3>Responde 15 preguntas</h3>
+            <p>Completa la evaluación IEI™ en 3–5 minutos, con criterio y sin tecnicismos.</p>
           </div>
           <div class="step">
             <div class="n">2</div>
-            <h3>Recibe tu nivel de exposición (IEI™) y recomendaciones generales</h3>
-            <p>Obtén una referencia clara para priorizar decisiones sin tecnicismos.</p>
+            <h3>Recibe tu IEI™ (0–100) y prioridades claras</h3>
+            <p>Obtén una referencia clara para decidir qué hacer primero (sin tecnicismos).</p>
           </div>
           <div class="step">
             <div class="n">3</div>
@@ -1203,17 +1251,17 @@
           </p>
         </div>
 
-        <div class="grid">
+	        <div class="grid">
 	          <div class="card">
-	            <h3>Accesos y cerramientos</h3>
+	            <h3>Puertas, ventanas y puntos secundarios</h3>
 	            <p>Puertas, ventanas, escaparates (si aplica), accesos secundarios, puntos vulnerables y su estado real (no el aparente).</p>
 	          </div>
 	          <div class="card">
-	            <h3>Hábitos operativos</h3>
+	            <h3>Horarios y rutinas que te vuelven predecible</h3>
 	            <p>Rutinas, horarios, aperturas, cierres y prácticas habituales que pueden volver el inmueble predecible.</p>
 	          </div>
           <div class="card">
-            <h3>Entorno y ubicación</h3>
+            <h3>Entorno, visibilidad e iluminación</h3>
             <p>Visibilidad, iluminación, tránsito, contexto de zona y elementos que aumentan oportunidad de intrusión.</p>
           </div>
         </div>
@@ -1258,7 +1306,7 @@
       <div class="container" style="max-width: 920px;">
         <div class="hero-panel" aria-label="Evaluador Punto Seguro">
           <h3>Evaluación IEI™</h3>
-          <b><p>Calcula en segundos el <a href="/diagnostico">nivel de exposición a intrusión</a> en tu vivienda o local.</p></b>
+          <b><p>Completa el diagnóstico IEI™ y obtén tu nivel de exposición a intrusión (0–100) al momento.</p></b>
           <p>Basado en técnicas de seguridad física, CPTED y criterios profesionales.</p>
           <div class="ps-cta-inline-block">
             <a class="ps-cta-primary ps-cta-mid" href="/diagnostico" data-ps-placement="inline" aria-label="Calcular mi Índice IEI™">Calcular mi Índice IEI™</a>
@@ -1280,61 +1328,28 @@
 
         <div style="max-width: 900px; margin: 0 auto;">
           <details>
-            <summary>¿Qué factores aumentan realmente la exposición a intrusión en un inmueble?</summary>
-            <p>
-              La exposición no depende solo del barrio o del tipo de inmueble.
-              Influyen factores como la <b>previsibilidad de horarios, accesos secundarios poco visibles, iluminación, hábitos repetidos y la facilidad con la que alguien puede observar sin ser detectado.</b>
-              Muchos de estos factores pasan desapercibidos para el propietario, pero no para quien busca oportunidades.
-            </p>
+            <summary>¿Cómo sé si mi vivienda o negocio es más vulnerable de lo que parece?</summary>
+            <p>La percepción suele fallar. El IEI™ cruza accesos, rutinas y entorno para darte una lectura objetiva en escala 0–100.</p>
           </details>
 
           <details>
-            <summary>¿Por qué algunos robos ocurren en viviendas o negocios donde “nunca había pasado nada”?</summary>
-            <p>
-              Porque la ausencia de incidentes previos no reduce la exposición.
-              De hecho, <b>muchos intrusos priorizan inmuebles sin antecedentes,</b> donde la percepción de seguridad suele ser más relajada y las rutinas más estables.
-            </p>
+            <summary>¿De verdad alguien puede saber si mi inmueble está vacío?</summary>
+            <p>Sí. Horarios repetidos, luces constantes o poca actividad permiten detectar patrones en pocos días.</p>
           </details>
 
           <details>
-            <summary>¿Cómo sabe un intruso si un inmueble está vacío o es predecible?</summary>
-            <p>
-              A través de señales simples: <b>horarios repetidos, persianas, iluminación constante, ausencia prolongada de movimiento, entregas acumuladas o accesos que nunca cambian.</b>
-              No requiere tecnología avanzada, solo observación durante pocos días.
-            </p>
+            <summary>Si nunca me han robado, ¿tiene sentido preocuparme ahora?</summary>
+            <p>Sí, porque prevenir antes del primer incidente evita decisiones urgentes y reduce exposición acumulada.</p>
           </details>
 
           <details>
-            <summary>¿Un inmueble puede parecer seguro y aun así ser vulnerable?</summary>
-            <p>
-              Sí.
-              Es habitual encontrar inmuebles con cerraduras, rejas o medidas visibles que <b>transmiten seguridad, pero que presentan puntos débiles en accesos menos evidentes</b> o en el comportamiento diario de quienes lo usan.
-            </p>
+            <summary>Tengo cerraduras o alarma. ¿No es suficiente?</summary>
+            <p>Ayuda, pero importa cómo se combinan detección, respuesta y accesos. El IEI™ te muestra qué priorizar primero.</p>
           </details>
 
           <details>
-            <summary>¿Tiene sentido evaluar la exposición si no he sufrido ningún intento de intrusión?</summary>
-            <p>
-              Precisamente en ese momento es cuando la evaluación aporta más valor.
-              <b>Identificar vulnerabilidades antes de un incidente permite corregirlas sin urgencias ni decisiones precipitadas.</b>
-            </p>
-          </details>
-
-          <details>
-            <summary>¿Por qué una evaluación personalizada requiere registro de datos?</summary>
-            <p>
-              Porque cualquier evaluación técnica de seguridad debe realizarse bajo el marco legal de una empresa de seguridad homologada.
-              Punto Seguro ofrece información y criterio preventivo.
-              La evaluación profesional solo se realiza si el propietario lo solicita expresamente y siempre con total transparencia.
-            </p>
-          </details>
-
-          <details>
-            <summary>¿Este contenido implica que se me va a contactar o que se recopilan datos personales?</summary>
-            <p>
-              <b>Solo si lo decides.</b>
-              La evaluación IEI™ inicial es orientativa. Si solicitas propuestas, Punto Seguro compartirá tus datos con hasta 2 proveedores con tu consentimiento explícito.
-            </p>
+            <summary>¿Van a llamarme o pedir mis datos al hacer la evaluación?</summary>
+            <p>No. Puedes completar el diagnóstico sin llamadas. Solo compartimos datos si pides propuestas y lo autorizas.</p>
           </details>
         </div>
       </div>
@@ -1383,6 +1398,17 @@
         });
       }
 
+      const segmentPills = document.querySelectorAll('[data-ps-segment][data-ps-placement="hero_segment"]');
+      segmentPills.forEach(function (pill) {
+        pill.addEventListener("click", function () {
+          const segment = pill.getAttribute("data-ps-segment");
+          window.PuntoSeguroAnalytics?.trackEvent("quiz_started", {
+            source: "home_hero_segment",
+            segment: segment
+          });
+        });
+      });
+
       const stickyBar = document.querySelector(".home-page .ps-sticky-bar");
       const body = document.body;
       if (!stickyBar || !body) return;
@@ -1419,50 +1445,42 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Qué diferencia este criterio de los consejos genéricos sobre seguridad?",
+            "name": "¿Cómo sé si mi vivienda o negocio es más vulnerable de lo que parece?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "La mayoría de consejos se centran en añadir medidas. Este criterio analiza la exposición real: accesos, rutinas repetidas y señales que un intruso detecta en segundos. Es una lectura profesional, no una lista genérica."
+              "text": "La percepción suele fallar. El IEI™ cruza accesos, rutinas y entorno para darte una lectura objetiva en escala 0–100."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Esto sustituye a un estudio técnico o a un sistema de alarma?",
+            "name": "¿De verdad alguien puede saber si mi inmueble está vacío?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Este contenido no sustituye estudios técnicos ni implica contratar nada. Sirve para entender la exposición real antes de decidir, evitando decisiones basadas en suposiciones."
+              "text": "Sí. Horarios repetidos, luces constantes o poca actividad permiten detectar patrones en pocos días."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Por qué muchos robos ocurren en inmuebles “bien protegidos”?",
+            "name": "Si nunca me han robado, ¿tiene sentido preocuparme ahora?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Porque el problema rara vez es la falta de medidas, sino puntos ignorados y hábitos previsibles. En muchos casos recientes, el acceso no fue forzado: fue observado."
+              "text": "Sí, porque prevenir antes del primer incidente evita decisiones urgentes y reduce exposición acumulada."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Es útil si nunca ha pasado nada en mi vivienda o negocio?",
+            "name": "Tengo cerraduras o alarma. ¿No es suficiente?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Especialmente en ese caso. La mayoría de incidentes ocurren antes del primer robo, cuando la percepción de seguridad es alta y nadie revisa su exposición real."
+              "text": "Ayuda, pero importa cómo se combinan detección, respuesta y accesos. El IEI™ te muestra qué priorizar primero."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Por qué una evaluación personalizada requiere registro de datos?",
+            "name": "¿Van a llamarme o pedir mis datos al hacer la evaluación?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Porque cualquier evaluación técnica de seguridad debe realizarse bajo el marco legal de una empresa de seguridad homologada. Punto Seguro ofrece información y criterio preventivo. La evaluación profesional solo se realiza si el propietario lo solicita expresamente y siempre con total transparencia."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "¿Se recogen datos o se me va a contactar después?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "La evaluación IEI™ inicial no requiere contacto. Si el usuario solicita propuestas, se recogen datos con consentimiento explícito y se comparten con hasta 2 proveedores."
+              "text": "No. Puedes completar el diagnóstico sin llamadas. Solo compartimos datos si pides propuestas y lo autorizas."
             }
           }
         ]

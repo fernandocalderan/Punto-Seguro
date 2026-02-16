@@ -1191,6 +1191,63 @@
       border-radius: 12px;
     }
 
+    .ps-start-trustline{
+      visibility: hidden;
+      height: 22px;
+      margin-top: 18px;
+    }
+
+    .ps-type-btn{
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ps-type-name{
+      font-size: 1.05rem;
+    }
+
+    .ps-type-desc{
+      margin-top: 6px;
+      font-size: .92rem;
+    }
+
+    .ps-type-btn{
+      background: #ffffff;
+      border: 1.5px solid rgba(15,23,42,0.18);
+      border-radius: 18px;
+      padding: 22px 18px;
+      box-shadow: 0 14px 34px rgba(15,23,42,0.08);
+      transition: transform .15s ease,
+                  box-shadow .15s ease,
+                  border-color .15s ease,
+                  background .15s ease;
+    }
+
+    .ps-type-btn:hover{
+      transform: translateY(-3px);
+      border-color: rgba(15,23,42,0.32);
+      box-shadow: 0 24px 50px rgba(15,23,42,0.14);
+      background: rgba(15,23,42,0.02);
+    }
+
+    .ps-type-btn.ps-active{
+      border-color: var(--brand-primary);
+      box-shadow: 0 28px 60px rgba(15,23,42,0.18);
+    }
+
+    .ps-type-btn:active{
+      transform: translateY(-1px);
+    }
+
+    .ps-start{
+      padding-bottom: 10px;
+    }
+
+    .evaluador-card{
+      padding-bottom: 28px;
+    }
+
   </style>
   <link rel="stylesheet" href="/css/ps-ui.css?v=1" />
 </head>

@@ -118,6 +118,36 @@
     return map[label] || "";
   }
 
+  function computeInterventionPriority(meta){
+    const p = Number(meta?.probabilityIndex || 0);
+    const i = Number(meta?.impactIndex || 0);
+    const s = Number(meta?.synergyPoints || 0);
+
+    const composite = (0.6 * p + 0.3 * i + 0.1 * (s * 10));
+
+    if (composite >= 75) {
+      return {
+        level: "Alta",
+        plazo: "7–14 días",
+        justification: "La combinación de probabilidad elevada y factores concurrentes incrementa exposición acumulada."
+      };
+    }
+
+    if (composite >= 55) {
+      return {
+        level: "Media",
+        plazo: "30 días",
+        justification: "Existen factores mejorables que conviene abordar por fases para reducir previsibilidad."
+      };
+    }
+
+    return {
+      level: "Baja",
+      plazo: "Revisión periódica",
+      justification: "No se detecta presión operativa inmediata, aunque conviene mantener control preventivo."
+    };
+  }
+
   function getTopFactors(evaluation, limit = 5) {
     const factors = evaluation?.factores_top || evaluation?.factors_top || [];
     if (!Array.isArray(factors)) return [];
@@ -403,6 +433,11 @@
   const probabilityIndex = Number(evaluation.probability_index);
   const impactIndex = Number(evaluation.impact_index);
   const synergyPoints = Number(evaluation.synergy_points || 0);
+  const intervention = computeInterventionPriority({
+    probabilityIndex,
+    impactIndex,
+    synergyPoints
+  });
   const modelVersion = String(evaluation.model_version || "").trim();
   const dominantAxisCode = String(evaluation.dominant_axis || "").trim().toUpperCase();
   const tier = String(evaluation.tier || "").trim();
@@ -461,14 +496,29 @@
     tier,
   });
 
+  let priorityContainer = document.getElementById("technical-priority");
+  if (!priorityContainer) {
+    priorityContainer = document.createElement("div");
+    priorityContainer.id = "technical-priority";
+    priorityContainer.className = "technical-priority-block";
+    humanTextNode.parentNode.insertBefore(priorityContainer, humanTextNode.nextSibling);
+  }
+
+  priorityContainer.innerHTML = `
+    <div class="priority-title">Prioridad de intervención técnica</div>
+    <div class="priority-level">Nivel: ${escapeHtml(intervention.level)}</div>
+    <div class="priority-deadline">Plazo recomendado: ${escapeHtml(intervention.plazo)}</div>
+    <div class="priority-justification">${escapeHtml(intervention.justification)}</div>
+  `.trim();
+
   let urgencyContainer = document.getElementById("operational-exposure");
 
   if(!urgencyContainer){
     urgencyContainer = document.createElement("div");
     urgencyContainer.id = "operational-exposure";
     urgencyContainer.className = "operational-exposure-block";
-    // insert justo después del texto humano
-    humanTextNode.parentNode.insertBefore(urgencyContainer, humanTextNode.nextSibling);
+    const insertionRef = priorityContainer ? priorityContainer.nextSibling : humanTextNode.nextSibling;
+    humanTextNode.parentNode.insertBefore(urgencyContainer, insertionRef);
   }
 
   urgencyContainer.innerHTML = `
@@ -550,9 +600,8 @@
 
   ctaRequestNode?.addEventListener("click", () => {
     const inferredPlazo =
-      urgencyLvl === "MUY ALTA" ? "esta_semana" :
-      urgencyLvl === "ALTA" ? "15_dias" :
-      urgencyLvl === "MEDIA" ? "1_3_meses" :
+      intervention.level === "Alta" ? "esta_semana" :
+      intervention.level === "Media" ? "30_dias" :
       "informativo";
 
     window.sessionStorage.setItem(

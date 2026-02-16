@@ -10,6 +10,31 @@
     }
   }
 
+  const URGENCY_CAL = {
+    // Variante: "A" conservadora, "B" más negocio
+    variant: (window.localStorage.getItem("ps_urgency_variant") || "B").toUpperCase(),
+
+    // Pesos base (se aplican a p,i,s)
+    // A: más prudente, B: más “urgencia”
+    weights: {
+      A: { p: 0.50, i: 0.35, s: 0.15 },
+      B: { p: 0.55, i: 0.30, s: 0.15 }
+    },
+
+    // Escala sinergia (puntos -> 0..1 aprox)
+    synergyDiv: { A: 14, B: 10 },
+
+    // Boost máximo aplicado al risk_score según FA (0..1)
+    boostK: { A: 0.22, B: 0.35 },
+
+    // “Curva” para polarizar ( >1 empuja medios hacia arriba si FA>~0.5 )
+    // A: suave, B: más agresiva pero defendible
+    gamma: { A: 1.05, B: 1.20 },
+
+    // Ajuste por confianza (reduce urgencia si confianza baja)
+    confidenceFloor: { A: 0.80, B: 0.78 } // mínimo multiplicador
+  };
+
   function badgeClass(level) {
     if (level === "CONTROLADA") return "badge badge-low";
     if (level === "MODERADA") return "badge badge-medium";
@@ -44,35 +69,51 @@
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 
   function computeActivationFactor(meta){
-    const p = Number(meta?.probabilityIndex || 0) / 100;
-    const i = Number(meta?.impactIndex || 0) / 100;
-    const s = Number(meta?.synergyPoints || 0) / 10; // escala moderada
-    const c = Number(meta?.confidenceScore || 70) / 100;
+    const v = URGENCY_CAL.variant in URGENCY_CAL.weights ? URGENCY_CAL.variant : "B";
+    const w = URGENCY_CAL.weights[v];
+    const div = URGENCY_CAL.synergyDiv[v];
 
-    const exposure = clamp01(0.5*p + 0.3*i + 0.2*s);
-    const adjusted = clamp01(exposure * (0.85 + 0.15*c));
+    const p = clamp01(Number(meta?.probabilityIndex || 0) / 100);
+    const i = clamp01(Number(meta?.impactIndex || 0) / 100);
+    const s = clamp01(Number(meta?.synergyPoints || 0) / div);
+    const c = clamp01(Number(meta?.confidenceScore || 70) / 100);
 
-    return adjusted;
+    // exposición lineal (0..1)
+    let exposure = clamp01(w.p*p + w.i*i + w.s*s);
+
+    // curva para polarizar (gamma)
+    const g = URGENCY_CAL.gamma[v];
+    exposure = clamp01(Math.pow(exposure, 1/g)); // 1/g sube medios sin “romper” altos
+
+    // penalización suave por baja confianza (no regales urgencia con datos flojos)
+    const floor = URGENCY_CAL.confidenceFloor[v];
+    const confMult = clamp01(floor + (1 - floor) * c);
+
+    return clamp01(exposure * confMult);
   }
 
   function computeUrgencyScore(baseScore, FA){
-    const boost = baseScore * (1 + 0.30*FA);
-    return Math.round(Math.max(0, Math.min(100, boost)));
+    const v = URGENCY_CAL.variant in URGENCY_CAL.boostK ? URGENCY_CAL.variant : "B";
+    const k = URGENCY_CAL.boostK[v];
+
+    // boost: 0..k (hasta +35% en variante B)
+    const boosted = Number(baseScore || 0) * (1 + k * FA);
+    return Math.round(Math.max(0, Math.min(100, boosted)));
   }
 
   function urgencyLabel(score){
-    if(score >= 75) return "MUY ALTA";
-    if(score >= 55) return "ALTA";
-    if(score >= 35) return "MEDIA";
+    if(score >= 78) return "MUY ALTA";
+    if(score >= 58) return "ALTA";
+    if(score >= 38) return "MEDIA";
     return "BAJA";
   }
 
   function urgencyText(label){
     const map = {
-      "MUY ALTA": "La exposición operativa es elevada en escenarios habituales. Recomendable priorizar actuación inmediata.",
-      "ALTA": "La exposición operativa es relevante. Actuar en el corto plazo reduce probabilidad acumulada.",
-      "MEDIA": "Exposición operativa moderada. Ajustes técnicos por fases suelen reducir riesgo.",
-      "BAJA": "Exposición operativa contenida. Mantener revisión periódica."
+      "MUY ALTA": "Exposición operativa muy alta: actuar esta semana reduce probabilidad acumulada y ventanas de oportunidad.",
+      "ALTA": "Exposición operativa alta: actuar en 7–14 días suele reducir riesgo de forma clara.",
+      "MEDIA": "Exposición operativa moderada: aplicar mejoras por fases suele ser suficiente.",
+      "BAJA": "Exposición operativa contenida: mantener revisión y ajustes coste/beneficio."
     };
     return map[label] || "";
   }
@@ -426,15 +467,19 @@
     urgencyContainer = document.createElement("div");
     urgencyContainer.id = "operational-exposure";
     urgencyContainer.className = "operational-exposure-block";
+    // insert justo después del texto humano
     humanTextNode.parentNode.insertBefore(urgencyContainer, humanTextNode.nextSibling);
   }
 
   urgencyContainer.innerHTML = `
     <div class="urgency-title">Exposición operativa</div>
-    <div class="urgency-score">${urgencyScore} / 100</div>
-    <div class="urgency-label urgency-${urgencyLvl.toLowerCase()}">${urgencyLvl}</div>
-    <div class="urgency-text">${urgencyText(urgencyLvl)}</div>
-  `;
+    <div class="urgency-row">
+      <div class="urgency-score">${urgencyScore} / 100</div>
+      <span class="badge ${urgencyLvl === "BAJA" ? "badge-low" : urgencyLvl === "MEDIA" ? "badge-medium" : "badge-high"}">${urgencyLvl}</span>
+    </div>
+    <div class="urgency-text">${escapeHtml(urgencyText(urgencyLvl))}</div>
+    <div class="urgency-note">Nota: el IEI es estructural; la exposición operativa prioriza urgencia según probabilidad/impacto/sinergia y confianza.</div>
+  `.trim();
 
   if (barFillNode) {
     const pct = Math.max(0, Math.min(100, Number.isFinite(score) ? score : 0));

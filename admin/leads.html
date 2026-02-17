@@ -24,14 +24,35 @@
 
   <main class="main">
     <div class="container stack">
+      <section class="ps-admin-hero" aria-label="Centro de Control IEI">
+        <div class="ps-admin-hero-left">
+          <h1 class="ps-admin-title">Centro de Control IEI™</h1>
+          <p class="ps-admin-subtitle">Pipeline operativo y financiero de demanda (leads) en tiempo real.</p>
+        </div>
+        <div class="ps-admin-hero-right">
+          <div class="ps-admin-view">
+            <span class="ps-admin-view-label">Vista</span>
+            <div class="ps-admin-toggle" role="group" aria-label="Selector de vista">
+              <button type="button" class="ps-admin-toggle-btn is-active" data-view="operativa">Operativa</button>
+              <button type="button" class="ps-admin-toggle-btn" data-view="financiera">Financiera</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="card">
-        <h1>Leads</h1>
-        <p class="muted">Listado, detalle y actualización de estado.</p>
+        <h2 class="ps-section-h2">Resumen</h2>
+        <p class="muted">KPIs clave para priorizar y monetizar el flujo.</p>
         <div class="grid-3 metrics-grid" id="metrics"></div>
       </section>
 
       <section class="card stack">
-        <h2 class="section-title">Listado</h2>
+        <div class="ps-list-head">
+          <div>
+            <h2 class="ps-section-h2">Leads</h2>
+            <p class="muted ps-subline">Filtra, revisa y actúa. Prioriza por exposición IEI™ y valor.</p>
+          </div>
+        </div>
         <div class="actions actions-left">
           <label for="status-filter" class="filter-row">
             <span class="muted">Filtrar por estado</span>

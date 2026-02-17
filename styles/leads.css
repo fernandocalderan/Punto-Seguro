@@ -9,6 +9,20 @@
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
+  --ps-bg: #f7f8fa;
+  --ps-card: #ffffff;
+  --ps-text: #0f172a;
+  --ps-muted: rgba(15,23,42,.65);
+  --ps-border: rgba(15,23,42,.10);
+  --ps-border-strong: rgba(15,23,42,.14);
+  --ps-primary: #2b5cff;
+  --ps-success: #16a34a;
+  --ps-warn: #f59e0b;
+  --ps-danger: #ef4444;
+  --ps-radius-lg: 18px;
+  --ps-radius-md: 14px;
+  --ps-shadow-sm: 0 10px 26px rgba(15,23,42,0.06);
+  --ps-shadow-md: 0 18px 50px rgba(15,23,42,0.08);
 }
 
 * {
@@ -636,5 +650,247 @@ p {
 @media (max-width: 520px) {
   .iei-score {
     font-size: 2.4rem;
+  }
+}
+
+/* ================================
+   Punto Seguro Admin Premium UI
+   (non-breaking; keeps all IDs)
+================================= */
+
+body{
+  background: var(--ps-bg);
+  color: var(--ps-text);
+}
+
+/* Hero */
+.ps-admin-hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 1.25rem;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--ps-border);
+  background: var(--ps-card);
+  border-radius: var(--ps-radius-lg);
+  box-shadow: var(--ps-shadow-sm);
+}
+
+.ps-admin-title{
+  margin:0;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+}
+
+.ps-admin-subtitle{
+  margin:.35rem 0 0;
+  color: var(--ps-muted);
+  max-width: 60ch;
+}
+
+.ps-admin-view{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:.4rem;
+}
+
+.ps-admin-view-label{
+  font-size:.78rem;
+  color: var(--ps-muted);
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.ps-admin-toggle{
+  display:inline-flex;
+  padding: .25rem;
+  border-radius: 999px;
+  border: 1px solid var(--ps-border);
+  background: rgba(15,23,42,.03);
+}
+
+.ps-admin-toggle-btn{
+  appearance:none;
+  border:0;
+  background: transparent;
+  color: rgba(15,23,42,.75);
+  font-weight: 800;
+  font-size: .85rem;
+  padding: .55rem .85rem;
+  border-radius: 999px;
+  cursor:pointer;
+}
+
+.ps-admin-toggle-btn.is-active{
+  background: var(--ps-primary);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(43,92,255,0.22);
+}
+
+/* Section titles */
+.ps-section-h2{
+  margin:0;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+/* Lift existing cards */
+.card{
+  border-radius: var(--ps-radius-lg);
+  border: 1px solid var(--ps-border);
+  box-shadow: var(--ps-shadow-sm);
+}
+
+/* Metrics as KPI cards (JS injects content inside #metrics) */
+#metrics{
+  margin-top: 1rem;
+}
+
+#metrics .metric,
+#metrics .kpi,
+#metrics > div{
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-md);
+  background: #fff;
+  box-shadow: none;
+  padding: 1rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#metrics .metric::before,
+#metrics .kpi::before,
+#metrics > div::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width: 5px;
+  background: rgba(43,92,255,.9);
+  opacity: .9;
+}
+
+/* List head */
+.ps-list-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 1rem;
+  margin-bottom: .75rem;
+}
+
+.ps-subline{
+  margin:.35rem 0 0;
+}
+
+/* Table premium */
+.table-wrap{
+  border: 1px solid var(--ps-border);
+  border-radius: var(--ps-radius-lg);
+  overflow: hidden;
+  background: #fff;
+}
+
+.table{
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th{
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  border-bottom: 1px solid var(--ps-border);
+  color: rgba(15,23,42,.78);
+  font-size: .78rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.table tbody td{
+  border-bottom: 1px solid rgba(15,23,42,.06);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover{
+  background: rgba(43,92,255,0.04);
+}
+
+/* Make “money” columns pop a bit (Ticket/Precio) */
+.table tbody td:nth-child(6),
+.table tbody td:nth-child(10){
+  font-weight: 800;
+  color: rgba(15,23,42,.92);
+}
+
+/* Badges (you can optionally add classnames from JS later; safe defaults) */
+.ps-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.3rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--ps-border);
+  font-weight: 800;
+  font-size: .82rem;
+  background: rgba(15,23,42,.03);
+  color: rgba(15,23,42,.85);
+  white-space: nowrap;
+}
+
+.ps-badge--ok{ background: rgba(22,163,74,.08); border-color: rgba(22,163,74,.20); color: rgba(22,163,74,.95); }
+.ps-badge--warn{ background: rgba(245,158,11,.10); border-color: rgba(245,158,11,.22); color: rgba(245,158,11,.95); }
+.ps-badge--danger{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.22); color: rgba(239,68,68,.95); }
+
+/* Detail area: make it feel premium */
+#lead-detail .card{
+  border: 1px solid var(--ps-border);
+  box-shadow: var(--ps-shadow-sm);
+}
+
+.subsection-title{
+  letter-spacing: -0.01em;
+}
+
+/* Inputs */
+.field input,
+.field select,
+.field textarea{
+  border-radius: 12px;
+  border: 1px solid var(--ps-border);
+  background: #fff;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  outline: none;
+  border-color: rgba(43,92,255,.35);
+  box-shadow: 0 0 0 4px rgba(43,92,255,.10);
+}
+
+/* Buttons: slightly more premium */
+.btn{
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.btn-primary{
+  box-shadow: 0 12px 30px rgba(43,92,255,.22);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .ps-admin-hero{
+    align-items:flex-start;
+    flex-direction: column;
+  }
+  .ps-admin-view{
+    align-items:flex-start;
+  }
+  .table-wrap{
+    overflow-x:auto;
   }
 }

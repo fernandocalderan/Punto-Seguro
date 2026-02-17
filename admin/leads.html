@@ -70,6 +70,34 @@
             </select>
           </label>
         </div>
+        <div class="ps-smart-filters">
+          <div class="ps-filter">
+            <label class="muted" for="q-search">Buscar</label>
+            <input id="q-search" type="search" placeholder="Nombre, email, CP, proveedor…" />
+          </div>
+
+          <div class="ps-filter">
+            <label class="muted" for="iei-filter">Exposición IEI™</label>
+            <select id="iei-filter">
+              <option value="all">Todas</option>
+              <option value="MODERADA">MODERADA</option>
+              <option value="ELEVADA">ELEVADA</option>
+              <option value="CRÍTICA">CRÍTICA</option>
+            </select>
+          </div>
+
+          <div class="ps-filter">
+            <label class="muted" for="ticket-min">Ticket mín. (€)</label>
+            <input id="ticket-min" type="number" min="0" step="50" placeholder="Ej: 800" />
+          </div>
+
+          <div class="ps-filter ps-filter-inline">
+            <label class="ps-check">
+              <input id="no-provider" type="checkbox" />
+              <span>Sin proveedor</span>
+            </label>
+          </div>
+        </div>
         <div class="table-wrap">
           <table class="table" id="leads-table">
             <thead>

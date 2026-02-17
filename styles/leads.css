@@ -42,8 +42,13 @@ a {
 }
 
 .container {
-  width: min(920px, 100% - 2.4rem);
+  max-width: 1600px;
+  width: calc(100% - 48px);
   margin: 0 auto;
+}
+
+@media (min-width: 1600px){
+  .container{ max-width: 1760px; }
 }
 
 .header {
@@ -547,21 +552,25 @@ p {
 }
 
 .table-wrap {
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
-  min-width: 760px;
 }
 
 .table th,
 .table td {
   text-align: left;
-  padding: 0.62rem;
+  padding: 10px 10px;
   border-bottom: 1px solid var(--border-soft);
-  font-size: 0.92rem;
+  font-size: 13px;
+  line-height: 1.2;
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .table th {
@@ -569,6 +578,23 @@ p {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: normal;
+}
+
+/* 1 Fecha */            .table th:nth-child(1), .table td:nth-child(1){ width: 120px; }
+/* 2 Contacto */         .table th:nth-child(2), .table td:nth-child(2){ width: 210px; }
+/* 3 Ubicación */        .table th:nth-child(3), .table td:nth-child(3){ width: 110px; }
+/* 4 Exposición IEI */   .table th:nth-child(4), .table td:nth-child(4){ width: 120px; }
+/* 5 Lead score */       .table th:nth-child(5), .table td:nth-child(5){ width: 90px; }
+/* 6 Ticket */           .table th:nth-child(6), .table td:nth-child(6){ width: 95px; }
+/* 7 Plazo */            .table th:nth-child(7), .table td:nth-child(7){ width: 90px; }
+/* 8 Estado */           .table th:nth-child(8), .table td:nth-child(8){ width: 95px; }
+/* 9 Proveedor */        .table th:nth-child(9), .table td:nth-child(9){ width: 170px; }
+/* 10 Precio */          .table th:nth-child(10), .table td:nth-child(10){ width: 85px; }
+/* 11 Acción */          .table th:nth-child(11), .table td:nth-child(11){ width: 110px; }
+
+.table td:nth-child(2){
+  word-break: break-word;
 }
 
 .notice {
@@ -787,12 +813,13 @@ body{
 .table-wrap{
   border: 1px solid var(--ps-border);
   border-radius: var(--ps-radius-lg);
-  overflow: hidden;
+  overflow: visible;
   background: #fff;
 }
 
 .table{
   width:100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -807,11 +834,12 @@ body{
   font-size: .78rem;
   letter-spacing: .02em;
   text-transform: uppercase;
+  white-space: normal;
 }
 
 .table tbody td{
   border-bottom: 1px solid rgba(15,23,42,.06);
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .table tbody tr:hover{
@@ -881,6 +909,38 @@ body{
   box-shadow: 0 12px 30px rgba(43,92,255,.22);
 }
 
+.ps-smart-filters{
+  display:flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+  margin: 12px 0 6px;
+}
+
+.ps-filter{ display:flex; flex-direction:column; gap:6px; min-width: 220px; }
+.ps-filter-inline{ min-width: 180px; }
+
+#q-search, #ticket-min, #iei-filter{
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.12);
+  padding: 0 12px;
+  background:#fff;
+}
+
+.ps-check{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.12);
+  background:#fff;
+  font-weight: 700;
+  color: rgba(15,23,42,.75);
+}
+
 /* Responsive */
 @media (max-width: 900px){
   .ps-admin-hero{
@@ -891,6 +951,6 @@ body{
     align-items:flex-start;
   }
   .table-wrap{
-    overflow-x:auto;
+    overflow: visible;
   }
 }

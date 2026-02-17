@@ -6,6 +6,10 @@
   const alertNode = document.getElementById("lead-alert");
   const metricsNode = document.getElementById("metrics");
   const statusFilter = document.getElementById("status-filter");
+  const searchInput = document.getElementById("q-search");
+  const ieiFilter = document.getElementById("iei-filter");
+  const ticketMinInput = document.getElementById("ticket-min");
+  const noProviderInput = document.getElementById("no-provider");
 
   const leadIdInput = document.getElementById("lead-id");
   const statusInput = document.getElementById("lead-status");
@@ -23,6 +27,7 @@
   let providersCache = [];
   let providerMap = new Map();
   let activeStatusFilter = "all";
+  let searchDebounceTimer = null;
 
   function showAlert(message, isError) {
     if (!message) {
@@ -66,9 +71,111 @@
     return `${parsed} EUR`;
   }
 
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+
+  function parseAmount(value) {
+    if (value === null || value === undefined || value === "") return NaN;
+    if (typeof value === "number") return Number.isFinite(value) ? value : NaN;
+    const cleaned = String(value).replace(/[^\d,.-]/g, "").replace(",", ".");
+    const parsed = Number.parseFloat(cleaned);
+    return Number.isFinite(parsed) ? parsed : NaN;
+  }
+
+  function leadRiskBucket(lead) {
+    const token = normalizeText(
+      lead?.risk_level ||
+      lead?.riskLevel ||
+      lead?.iei_level ||
+      lead?.exposure_level ||
+      ""
+    );
+    if (token.includes("crit")) return "critica";
+    if (token.includes("elev")) return "elevada";
+    if (token.includes("moder")) return "moderada";
+    return "";
+  }
+
+  function leadTicketValue(lead) {
+    return parseAmount(
+      lead?.ticket_estimated_eur ??
+      lead?.ticket_estimated ??
+      lead?.ticket ??
+      lead?.ticket_eur ??
+      lead?.price_eur
+    );
+  }
+
+  function leadHasProvider(lead) {
+    const primary = String(
+      lead?.assigned_provider_id ??
+      lead?.assignedProviderId ??
+      lead?.provider_id ??
+      ""
+    ).trim();
+    if (primary && primary !== "-") return true;
+
+    if (Array.isArray(lead?.provider_ids)) {
+      return lead.provider_ids.some((id) => {
+        const token = String(id || "").trim();
+        return token && token !== "-";
+      });
+    }
+
+    return false;
+  }
+
+  function leadSearchHaystack(lead) {
+    const createdAt = lead?.created_at ? new Date(lead.created_at).toLocaleString("es-ES") : "";
+    const provider = providerLabel(lead?.assigned_provider_id);
+    return normalizeText([
+      lead?.name,
+      lead?.email,
+      lead?.postal_code,
+      lead?.zip,
+      lead?.city,
+      provider,
+      lead?.status,
+      lead?.risk_level,
+      createdAt,
+    ].filter(Boolean).join(" "));
+  }
+
   function getVisibleLeads() {
-    if (!activeStatusFilter || activeStatusFilter === "all") return leadsCache;
-    return leadsCache.filter((lead) => lead.status === activeStatusFilter);
+    let filtered = Array.isArray(leadsCache) ? leadsCache.slice() : [];
+
+    if (activeStatusFilter && activeStatusFilter !== "all") {
+      filtered = filtered.filter((lead) => lead.status === activeStatusFilter);
+    }
+
+    const query = normalizeText(searchInput?.value || "");
+    if (query) {
+      filtered = filtered.filter((lead) => leadSearchHaystack(lead).includes(query));
+    }
+
+    const ieiValue = normalizeText(ieiFilter?.value || "all");
+    if (ieiValue && ieiValue !== "all") {
+      filtered = filtered.filter((lead) => leadRiskBucket(lead) === ieiValue);
+    }
+
+    const ticketMinValue = parseAmount(ticketMinInput?.value);
+    if (Number.isFinite(ticketMinValue) && ticketMinValue > 0) {
+      filtered = filtered.filter((lead) => {
+        const ticket = leadTicketValue(lead);
+        return Number.isFinite(ticket) && ticket >= ticketMinValue;
+      });
+    }
+
+    if (Boolean(noProviderInput?.checked)) {
+      filtered = filtered.filter((lead) => !leadHasProvider(lead));
+    }
+
+    return filtered;
   }
 
   function escapeHtml(value) {
@@ -237,6 +344,11 @@
       .join("");
   }
 
+  function applySmartFilters() {
+    activeStatusFilter = String(statusFilter?.value || "all");
+    renderTable();
+  }
+
   function openLeadDetail(lead) {
     detailSection.style.display = "grid";
     leadIdInput.value = lead.id;
@@ -311,7 +423,7 @@
     providersCache = providersData.providers || [];
     providerMap = new Map(providersCache.map((provider) => [provider.id, provider]));
 
-    renderTable();
+    applySmartFilters();
     renderMetrics(metricsData);
     renderProviderSelects([]);
   }
@@ -447,7 +559,26 @@
 
   statusFilter?.addEventListener("change", (event) => {
     activeStatusFilter = String(event.target.value || "all");
-    renderTable();
+    applySmartFilters();
+  });
+
+  searchInput?.addEventListener("input", () => {
+    window.clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = window.setTimeout(() => {
+      applySmartFilters();
+    }, 200);
+  });
+
+  ieiFilter?.addEventListener("change", () => {
+    applySmartFilters();
+  });
+
+  ticketMinInput?.addEventListener("input", () => {
+    applySmartFilters();
+  });
+
+  noProviderInput?.addEventListener("change", () => {
+    applySmartFilters();
   });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {

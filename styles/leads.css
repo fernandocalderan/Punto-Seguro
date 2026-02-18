@@ -954,3 +954,19 @@ body{
     overflow: visible;
   }
 }
+
+/* Collaborators admin table */
+#collaborators-table th:nth-child(1), #collaborators-table td:nth-child(1){ width: 180px; }
+#collaborators-table th:nth-child(2), #collaborators-table td:nth-child(2){ width: 120px; }
+#collaborators-table th:nth-child(3), #collaborators-table td:nth-child(3){ width: 150px; }
+#collaborators-table th:nth-child(4), #collaborators-table td:nth-child(4){ width: 120px; }
+#collaborators-table th:nth-child(5), #collaborators-table td:nth-child(5){ width: 100px; }
+#collaborators-table th:nth-child(6), #collaborators-table td:nth-child(6){ width: 150px; }
+#collaborators-table th:nth-child(7), #collaborators-table td:nth-child(7){ width: 110px; }
+#collaborators-table th:nth-child(8), #collaborators-table td:nth-child(8){ width: 170px; }
+
+#collaborators-table td:nth-child(8){
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}

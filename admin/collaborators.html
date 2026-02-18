@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro Admin | Colaboradores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/admin/providers">Panel admin</a>
+      <nav class="nav" aria-label="Navegación admin">
+        <a href="/admin/providers">Proveedores</a>
+        <a href="/admin/leads">Leads</a>
+        <a href="/admin/collaborators">Colaboradores</a>
+        <a href="/">Web</a>
+        <button type="button" id="logout-btn" class="btn btn-secondary btn-compact">Salir</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Colaboradores</h1>
+        <p class="muted">Gestiona tracking codes y comisión estimada atribuida solo con teléfono verificado por OTP.</p>
+
+        <form id="collaborator-form" class="stack">
+          <input id="collaborator-id" type="hidden" />
+          <div class="grid">
+            <div class="field">
+              <label for="collaborator-name">Nombre</label>
+              <input id="collaborator-name" required />
+            </div>
+            <div class="field">
+              <label for="collaborator-type">Tipo</label>
+              <input id="collaborator-type" placeholder="affiliate, partner, agencia..." required />
+            </div>
+            <div class="field">
+              <label for="collaborator-tracking-code">Tracking code</label>
+              <input id="collaborator-tracking-code" placeholder="COL-TEST-01" required />
+            </div>
+            <div class="field">
+              <label for="collaborator-commission-type">Tipo comisión</label>
+              <select id="collaborator-commission-type" required>
+                <option value="percent">percent</option>
+                <option value="fixed">fixed</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="collaborator-commission-value">Valor comisión</label>
+              <input id="collaborator-commission-value" type="number" min="0" step="0.01" value="10" required />
+            </div>
+            <div class="field">
+              <label for="collaborator-status">Estado</label>
+              <select id="collaborator-status" required>
+                <option value="active">active</option>
+                <option value="paused">paused</option>
+                <option value="banned">banned</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="collaborator-alert" class="notice" style="display:none;"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Guardar colaborador</button>
+            <button type="button" id="collaborator-reset" class="btn btn-secondary">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Métricas</h2>
+        <p class="muted">Visión rápida del estado de la red de colaboradores.</p>
+        <div class="grid-3 metrics-grid" id="collaborators-metrics"></div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Listado</h2>
+        <div class="table-wrap">
+          <table class="table" id="collaborators-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Tracking</th>
+                <th>Comisión</th>
+                <th>Estado</th>
+                <th>Creado</th>
+                <th>Leads</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card stack" id="collaborator-detail" style="display:none;">
+        <h2 class="ps-section-h2">Detalle colaborador</h2>
+        <div id="collaborator-detail-content" class="stack"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin/collaborators.js"></script>
+</body>
+</html>

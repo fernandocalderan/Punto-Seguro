@@ -54,6 +54,17 @@
     }
   }
 
+  function readCollaboratorTrackingCode() {
+    try {
+      const raw = window.sessionStorage.getItem("puntoSeguro.collaborator");
+      if (!raw) return "";
+      const parsed = JSON.parse(raw);
+      return String(parsed?.tracking_code || "").trim();
+    } catch (_error) {
+      return "";
+    }
+  }
+
   const evaluation = readEvaluation();
   if (!evaluation) {
     window.location.href = "/resultado";
@@ -576,6 +587,11 @@
       axis_mix: evaluation.axis_mix || null,
       model_version: evaluation.model_version || null,
     };
+
+    const collaboratorTrackingCode = readCollaboratorTrackingCode();
+    if (collaboratorTrackingCode) {
+      payload.collaborator_tracking_code = collaboratorTrackingCode;
+    }
 
     window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
       risk_level: payload.risk_level,

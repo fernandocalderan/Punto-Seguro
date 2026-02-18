@@ -469,6 +469,21 @@ const state = {
   questionsJson: null,
 };
 
+function persistCollaboratorRefFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search || "");
+    const ref = String(params.get("ref") || "").trim();
+    if (!ref) return;
+
+    window.sessionStorage.setItem(
+      "puntoSeguro.collaborator",
+      JSON.stringify({ tracking_code: ref })
+    );
+  } catch (_error) {
+    // Ignore malformed URL/sessionStorage edge cases.
+  }
+}
+
 // Bridge global: única fuente de verdad para calcular.
 window.calcularRiesgo = () => {
   try {
@@ -569,4 +584,5 @@ async function init() {
   }
 }
 
+persistCollaboratorRefFromUrl();
 init();

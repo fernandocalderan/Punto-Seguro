@@ -36,12 +36,27 @@ CREATE TABLE IF NOT EXISTS leads (
   lead_score INT,
   ticket_estimated_eur INT,
   price_eur INT,
+  collaborator_id TEXT,
+  collaborator_tracking_code TEXT,
+  commission_estimated_eur INT NOT NULL DEFAULT 0,
   assignment_mode TEXT DEFAULT 'auto',
   assigned_by TEXT,
   updated_at TIMESTAMPTZ,
   deleted_at TIMESTAMPTZ,
   status TEXT NOT NULL DEFAULT 'new',
   notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS collaborators (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  tracking_code TEXT NOT NULL UNIQUE,
+  commission_type TEXT NOT NULL,
+  commission_value NUMERIC(12, 2) NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'active',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS events (
@@ -55,4 +70,6 @@ CREATE INDEX IF NOT EXISTS idx_providers_active ON providers (active);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads (status);
 CREATE INDEX IF NOT EXISTS idx_leads_assigned_provider_id ON leads (assigned_provider_id);
+CREATE INDEX IF NOT EXISTS idx_leads_collaborator_id ON leads (collaborator_id);
+CREATE INDEX IF NOT EXISTS idx_collaborators_tracking_code ON collaborators (tracking_code);
 CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts DESC);

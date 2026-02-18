@@ -52,6 +52,8 @@ const OTP_SPAIN_ONLY = String(process.env.OTP_SPAIN_ONLY || "1") !== "0";
 const TWILIO_ACCOUNT_SID = String(process.env.TWILIO_ACCOUNT_SID || "");
 const TWILIO_AUTH_TOKEN = String(process.env.TWILIO_AUTH_TOKEN || "");
 const TWILIO_VERIFY_SERVICE_SID = String(process.env.TWILIO_VERIFY_SERVICE_SID || "");
+const COLLABORATOR_STATUS_VALUES = new Set(["active", "paused", "banned"]);
+const COLLABORATOR_COMMISSION_VALUES = new Set(["percent", "fixed"]);
 
 const otpVerifiedMap = new Map();
 const otpStartedMap = new Map();
@@ -80,7 +82,9 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   const pathName = req.path || "";
   const protectedAdminFile =
-    pathName === "/admin/providers.html" || pathName === "/admin/leads.html";
+    pathName === "/admin/providers.html" ||
+    pathName === "/admin/leads.html" ||
+    pathName === "/admin/collaborators.html";
 
   if (protectedAdminFile && !isAdminAuthenticated(req)) {
     return res.redirect("/admin/login");
@@ -132,6 +136,51 @@ function normalizeProviderIds(value) {
   if (!Array.isArray(value)) return [];
   const cleaned = value.map((id) => String(id).trim()).filter(Boolean);
   return Array.from(new Set(cleaned)).slice(0, MAX_PROVIDERS_PER_LEAD);
+}
+
+function normalizeCollaboratorTrackingCode(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function normalizeCollaboratorPatch(body, { partial = false } = {}) {
+  const patch = {};
+
+  if (!partial || body.name !== undefined) {
+    patch.name = String(body.name || "").trim();
+  }
+  if (!partial || body.type !== undefined) {
+    patch.type = String(body.type || "").trim();
+  }
+  if (!partial || body.tracking_code !== undefined) {
+    patch.tracking_code = normalizeCollaboratorTrackingCode(body.tracking_code);
+  }
+  if (!partial || body.commission_type !== undefined) {
+    patch.commission_type = String(body.commission_type || "").trim().toLowerCase();
+    if (patch.commission_type && !COLLABORATOR_COMMISSION_VALUES.has(patch.commission_type)) {
+      throw new Error("Invalid commission_type");
+    }
+  }
+  if (!partial || body.commission_value !== undefined) {
+    const value = Number(body.commission_value);
+    if (!Number.isFinite(value) || value < 0) {
+      throw new Error("commission_value must be >= 0");
+    }
+    patch.commission_value = value;
+  }
+  if (!partial || body.status !== undefined) {
+    patch.status = String(body.status || "").trim().toLowerCase();
+    if (patch.status && !COLLABORATOR_STATUS_VALUES.has(patch.status)) {
+      throw new Error("Invalid status");
+    }
+  }
+
+  if (!partial) {
+    if (!patch.name) throw new Error("name is required");
+    if (!patch.type) throw new Error("type is required");
+    if (!patch.tracking_code) throw new Error("tracking_code is required");
+  }
+
+  return patch;
 }
 
 function normalizePhoneE164(value) {
@@ -311,6 +360,10 @@ app.get("/admin/leads", requireAdminPage, (_req, res) => {
   res.sendFile(file("admin/leads.html"));
 });
 
+app.get("/admin/collaborators", requireAdminPage, (_req, res) => {
+  res.sendFile(file("admin/collaborators.html"));
+});
+
 app.post("/api/events", asyncHandler(async (req, res) => {
   const eventName = String(req.body.event_name || "").trim();
   if (!eventName) {
@@ -480,6 +533,7 @@ app.post("/api/leads", async (req, res) => {
         consent: req.body.consent,
         consent_timestamp: req.body.consent_timestamp,
         evaluation_summary: req.body.evaluation_summary,
+        collaborator_tracking_code: req.body.collaborator_tracking_code,
         phone_verified: true,
         otp_started_at: decodedToken?.otp_started_at || null,
         otp_verified_at: decodedToken?.otp_verified_at || null,
@@ -617,6 +671,70 @@ app.delete("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req,
   });
 
   return res.json({ ok: true });
+}));
+
+app.get("/api/admin/collaborators", requireAdminApi, asyncHandler(async (_req, res) => {
+  return res.json({
+    collaborators: await repositories.collaborators.findAll(),
+  });
+}));
+
+app.post("/api/admin/collaborators", requireAdminApi, asyncHandler(async (req, res) => {
+  try {
+    const payload = normalizeCollaboratorPatch(req.body, { partial: false });
+    const existing = await repositories.collaborators.findByTrackingCode(payload.tracking_code);
+    if (existing) {
+      return res.status(409).json({ error: "tracking_code already exists" });
+    }
+
+    const collaborator = await repositories.collaborators.create(payload);
+    return res.status(201).json({ collaborator });
+  } catch (error) {
+    return res.status(400).json({ error: error.message || "Invalid collaborator payload" });
+  }
+}));
+
+app.patch("/api/admin/collaborators/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const collaboratorId = String(req.params.id || "").trim();
+  const existing = await repositories.collaborators.findById(collaboratorId);
+  if (!existing) {
+    return res.status(404).json({ error: "Collaborator not found" });
+  }
+
+  try {
+    const patch = normalizeCollaboratorPatch(req.body, { partial: true });
+    if (Object.keys(patch).length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
+    }
+
+    if (patch.tracking_code) {
+      const byCode = await repositories.collaborators.findByTrackingCode(patch.tracking_code);
+      if (byCode && byCode.id !== collaboratorId) {
+        return res.status(409).json({ error: "tracking_code already exists" });
+      }
+    }
+
+    const collaborator = await repositories.collaborators.update(collaboratorId, patch);
+    return res.json({ collaborator });
+  } catch (error) {
+    return res.status(400).json({ error: error.message || "Invalid collaborator payload" });
+  }
+}));
+
+app.get("/api/admin/collaborators/:id/leads", requireAdminApi, asyncHandler(async (req, res) => {
+  const collaboratorId = String(req.params.id || "").trim();
+  const collaborator = await repositories.collaborators.findById(collaboratorId);
+  if (!collaborator) {
+    return res.status(404).json({ error: "Collaborator not found" });
+  }
+
+  const leads = await repositories.leads.list();
+  const relatedLeads = leads.filter((lead) => lead.collaborator_id === collaboratorId);
+
+  return res.json({
+    collaborator,
+    leads: relatedLeads,
+  });
 }));
 
 app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (_req, res) => {

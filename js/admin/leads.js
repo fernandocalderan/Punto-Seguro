@@ -28,6 +28,8 @@
   let providerMap = new Map();
   let activeStatusFilter = "all";
   let searchDebounceTimer = null;
+  const deepLinkLeadId = new URLSearchParams(window.location.search).get("id");
+  let deepLinkHandled = false;
 
   function showAlert(message, isError) {
     if (!message) {
@@ -192,6 +194,70 @@
     const provider = providerMap.get(providerId);
     if (!provider) return providerId;
     return provider.active ? provider.name : `${provider.name} (inactivo)`;
+  }
+
+  function providerSlotsForLead(lead) {
+    const providerIds = Array.isArray(lead?.provider_ids)
+      ? lead.provider_ids.map((id) => String(id || "").trim()).filter(Boolean)
+      : [];
+    const assignedProviderId = String(lead?.assigned_provider_id || "").trim();
+
+    const primaryId = providerIds[0] || assignedProviderId || null;
+    const secondaryCandidate = providerIds[1] || null;
+    const secondaryId = secondaryCandidate && secondaryCandidate !== primaryId ? secondaryCandidate : null;
+
+    return { primaryId, secondaryId };
+  }
+
+  function relatedCollaboratorHtml(lead) {
+    const collaborator = lead?._collaborator;
+    if (!collaborator) {
+      return "<p class=\"muted\">Sin colaborador atribuido.</p>";
+    }
+
+    const collaboratorName = escapeHtml(collaborator.name || "-");
+    const collaboratorTracking = escapeHtml(collaborator.tracking_code || "-");
+    const collaboratorId = encodeURIComponent(collaborator.id);
+    const estimatedCommission = toCurrency(lead?.commission_estimated_eur);
+
+    return `
+      <p><b>Colaborador:</b> ${collaboratorName}</p>
+      <p><b>Tracking code:</b> <code>${collaboratorTracking}</code></p>
+      <p><b>Comisión estimada:</b> ${estimatedCommission}</p>
+      <p><a class="btn btn-secondary btn-compact" href="/admin/collaborators?id=${collaboratorId}">Ver colaborador</a></p>
+    `;
+  }
+
+  function relatedProvidersHtml(lead) {
+    const slots = providerSlotsForLead(lead);
+    const providers = Array.isArray(lead?._providers) ? lead._providers : [];
+    const providerById = new Map(providers.map((provider) => [provider.id, provider]));
+    const orderedIds = [slots.primaryId, slots.secondaryId].filter(Boolean);
+
+    const rows = orderedIds
+      .map((providerId, index) => {
+        const provider = providerById.get(providerId) || providerMap.get(providerId);
+        if (!provider) return "";
+
+        const role = index === 0 ? "Principal" : "Secundario";
+        const providerName = escapeHtml(provider.name || providerId);
+        const providerLinkId = encodeURIComponent(provider.id || providerId);
+        return `
+          <li>
+            <b>${providerName}</b>
+            · Estado asignación: ${role}
+            · <a href="/admin/providers?id=${providerLinkId}">Ver proveedor</a>
+          </li>
+        `;
+      })
+      .filter(Boolean)
+      .join("");
+
+    if (!rows) {
+      return "<p class=\"muted\">Sin proveedores asignados.</p>";
+    }
+
+    return `<ul class="list">${rows}</ul>`;
   }
 
   function renderIEIReport(diagInput) {
@@ -409,12 +475,21 @@
         </div>
       </div>
       ${renderIEIReport(diag)}
+      <div id="lead-related-block" class="card" style="margin-top:1rem;padding:1rem;">
+        <h3 style="margin:0 0 0.8rem;">Relaciones</h3>
+        <div id="lead-related-collaborator">
+          ${relatedCollaboratorHtml(lead)}
+        </div>
+        <div id="lead-related-providers" style="margin-top:0.8rem;">
+          ${relatedProvidersHtml(lead)}
+        </div>
+      </div>
     `;
   }
 
   async function loadAll() {
     const [leadsData, metricsData, providersData] = await Promise.all([
-      api("/api/admin/leads"),
+      api("/api/admin/leads?expand=collaborator,providers"),
       api("/api/admin/metrics"),
       api("/api/admin/providers"),
     ]);
@@ -426,6 +501,16 @@
     applySmartFilters();
     renderMetrics(metricsData);
     renderProviderSelects([]);
+
+    if (deepLinkLeadId && !deepLinkHandled) {
+      deepLinkHandled = true;
+      try {
+        const data = await api(`/api/admin/leads/${encodeURIComponent(deepLinkLeadId)}?expand=collaborator,providers`);
+        openLeadDetail(data.lead);
+      } catch (_error) {
+        // Ignore invalid deep link ids and keep default listing.
+      }
+    }
   }
 
   tableBody.addEventListener("click", async (event) => {
@@ -436,7 +521,7 @@
     if (!selected) return;
 
     try {
-      const data = await api(`/api/admin/leads/${selected.id}`);
+      const data = await api(`/api/admin/leads/${selected.id}?expand=collaborator,providers`);
       openLeadDetail(data.lead);
     } catch (error) {
       showAlert(error.message, true);
@@ -464,7 +549,7 @@
 
       showAlert("Lead actualizado.");
       await loadAll();
-      const data = await api(`/api/admin/leads/${id}`);
+      const data = await api(`/api/admin/leads/${id}?expand=collaborator,providers`);
       openLeadDetail(data.lead);
     } catch (error) {
       showAlert(error.message, true);
@@ -473,7 +558,7 @@
 
   async function reloadAndOpenLead(id) {
     await loadAll();
-    const data = await api(`/api/admin/leads/${id}`);
+    const data = await api(`/api/admin/leads/${id}?expand=collaborator,providers`);
     openLeadDetail(data.lead);
   }
 

@@ -2,6 +2,10 @@
   const tableBody = document.querySelector("#providers-table tbody");
   const form = document.getElementById("provider-form");
   const alertNode = document.getElementById("provider-alert");
+  const relatedSection = document.getElementById("provider-related-section");
+  const relatedTitle = document.getElementById("provider-related-title");
+  const relatedMeta = document.getElementById("provider-related-meta");
+  const relatedTableBody = document.querySelector("#provider-related-table tbody");
 
   const fields = {
     id: document.getElementById("provider-id"),
@@ -16,6 +20,8 @@
   };
 
   let providersCache = [];
+  const deepLinkProviderId = new URLSearchParams(window.location.search).get("id");
+  let deepLinkHandled = false;
 
   function showAlert(message, isError) {
     if (!message) {
@@ -45,12 +51,22 @@
     return data;
   }
 
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
   function clearForm() {
     form.reset();
     fields.id.value = "";
     fields.priority.value = "100";
     fields.dailyCap.value = "10";
     fields.active.checked = true;
+    if (relatedSection) relatedSection.style.display = "none";
   }
 
   function fillForm(provider) {
@@ -64,6 +80,18 @@
     fields.dailyCap.value = provider.daily_cap;
     fields.active.checked = Boolean(provider.active);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function providerRoleInLead(providerId, lead) {
+    const providerIds = Array.isArray(lead?.provider_ids)
+      ? lead.provider_ids.map((id) => String(id || "").trim()).filter(Boolean)
+      : [];
+    const assigned = String(lead?.assigned_provider_id || "").trim();
+    const primary = providerIds[0] || assigned || null;
+    const secondary = providerIds[1] || null;
+    if (providerId === primary) return "Principal";
+    if (providerId === secondary) return "Secundario";
+    return "Relacionado";
   }
 
   function renderTable() {
@@ -98,6 +126,49 @@
     const data = await api("/api/admin/providers");
     providersCache = data.providers || [];
     renderTable();
+
+    if (deepLinkProviderId && !deepLinkHandled) {
+      deepLinkHandled = true;
+      await openProviderDetail(deepLinkProviderId);
+    }
+  }
+
+  async function loadLeadsForProvider(providerId) {
+    const data = await api(`/api/admin/providers/${encodeURIComponent(providerId)}/leads`);
+    const provider = data.provider;
+    const leads = Array.isArray(data.leads) ? data.leads : [];
+
+    relatedSection.style.display = "grid";
+    relatedTitle.textContent = `Leads asociados · ${provider.name || provider.id}`;
+    relatedMeta.textContent = `Total asociados: ${leads.length}`;
+
+    if (leads.length === 0) {
+      relatedTableBody.innerHTML = "<tr><td colspan=\"7\">No hay leads asociados.</td></tr>";
+      return;
+    }
+
+    relatedTableBody.innerHTML = leads.slice(0, 50).map((lead) => `
+      <tr>
+        <td>${lead.created_at ? new Date(lead.created_at).toLocaleString("es-ES") : "-"}</td>
+        <td>${escapeHtml(lead.name || "-")}</td>
+        <td>${escapeHtml(lead.status || "-")}</td>
+        <td>${escapeHtml(lead.risk_level || "-")}</td>
+        <td>${escapeHtml(String(lead.ticket_estimated_eur ?? "-"))}</td>
+        <td>${providerRoleInLead(providerId, lead)}</td>
+        <td><a href="/admin/leads?id=${encodeURIComponent(lead.id)}">Ver lead</a></td>
+      </tr>
+    `).join("");
+  }
+
+  async function openProviderDetail(providerId) {
+    const provider = providersCache.find((item) => item.id === providerId);
+    if (!provider) {
+      showAlert("Proveedor no encontrado.", true);
+      return;
+    }
+
+    fillForm(provider);
+    await loadLeadsForProvider(providerId);
   }
 
   form.addEventListener("submit", async (event) => {
@@ -142,13 +213,17 @@
     }
   });
 
-  tableBody.addEventListener("click", (event) => {
+  tableBody.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-edit]");
     if (!button) return;
 
-    const provider = providersCache.find((item) => item.id === button.dataset.edit);
-    if (!provider) return;
-    fillForm(provider);
+    const providerId = String(button.dataset.edit || "").trim();
+    if (!providerId) return;
+    try {
+      await openProviderDetail(providerId);
+    } catch (error) {
+      showAlert(error.message, true);
+    }
   });
 
   document.getElementById("provider-reset").addEventListener("click", clearForm);

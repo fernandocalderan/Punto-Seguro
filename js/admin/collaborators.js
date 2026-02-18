@@ -18,6 +18,8 @@
 
   let collaboratorsCache = [];
   const leadsCountByCollaborator = new Map();
+  const deepLinkCollaboratorId = new URLSearchParams(window.location.search).get("id");
+  let deepLinkHandled = false;
 
   function showAlert(message, isError) {
     if (!message) {
@@ -160,9 +162,14 @@
     collaboratorsCache = Array.isArray(data.collaborators) ? data.collaborators : [];
     renderMetrics();
     renderTable();
+
+    if (deepLinkCollaboratorId && !deepLinkHandled) {
+      deepLinkHandled = true;
+      await openCollaboratorDetail(deepLinkCollaboratorId);
+    }
   }
 
-  async function loadCollaboratorLeads(collaboratorId) {
+  async function loadLeadsForCollaborator(collaboratorId) {
     const data = await api(`/api/admin/collaborators/${encodeURIComponent(collaboratorId)}/leads`);
     const collaborator = data.collaborator;
     const leads = Array.isArray(data.leads) ? data.leads : [];
@@ -173,16 +180,32 @@
     const leadsHtml = leads.length === 0
       ? "<p class=\"muted\">No hay leads asociados.</p>"
       : `
-        <ul class="list">
-          ${leads.slice(0, 20).map((lead) => `
-            <li>
-              <strong>${escapeHtml(lead.name || "-")}</strong>
-              (${lead.created_at ? new Date(lead.created_at).toLocaleDateString("es-ES") : "-"})
-              · ${escapeHtml(lead.status || "-")}
-              · Comisión est.: ${toCurrency(lead.commission_estimated_eur)}
-            </li>
-          `).join("")}
-        </ul>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Lead</th>
+                <th>Estado</th>
+                <th>IEI</th>
+                <th>Comisión est.</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leads.slice(0, 20).map((lead) => `
+                <tr>
+                  <td>${lead.created_at ? new Date(lead.created_at).toLocaleDateString("es-ES") : "-"}</td>
+                  <td>${escapeHtml(lead.name || "-")}</td>
+                  <td>${escapeHtml(lead.status || "-")}</td>
+                  <td>${escapeHtml(lead.risk_level || "-")}</td>
+                  <td>${toCurrency(lead.commission_estimated_eur)}</td>
+                  <td><a href="/admin/leads?id=${encodeURIComponent(lead.id)}">Ver lead</a></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
       `;
 
     detailSection.style.display = "grid";
@@ -192,6 +215,17 @@
       <p><strong>Leads asociados:</strong> ${leads.length}</p>
       ${leadsHtml}
     `;
+  }
+
+  async function openCollaboratorDetail(collaboratorId) {
+    const collaborator = collaboratorsCache.find((item) => item.id === collaboratorId);
+    if (!collaborator) {
+      showAlert("Colaborador no encontrado.", true);
+      return;
+    }
+
+    fillForm(collaborator);
+    await loadLeadsForCollaborator(collaboratorId);
   }
 
   form.addEventListener("submit", async (event) => {
@@ -237,8 +271,13 @@
   tableBody.addEventListener("click", async (event) => {
     const editButton = event.target.closest("[data-edit]");
     if (editButton) {
-      const collaborator = collaboratorsCache.find((item) => item.id === editButton.dataset.edit);
-      if (collaborator) fillForm(collaborator);
+      const collaboratorId = String(editButton.dataset.edit || "").trim();
+      if (!collaboratorId) return;
+      try {
+        await openCollaboratorDetail(collaboratorId);
+      } catch (error) {
+        showAlert(error.message, true);
+      }
       return;
     }
 
@@ -270,7 +309,7 @@
       if (!collaboratorId) return;
 
       try {
-        await loadCollaboratorLeads(collaboratorId);
+        await loadLeadsForCollaborator(collaboratorId);
       } catch (error) {
         showAlert(error.message, true);
       }

@@ -183,6 +183,99 @@ function normalizeCollaboratorPatch(body, { partial = false } = {}) {
   return patch;
 }
 
+function parseExpandParam(value) {
+  const raw = Array.isArray(value) ? value.join(",") : String(value || "");
+  const tokens = raw
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set(tokens);
+}
+
+function providerSlotsForLead(lead) {
+  const providerIds = Array.isArray(lead?.provider_ids)
+    ? lead.provider_ids.map((id) => String(id).trim()).filter(Boolean)
+    : [];
+  const assignedProviderId = String(lead?.assigned_provider_id || "").trim();
+
+  const primaryId = providerIds[0] || assignedProviderId || null;
+  const secondaryCandidate = providerIds[1] || null;
+  const secondaryId = secondaryCandidate && secondaryCandidate !== primaryId ? secondaryCandidate : null;
+
+  return {
+    primaryId,
+    secondaryId,
+  };
+}
+
+async function expandAdminLeads(leads, expandSet) {
+  const expanded = Array.isArray(leads) ? leads.slice() : [];
+  if (expanded.length === 0) return expanded;
+
+  const shouldExpandCollaborator = expandSet.has("collaborator");
+  const shouldExpandProviders = expandSet.has("providers");
+
+  const collaboratorsById = new Map();
+  if (shouldExpandCollaborator) {
+    const collaboratorIds = Array.from(
+      new Set(
+        expanded
+          .map((lead) => String(lead?.collaborator_id || "").trim())
+          .filter(Boolean)
+      )
+    );
+
+    for (const collaboratorId of collaboratorIds) {
+      const collaborator = await repositories.collaborators.findById(collaboratorId);
+      if (collaborator) {
+        collaboratorsById.set(collaboratorId, collaborator);
+      }
+    }
+  }
+
+  const providersById = new Map();
+  if (shouldExpandProviders) {
+    const providerIds = Array.from(
+      new Set(
+        expanded.flatMap((lead) => {
+          const slots = providerSlotsForLead(lead);
+          return [slots.primaryId, slots.secondaryId].filter(Boolean);
+        })
+      )
+    );
+
+    if (providerIds.length > 0) {
+      const providers = await repositories.providers.getByIds(providerIds);
+      for (const provider of providers) {
+        providersById.set(provider.id, provider);
+      }
+    }
+  }
+
+  return expanded.map((lead) => {
+    const nextLead = { ...lead };
+
+    if (shouldExpandCollaborator) {
+      const collaboratorId = String(lead?.collaborator_id || "").trim();
+      nextLead._collaborator = collaboratorId ? collaboratorsById.get(collaboratorId) || null : null;
+    }
+
+    if (shouldExpandProviders) {
+      const slots = providerSlotsForLead(lead);
+      const relatedProviders = [];
+      if (slots.primaryId && providersById.has(slots.primaryId)) {
+        relatedProviders.push(providersById.get(slots.primaryId));
+      }
+      if (slots.secondaryId && providersById.has(slots.secondaryId) && slots.secondaryId !== slots.primaryId) {
+        relatedProviders.push(providersById.get(slots.secondaryId));
+      }
+      nextLead._providers = relatedProviders;
+    }
+
+    return nextLead;
+  });
+}
+
 function normalizePhoneE164(value) {
   let phone = String(value || "").trim();
   if (!phone) return "";
@@ -592,6 +685,25 @@ app.get("/api/admin/providers", requireAdminApi, asyncHandler(async (_req, res) 
   });
 }));
 
+app.get("/api/admin/providers/:id/leads", requireAdminApi, asyncHandler(async (req, res) => {
+  const providerId = String(req.params.id || "").trim();
+  const provider = await repositories.providers.getById(providerId);
+  if (!provider) {
+    return res.status(404).json({ error: "Provider not found" });
+  }
+
+  const leads = await repositories.leads.list();
+  const relatedLeads = leads.filter((lead) => {
+    const slots = providerSlotsForLead(lead);
+    return slots.primaryId === providerId || slots.secondaryId === providerId;
+  });
+
+  return res.json({
+    provider,
+    leads: relatedLeads,
+  });
+}));
+
 app.post("/api/admin/providers", requireAdminApi, asyncHandler(async (req, res) => {
   try {
     const provider = await repositories.providers.create({
@@ -737,9 +849,15 @@ app.get("/api/admin/collaborators/:id/leads", requireAdminApi, asyncHandler(asyn
   });
 }));
 
-app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (_req, res) => {
+app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (req, res) => {
+  const expandSet = parseExpandParam(req.query.expand);
+  const leads = await repositories.leads.list();
+  const payloadLeads = expandSet.size > 0
+    ? await expandAdminLeads(leads, expandSet)
+    : leads;
+
   return res.json({
-    leads: await repositories.leads.list(),
+    leads: payloadLeads,
   });
 }));
 
@@ -748,7 +866,14 @@ app.get("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) =
   if (!lead) {
     return res.status(404).json({ error: "Lead not found" });
   }
-  return res.json({ lead });
+
+  const expandSet = parseExpandParam(req.query.expand);
+  if (expandSet.size === 0) {
+    return res.json({ lead });
+  }
+
+  const [expandedLead] = await expandAdminLeads([lead], expandSet);
+  return res.json({ lead: expandedLead || lead });
 }));
 
 app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) => {
@@ -981,6 +1106,114 @@ app.get("/api/admin/events", requireAdminApi, asyncHandler(async (req, res) => {
   return res.json({
     events: await repositories.events.list(limit),
   });
+}));
+
+app.get("/api/admin/metrics/by-collaborator", requireAdminApi, asyncHandler(async (_req, res) => {
+  const [leads, collaborators] = await Promise.all([
+    repositories.leads.list(),
+    repositories.collaborators.findAll(),
+  ]);
+
+  const collaboratorMap = new Map(collaborators.map((item) => [item.id, item]));
+  const grouped = new Map();
+
+  for (const lead of leads) {
+    const collaboratorId = String(lead?.collaborator_id || "").trim();
+    if (!collaboratorId) continue;
+
+    if (!grouped.has(collaboratorId)) {
+      grouped.set(collaboratorId, {
+        collaborator_id: collaboratorId,
+        collaborator: collaboratorMap.get(collaboratorId) || null,
+        total_leads: 0,
+        otp_verified_count: 0,
+        total_commission: 0,
+        risk_score_sum: 0,
+        risk_score_count: 0,
+      });
+    }
+
+    const row = grouped.get(collaboratorId);
+    row.total_leads += 1;
+    if (lead.phone_verified) row.otp_verified_count += 1;
+    row.total_commission += Number(lead.commission_estimated_eur) || 0;
+
+    const riskScore = Number(lead.risk_score);
+    if (Number.isFinite(riskScore)) {
+      row.risk_score_sum += riskScore;
+      row.risk_score_count += 1;
+    }
+  }
+
+  const metrics = Array.from(grouped.values())
+    .map((row) => ({
+      collaborator_id: row.collaborator_id,
+      collaborator: row.collaborator,
+      total_leads: row.total_leads,
+      otp_verified_count: row.otp_verified_count,
+      total_commission: Math.round((row.total_commission + Number.EPSILON) * 100) / 100,
+      avg_risk_score: row.risk_score_count > 0
+        ? Math.round((row.risk_score_sum / row.risk_score_count) * 100) / 100
+        : null,
+    }))
+    .sort((a, b) => b.total_leads - a.total_leads);
+
+  return res.json({ metrics });
+}));
+
+app.get("/api/admin/metrics/by-provider", requireAdminApi, asyncHandler(async (_req, res) => {
+  const [leads, providers] = await Promise.all([
+    repositories.leads.list(),
+    repositories.providers.list(),
+  ]);
+
+  const providerMap = new Map(providers.map((item) => [item.id, item]));
+  const grouped = new Map();
+
+  for (const lead of leads) {
+    const slots = providerSlotsForLead(lead);
+    const assignedIds = Array.from(new Set([slots.primaryId, slots.secondaryId].filter(Boolean)));
+    if (assignedIds.length === 0) continue;
+
+    for (const providerId of assignedIds) {
+      if (!grouped.has(providerId)) {
+        grouped.set(providerId, {
+          provider_id: providerId,
+          provider: providerMap.get(providerId) || null,
+          total_assigned: 0,
+          sold_count: 0,
+          ticket_sum: 0,
+          ticket_count: 0,
+        });
+      }
+
+      const row = grouped.get(providerId);
+      row.total_assigned += 1;
+      if (lead.status === "sold") row.sold_count += 1;
+
+      const ticket = Number(lead.ticket_estimated_eur);
+      if (Number.isFinite(ticket)) {
+        row.ticket_sum += ticket;
+        row.ticket_count += 1;
+      }
+    }
+  }
+
+  const metrics = Array.from(grouped.values())
+    .map((row) => ({
+      provider_id: row.provider_id,
+      provider: row.provider,
+      total_assigned: row.total_assigned,
+      conversion: row.total_assigned > 0
+        ? Math.round((row.sold_count / row.total_assigned) * 10000) / 100
+        : 0,
+      avg_ticket: row.ticket_count > 0
+        ? Math.round((row.ticket_sum / row.ticket_count) * 100) / 100
+        : null,
+    }))
+    .sort((a, b) => b.total_assigned - a.total_assigned);
+
+  return res.json({ metrics });
 }));
 
 app.get("/api/admin/metrics", requireAdminApi, asyncHandler(async (_req, res) => {

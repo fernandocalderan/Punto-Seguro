@@ -37,9 +37,16 @@ const DATA_DIR =
   process.env.DATA_DIR ||
   (process.env.VERCEL ? "/tmp/punto-seguro-data" : path.join(ROOT_DIR, "data"));
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const PORT = Number(process.env.PORT || 3000);
 const MAX_PROVIDERS_PER_LEAD = Math.max(1, Number(process.env.MAX_PROVIDERS_PER_LEAD || 2));
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cambia-esta-clave";
+if (IS_PRODUCTION && !process.env.ADMIN_PASSWORD) {
+  throw new Error("[punto-seguro] Missing ADMIN_PASSWORD in production");
+}
+if (!IS_PRODUCTION && !process.env.ADMIN_PASSWORD) {
+  console.warn("[punto-seguro] WARNING: ADMIN_PASSWORD no esta definido en entorno no productivo. Usando default temporal de desarrollo.");
+}
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "dev-admin-password";
 const ADMIN_COOKIE = "ps_admin_session";
 const ADMIN_TOKEN = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
 const OTP_JWT_SECRET = String(process.env.OTP_JWT_SECRET || "");
@@ -1107,7 +1114,7 @@ app.get("/api/admin/collaborators/:id/leads", requireAdminApi, asyncHandler(asyn
 
 app.get("/api/admin/leads", requireAdminApi, asyncHandler(async (req, res) => {
   const expandSet = parseExpandParam(req.query.expand);
-  const leads = await repositories.leads.list();
+  const leads = (await repositories.leads.list()).filter((lead) => !lead.deleted_at);
   const payloadLeads = expandSet.size > 0
     ? await expandAdminLeads(leads, expandSet)
     : leads;
@@ -1135,8 +1142,15 @@ app.get("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) =
 app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) => {
   const lead = await repositories.leads.getById(req.params.id);
   if (!lead) {
-    return res.status(404).json({ error: "Lead not found" });
+    return res.status(404).json({ ok: false, error: "lead_not_found" });
   }
+
+  const invalid = (status, error, field, details) => {
+    const payload = { ok: false, error };
+    if (field) payload.field = field;
+    if (details && typeof details === "object") payload.details = details;
+    return res.status(status).json(payload);
+  };
 
   const patch = {};
   const hasOwn = (key) => Object.prototype.hasOwnProperty.call(req.body || {}, key);
@@ -1144,7 +1158,7 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
   if (hasOwn("status")) {
     const nextStatus = String(req.body.status || "").trim();
     if (!LEAD_STATUSES.includes(nextStatus)) {
-      return res.status(400).json({ error: "Invalid status" });
+      return invalid(400, "invalid_status", "status", { allowed: LEAD_STATUSES });
     }
     patch.status = nextStatus;
   }
@@ -1155,19 +1169,32 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
     patch.assigned_provider_id = String(req.body.assigned_provider_id || "").trim() || null;
   }
   if (hasOwn("provider_ids")) {
-    patch.provider_ids = normalizeProviderIds(req.body.provider_ids);
+    if (!Array.isArray(req.body.provider_ids)) {
+      return invalid(400, "provider_ids_invalid", "provider_ids", { reason: "must_be_array" });
+    }
+    const providerIds = req.body.provider_ids
+      .map((id) => String(id || "").trim())
+      .filter(Boolean);
+    if (providerIds.length < 1 || providerIds.length > 2) {
+      return invalid(400, "provider_ids_invalid", "provider_ids", { reason: "must_contain_1_or_2_ids" });
+    }
+    const uniqueProviderIds = Array.from(new Set(providerIds));
+    if (uniqueProviderIds.length !== providerIds.length) {
+      return invalid(400, "provider_ids_invalid", "provider_ids", { reason: "duplicates_not_allowed" });
+    }
+    patch.provider_ids = uniqueProviderIds;
   }
   if (hasOwn("price_eur")) {
     const value = Number(req.body.price_eur);
     if (!Number.isFinite(value) || value < 0) {
-      return res.status(400).json({ error: "price_eur must be >= 0" });
+      return invalid(400, "price_eur_invalid", "price_eur");
     }
     patch.price_eur = value;
   }
   if (hasOwn("ticket_estimated_eur")) {
     const value = Number(req.body.ticket_estimated_eur);
     if (!Number.isFinite(value) || value < 0) {
-      return res.status(400).json({ error: "ticket_estimated_eur must be >= 0" });
+      return invalid(400, "ticket_estimated_eur_invalid", "ticket_estimated_eur");
     }
     patch.ticket_estimated_eur = value;
   }
@@ -1187,25 +1214,45 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
     patch.collaborator_tracking_code = normalizeCollaboratorTrackingCode(req.body.collaborator_tracking_code) || null;
   }
 
-  const nextStatusForValidation = patch.status || lead.status;
-  const lockedStatuses = new Set(["sent", "accepted", "sold"]);
-  const currentCollaboratorId = String(lead.collaborator_id || "").trim() || null;
-  const currentTrackingCode = normalizeCollaboratorTrackingCode(lead.collaborator_tracking_code) || null;
-  const touchesCollaborator =
-    (hasOwn("collaborator_id") && patch.collaborator_id !== currentCollaboratorId) ||
-    (hasOwn("collaborator_tracking_code") && patch.collaborator_tracking_code !== currentTrackingCode);
-  if (touchesCollaborator && lockedStatuses.has(nextStatusForValidation)) {
-    return res.status(400).json({
-      error: "Cannot edit collaborator fields when lead status is sent/accepted/sold",
+  if (hasOwn("assigned_provider_id") && patch.assigned_provider_id) {
+    const provider = await repositories.providers.getById(patch.assigned_provider_id);
+    if (!provider) {
+      return invalid(400, "provider_not_found", "assigned_provider_id");
+    }
+    if (!provider.active) {
+      return invalid(400, "provider_inactive", "assigned_provider_id");
+    }
+  }
+
+  if (hasOwn("provider_ids")) {
+    const providers = await repositories.providers.getByIds(patch.provider_ids);
+    const providerById = new Map(providers.map((provider) => [provider.id, provider]));
+    const missingOrInactive = patch.provider_ids.filter((providerId) => {
+      const provider = providerById.get(providerId);
+      return !provider || !provider.active;
     });
+    if (missingOrInactive.length > 0) {
+      return invalid(400, "provider_ids_invalid", "provider_ids", {
+        reason: "missing_or_inactive",
+        provider_ids: missingOrInactive,
+      });
+    }
   }
 
   if (hasOwn("provider_ids") && !hasOwn("assigned_provider_id")) {
     patch.assigned_provider_id = patch.provider_ids[0] || null;
   }
 
+  if (hasOwn("provider_ids") && hasOwn("assigned_provider_id")) {
+    if (!patch.assigned_provider_id || !patch.provider_ids.includes(patch.assigned_provider_id)) {
+      return invalid(400, "provider_ids_invalid", "assigned_provider_id", {
+        reason: "assigned_provider_id_must_be_in_provider_ids",
+      });
+    }
+  }
+
   if (hasOwn("assigned_provider_id") && !hasOwn("provider_ids")) {
-    const providerIds = Array.isArray(lead.provider_ids) ? lead.provider_ids.slice(0, MAX_PROVIDERS_PER_LEAD) : [];
+    const providerIds = Array.isArray(lead.provider_ids) ? lead.provider_ids.map((id) => String(id || "").trim()).filter(Boolean) : [];
     const assignedId = patch.assigned_provider_id;
     if (assignedId && !providerIds.includes(assignedId)) {
       providerIds.unshift(assignedId);
@@ -1213,8 +1260,68 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
     patch.provider_ids = Array.from(new Set(providerIds.filter(Boolean))).slice(0, MAX_PROVIDERS_PER_LEAD);
   }
 
+  const nextStatusForValidation = patch.status || lead.status;
+  const lockedStatuses = new Set(["sent", "accepted", "sold"]);
+  const currentCollaboratorId = String(lead.collaborator_id || "").trim() || null;
+  const currentTrackingCode = normalizeCollaboratorTrackingCode(lead.collaborator_tracking_code) || null;
+  const touchesCollaborator =
+    (hasOwn("collaborator_id") && patch.collaborator_id !== currentCollaboratorId) ||
+    (hasOwn("collaborator_tracking_code") && patch.collaborator_tracking_code !== currentTrackingCode);
+  if (touchesCollaborator) {
+    if (lead.deleted_at) {
+      return invalid(400, "lead_deleted");
+    }
+    if (lead.accepted_at || lead.sold_at) {
+      return invalid(403, "collaborator_locked_closed_lead");
+    }
+    if (lockedStatuses.has(nextStatusForValidation)) {
+      return invalid(403, "collaborator_locked_status", "status", {
+        status: nextStatusForValidation,
+      });
+    }
+
+    const patchedCollaboratorId = hasOwn("collaborator_id") ? patch.collaborator_id : null;
+    const patchedTrackingCode = hasOwn("collaborator_tracking_code") ? patch.collaborator_tracking_code : null;
+    let resolvedById = null;
+    let resolvedByTracking = null;
+
+    if (patchedCollaboratorId) {
+      resolvedById = await repositories.collaborators.findById(patchedCollaboratorId);
+    }
+    if (patchedTrackingCode) {
+      resolvedByTracking = await repositories.collaborators.findByTrackingCode(patchedTrackingCode);
+    }
+
+    let resolvedCollaborator = null;
+    if (patchedCollaboratorId && patchedTrackingCode) {
+      if (!resolvedById || !resolvedByTracking) {
+        return invalid(400, "collaborator_not_found");
+      }
+      if (resolvedById.id !== resolvedByTracking.id) {
+        return invalid(400, "collaborator_mismatch");
+      }
+      resolvedCollaborator = resolvedById;
+    } else if (patchedCollaboratorId) {
+      resolvedCollaborator = resolvedById;
+    } else if (patchedTrackingCode) {
+      resolvedCollaborator = resolvedByTracking;
+    } else {
+      return invalid(400, "collaborator_not_found");
+    }
+
+    if (!resolvedCollaborator) {
+      return invalid(400, "collaborator_not_found");
+    }
+    if (String(resolvedCollaborator.status || "").toLowerCase() !== "active") {
+      return invalid(400, "collaborator_inactive");
+    }
+
+    patch.collaborator_id = resolvedCollaborator.id;
+    patch.collaborator_tracking_code = resolvedCollaborator.tracking_code;
+  }
+
   if (Object.keys(patch).length === 0) {
-    return res.status(400).json({ error: "No fields to update" });
+    return invalid(400, "no_fields_to_update");
   }
 
   try {
@@ -1225,7 +1332,7 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
     });
     return res.json({ lead: updatedLead });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ ok: false, error: error.message || "lead_update_failed" });
   }
 }));
 
@@ -1837,9 +1944,6 @@ app.use((_req, res) => {
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    if (!process.env.ADMIN_PASSWORD) {
-      console.warn("[punto-seguro] ADMIN_PASSWORD no esta definido. Usando valor por defecto inseguro.");
-    }
     console.log(`[punto-seguro] servidor iniciado en http://localhost:${PORT}`);
   });
 }

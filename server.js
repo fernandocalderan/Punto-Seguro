@@ -54,6 +54,7 @@ const TWILIO_AUTH_TOKEN = String(process.env.TWILIO_AUTH_TOKEN || "");
 const TWILIO_VERIFY_SERVICE_SID = String(process.env.TWILIO_VERIFY_SERVICE_SID || "");
 
 const otpVerifiedMap = new Map();
+const otpStartedMap = new Map();
 const otpStartByIpMap = new Map();
 const otpStartByPhoneMap = new Map();
 let twilioClient = null;
@@ -158,30 +159,77 @@ function otpVerificationKey(phone, req) {
   return `${phone}|${requesterIp(req) || "unknown"}`;
 }
 
+function normalizeOtpProof(value) {
+  if (value && typeof value === "object") {
+    const expiresAt = Number(value.expiresAt);
+    const otpResponse = Number(value.otp_response_seconds);
+    return {
+      expiresAt: Number.isFinite(expiresAt) ? expiresAt : 0,
+      phone_verified: value.phone_verified !== false,
+      otp_started_at: value.otp_started_at || null,
+      otp_verified_at: value.otp_verified_at || null,
+      otp_response_seconds: Number.isFinite(otpResponse) ? Math.max(0, Math.round(otpResponse)) : null,
+    };
+  }
+
+  const legacyExpiresAt = Number(value);
+  return {
+    expiresAt: Number.isFinite(legacyExpiresAt) ? legacyExpiresAt : 0,
+    phone_verified: true,
+    otp_started_at: null,
+    otp_verified_at: null,
+    otp_response_seconds: null,
+  };
+}
+
 function cleanupOtpVerifications() {
   const now = Date.now();
-  for (const [key, expiresAt] of otpVerifiedMap.entries()) {
-    if (Number(expiresAt) <= now) {
+  for (const [key, rawProof] of otpVerifiedMap.entries()) {
+    const proof = normalizeOtpProof(rawProof);
+    if (!proof.expiresAt || proof.expiresAt <= now) {
       otpVerifiedMap.delete(key);
     }
   }
 }
 
+function markOtpStarted(phone, req, now = Date.now()) {
+  otpStartedMap.set(otpVerificationKey(phone, req), now);
+}
+
 function markOtpVerified(phone, req) {
+  const key = otpVerificationKey(phone, req);
+  const now = Date.now();
+  const startedAtMs = Number(otpStartedMap.get(key));
+  const hasStartedAt = Number.isFinite(startedAtMs) && startedAtMs > 0 && startedAtMs <= now;
+  const otpResponseSeconds = hasStartedAt ? Math.max(0, Math.round((now - startedAtMs) / 1000)) : null;
+
   cleanupOtpVerifications();
-  otpVerifiedMap.set(otpVerificationKey(phone, req), Date.now() + OTP_VERIFIED_WINDOW_MS);
+  otpVerifiedMap.set(key, {
+    expiresAt: now + OTP_VERIFIED_WINDOW_MS,
+    phone_verified: true,
+    otp_started_at: hasStartedAt ? new Date(startedAtMs).toISOString() : null,
+    otp_verified_at: new Date(now).toISOString(),
+    otp_response_seconds: otpResponseSeconds,
+  });
 }
 
 function consumeOtpVerified(phone, req) {
   cleanupOtpVerifications();
   const key = otpVerificationKey(phone, req);
-  const expiresAt = otpVerifiedMap.get(key);
-  if (!expiresAt || Number(expiresAt) <= Date.now()) {
-    otpVerifiedMap.delete(key);
-    return false;
+  const rawProof = otpVerifiedMap.get(key);
+  if (!rawProof) {
+    return null;
   }
+
+  const proof = normalizeOtpProof(rawProof);
+  if (!proof.expiresAt || proof.expiresAt <= Date.now()) {
+    otpVerifiedMap.delete(key);
+    return null;
+  }
+
   otpVerifiedMap.delete(key);
-  return true;
+  otpStartedMap.delete(key);
+  return proof;
 }
 
 function pruneOtpAttempts(map, now) {
@@ -314,6 +362,7 @@ app.post("/api/otp/start", asyncHandler(async (req, res) => {
     channel: "sms",
   });
 
+  markOtpStarted(phone, req, now);
   registerOtpAttempt(otpStartByIpMap, ipKey, now);
   registerOtpAttempt(otpStartByPhoneMap, phone, now);
 
@@ -357,8 +406,8 @@ app.post("/api/otp/token", asyncHandler(async (req, res) => {
     return res.status(500).json({ ok: false, error: "otp_secret_missing" });
   }
 
-  const verified = consumeOtpVerified(phone, req);
-  if (!verified) {
+  const verificationProof = consumeOtpVerified(phone, req);
+  if (!verificationProof) {
     return res.status(403).json({ ok: false, error: "otp_not_verified" });
   }
 
@@ -366,6 +415,10 @@ app.post("/api/otp/token", asyncHandler(async (req, res) => {
     {
       phone,
       purpose: "lead_phone_verification",
+      phone_verified: Boolean(verificationProof.phone_verified),
+      otp_started_at: verificationProof.otp_started_at || null,
+      otp_verified_at: verificationProof.otp_verified_at || new Date().toISOString(),
+      otp_response_seconds: verificationProof.otp_response_seconds,
     },
     OTP_JWT_SECRET,
     { expiresIn: OTP_TOKEN_TTL_SECONDS }
@@ -404,12 +457,18 @@ app.post("/api/leads", async (req, res) => {
     if (normalizePhoneE164(decodedToken?.phone) !== normalizedPhone) {
       return res.status(403).json({ ok: false, error: "phone_not_verified" });
     }
+    if (decodedToken?.phone_verified === false) {
+      return res.status(403).json({ ok: false, error: "phone_not_verified" });
+    }
+
+    const otpResponseSeconds = Number(decodedToken?.otp_response_seconds);
 
     const result = await createLeadAndDispatch({
       leadInput: {
         name: req.body.name,
         email: req.body.email,
         phone: normalizedPhone,
+        risk_score: req.body.risk_score ?? req.body.iei_score,
         city: req.body.city,
         postal_code: req.body.postal_code,
         business_type: req.body.business_type,
@@ -421,6 +480,12 @@ app.post("/api/leads", async (req, res) => {
         consent: req.body.consent,
         consent_timestamp: req.body.consent_timestamp,
         evaluation_summary: req.body.evaluation_summary,
+        phone_verified: true,
+        otp_started_at: decodedToken?.otp_started_at || null,
+        otp_verified_at: decodedToken?.otp_verified_at || null,
+        otp_response_seconds: Number.isFinite(otpResponseSeconds)
+          ? Math.max(0, Math.round(otpResponseSeconds))
+          : null,
       },
       requesterIp: requesterIp(req),
       repositories,

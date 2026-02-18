@@ -5,6 +5,8 @@ const path = require("node:path");
 const { createHash } = require("node:crypto");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const twilio = require("twilio");
 
 const { createRepositories } = require("./lib/repositories");
 const { createEmailService } = require("./lib/email");
@@ -40,6 +42,15 @@ const MAX_PROVIDERS_PER_LEAD = Math.max(1, Number(process.env.MAX_PROVIDERS_PER_
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "cambia-esta-clave";
 const ADMIN_COOKIE = "ps_admin_session";
 const ADMIN_TOKEN = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
+const OTP_JWT_SECRET = String(process.env.OTP_JWT_SECRET || "");
+const OTP_TOKEN_TTL_SECONDS = Math.max(60, Number(process.env.OTP_TOKEN_TTL_SECONDS || 600));
+const OTP_VERIFIED_WINDOW_MS = Math.max(60 * 1000, Number(process.env.OTP_VERIFIED_WINDOW_MS || 10 * 60 * 1000));
+const TWILIO_ACCOUNT_SID = String(process.env.TWILIO_ACCOUNT_SID || "");
+const TWILIO_AUTH_TOKEN = String(process.env.TWILIO_AUTH_TOKEN || "");
+const TWILIO_VERIFY_SERVICE_SID = String(process.env.TWILIO_VERIFY_SERVICE_SID || "");
+
+const otpVerifiedMap = new Map();
+let twilioClient = null;
 
 if (process.env.VERCEL && !process.env.DATABASE_URL) {
   console.warn("[punto-seguro] WARNING: DATABASE_URL no está definido en Vercel. La persistencia será efímera.");
@@ -116,6 +127,67 @@ function normalizeProviderIds(value) {
   return Array.from(new Set(cleaned)).slice(0, MAX_PROVIDERS_PER_LEAD);
 }
 
+function normalizePhoneE164(value) {
+  let phone = String(value || "").trim();
+  if (!phone) return "";
+
+  phone = phone.replace(/[\s()-]/g, "");
+  if (phone.startsWith("00")) {
+    phone = `+${phone.slice(2)}`;
+  }
+
+  if (phone.startsWith("+")) {
+    const normalized = `+${phone.slice(1).replace(/\D/g, "")}`;
+    return /^\+\d{8,15}$/.test(normalized) ? normalized : "";
+  }
+
+  const digits = phone.replace(/\D/g, "");
+  if (/^\d{9}$/.test(digits)) {
+    return `+34${digits}`;
+  }
+  return /^\d{8,15}$/.test(digits) ? `+${digits}` : "";
+}
+
+function otpVerificationKey(phone, req) {
+  return `${phone}|${requesterIp(req) || "unknown"}`;
+}
+
+function cleanupOtpVerifications() {
+  const now = Date.now();
+  for (const [key, expiresAt] of otpVerifiedMap.entries()) {
+    if (Number(expiresAt) <= now) {
+      otpVerifiedMap.delete(key);
+    }
+  }
+}
+
+function markOtpVerified(phone, req) {
+  cleanupOtpVerifications();
+  otpVerifiedMap.set(otpVerificationKey(phone, req), Date.now() + OTP_VERIFIED_WINDOW_MS);
+}
+
+function consumeOtpVerified(phone, req) {
+  cleanupOtpVerifications();
+  const key = otpVerificationKey(phone, req);
+  const expiresAt = otpVerifiedMap.get(key);
+  if (!expiresAt || Number(expiresAt) <= Date.now()) {
+    otpVerifiedMap.delete(key);
+    return false;
+  }
+  otpVerifiedMap.delete(key);
+  return true;
+}
+
+function getTwilioClient() {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_VERIFY_SERVICE_SID) {
+    return null;
+  }
+  if (!twilioClient) {
+    twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+  }
+  return twilioClient;
+}
+
 function statusAfterAssignment(currentStatus) {
   const keep = new Set(["sent", "accepted", "closed", "sold", "rejected", "deleted"]);
   if (keep.has(currentStatus)) return currentStatus;
@@ -176,13 +248,115 @@ app.post("/api/events", asyncHandler(async (req, res) => {
   return res.status(201).json({ ok: true, event_id: event.id });
 }));
 
+app.post("/api/otp/start", asyncHandler(async (req, res) => {
+  const phone = normalizePhoneE164(req.body.phone);
+  if (!phone) {
+    return res.status(400).json({ ok: false, error: "invalid_phone" });
+  }
+
+  const client = getTwilioClient();
+  if (!client) {
+    return res.status(503).json({ ok: false, error: "otp_not_configured" });
+  }
+
+  await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID).verifications.create({
+    to: phone,
+    channel: "sms",
+  });
+
+  return res.json({ ok: true });
+}));
+
+app.post("/api/otp/check", asyncHandler(async (req, res) => {
+  const phone = normalizePhoneE164(req.body.phone);
+  const code = String(req.body.code || "").replace(/\D/g, "");
+  if (!phone) {
+    return res.status(400).json({ ok: false, error: "invalid_phone" });
+  }
+  if (!/^\d{4,8}$/.test(code)) {
+    return res.status(400).json({ ok: false, error: "invalid_code" });
+  }
+
+  const client = getTwilioClient();
+  if (!client) {
+    return res.status(503).json({ ok: false, error: "otp_not_configured" });
+  }
+
+  const check = await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID).verificationChecks.create({
+    to: phone,
+    code,
+  });
+
+  const verified = String(check.status || "").toLowerCase() === "approved";
+  if (verified) {
+    markOtpVerified(phone, req);
+  }
+
+  return res.json({ ok: true, verified });
+}));
+
+app.post("/api/otp/token", asyncHandler(async (req, res) => {
+  const phone = normalizePhoneE164(req.body.phone);
+  if (!phone) {
+    return res.status(400).json({ ok: false, error: "invalid_phone" });
+  }
+  if (!OTP_JWT_SECRET) {
+    return res.status(500).json({ ok: false, error: "otp_secret_missing" });
+  }
+
+  const verified = consumeOtpVerified(phone, req);
+  if (!verified) {
+    return res.status(403).json({ ok: false, error: "otp_not_verified" });
+  }
+
+  const token = jwt.sign(
+    {
+      phone,
+      purpose: "lead_phone_verification",
+    },
+    OTP_JWT_SECRET,
+    { expiresIn: OTP_TOKEN_TTL_SECONDS }
+  );
+
+  return res.json({ ok: true, token });
+}));
+
 app.post("/api/leads", async (req, res) => {
   try {
+    if (!OTP_JWT_SECRET) {
+      return res.status(500).json({ ok: false, error: "otp_secret_missing" });
+    }
+
+    const verificationToken = String(req.body.verificationToken || "").trim();
+    if (!verificationToken) {
+      return res.status(403).json({ ok: false, error: "phone_not_verified" });
+    }
+
+    const normalizedPhone = normalizePhoneE164(req.body.phone);
+    if (!normalizedPhone) {
+      return res.status(400).json({ ok: false, error: "invalid_phone" });
+    }
+
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(verificationToken, OTP_JWT_SECRET);
+    } catch (_error) {
+      return res.status(403).json({ ok: false, error: "phone_not_verified" });
+    }
+
+    if (decodedToken?.purpose !== "lead_phone_verification") {
+      return res.status(403).json({ ok: false, error: "phone_not_verified" });
+    }
+
+    if (normalizePhoneE164(decodedToken?.phone) !== normalizedPhone) {
+      return res.status(403).json({ ok: false, error: "phone_not_verified" });
+    }
+
     const result = await createLeadAndDispatch({
       leadInput: {
         name: req.body.name,
         email: req.body.email,
-        phone: req.body.phone,
+        phone: normalizedPhone,
         city: req.body.city,
         postal_code: req.body.postal_code,
         business_type: req.body.business_type,

@@ -2,6 +2,14 @@
   const form = document.getElementById("lead-form");
   const alertNode = document.getElementById("form-alert");
   const summaryNode = document.getElementById("lead-summary");
+  const submitButton = form?.querySelector('button[type="submit"]');
+  const otpOverlay = document.getElementById("ps-otp-overlay");
+  const otpCodeInput = document.getElementById("ps-otp-code");
+  const otpConfirmBtn = document.getElementById("ps-otp-confirm");
+  const otpResendBtn = document.getElementById("ps-otp-resend");
+  const otpCloseBtn = document.getElementById("ps-otp-close");
+  const otpErrorNode = document.getElementById("ps-otp-error");
+  const otpStatusNode = document.getElementById("ps-otp-status");
 
   function showAlert(message, isError) {
     if (!message) {
@@ -94,6 +102,12 @@
   const motivos = driverText || factorText || "Sin factores críticos destacados";
 
   let hasTrackedStarted = false;
+  let pendingLeadPayload = null;
+  let pendingPhoneE164 = "";
+  let resendCooldownRemaining = 0;
+  let resendCooldownTimer = null;
+  let otpBusy = false;
+
   function trackStartedOnce() {
     if (hasTrackedStarted) return;
     hasTrackedStarted = true;
@@ -186,101 +200,140 @@
     return String(value || "").replace(/\D/g, "").trim();
   }
 
-  function submitError(reason, message, focusId) {
-    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_error", {
-      reason,
-      risk_level: riskLevel,
-      iei_level: riskLevel,
-      iei_score: riskScore,
-      model_version: evaluation.model_version || null,
-      tier: evaluation.tier || null,
-      dominant_axis: evaluation.dominant_axis || null,
-      intent_plazo: intentPlazo,
-    });
+  function normalizePhoneE164(value) {
+    let phone = String(value || "").trim();
+    if (!phone) return "";
 
-    showAlert(message || "No se pudo enviar la solicitud.", true);
-    if (focusId) {
-      document.getElementById(focusId)?.focus();
+    phone = phone.replace(/[\s()-]/g, "");
+    if (phone.startsWith("00")) {
+      phone = `+${phone.slice(2)}`;
+    }
+
+    if (phone.startsWith("+")) {
+      const normalized = `+${phone.slice(1).replace(/\D/g, "")}`;
+      return /^\+\d{8,15}$/.test(normalized) ? normalized : "";
+    }
+
+    const digits = phone.replace(/\D/g, "");
+    if (/^\d{9}$/.test(digits)) {
+      return `+34${digits}`;
+    }
+    return /^\d{8,15}$/.test(digits) ? `+${digits}` : "";
+  }
+
+  function setSubmitDisabled(disabled) {
+    if (!submitButton) return;
+    submitButton.disabled = Boolean(disabled);
+  }
+
+  function setOtpStatus(message) {
+    if (!otpStatusNode) return;
+    otpStatusNode.textContent = String(message || "");
+  }
+
+  function setOtpError(message) {
+    if (!otpErrorNode) return;
+    if (!message) {
+      otpErrorNode.style.display = "none";
+      otpErrorNode.textContent = "";
+      return;
+    }
+    otpErrorNode.style.display = "block";
+    otpErrorNode.textContent = String(message);
+  }
+
+  function openOtpModal() {
+    if (!otpOverlay) return;
+    otpOverlay.setAttribute("aria-hidden", "false");
+    setOtpError("");
+    setOtpStatus("");
+    if (otpCodeInput) {
+      otpCodeInput.value = "";
+      window.setTimeout(() => otpCodeInput.focus(), 0);
     }
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    showAlert("");
+  function closeOtpModal() {
+    if (!otpOverlay) return;
+    otpOverlay.setAttribute("aria-hidden", "true");
+    setOtpError("");
+    setOtpStatus("");
+    if (otpCodeInput) otpCodeInput.value = "";
+  }
 
-    trackStartedOnce();
+  function setOtpBusy(isBusy) {
+    otpBusy = Boolean(isBusy);
+    if (otpConfirmBtn) otpConfirmBtn.disabled = otpBusy;
+    if (otpResendBtn) otpResendBtn.disabled = otpBusy || resendCooldownRemaining > 0;
+    if (otpCloseBtn) otpCloseBtn.disabled = otpBusy;
+    if (otpCodeInput) otpCodeInput.disabled = otpBusy;
+  }
 
-    const name = document.getElementById("name").value.trim();
-    if (!name) {
-      submitError("missing_name", "Indica tu nombre y apellidos.", "name");
+  function updateResendButtonLabel() {
+    if (!otpResendBtn) return;
+    if (resendCooldownRemaining > 0) {
+      otpResendBtn.textContent = `Reenviar (${resendCooldownRemaining}s)`;
+      otpResendBtn.disabled = true;
       return;
     }
+    otpResendBtn.textContent = "Reenviar";
+    otpResendBtn.disabled = otpBusy;
+  }
 
-    const consent = document.getElementById("consent").checked;
-    if (!consent) {
-      submitError("missing_consent", "Debes aceptar el consentimiento para continuar.", "consent");
-      return;
-    }
+  function startResendCooldown(seconds) {
+    resendCooldownRemaining = Math.max(0, Number(seconds) || 45);
+    window.clearInterval(resendCooldownTimer);
+    updateResendButtonLabel();
+    resendCooldownTimer = window.setInterval(() => {
+      resendCooldownRemaining -= 1;
+      if (resendCooldownRemaining <= 0) {
+        resendCooldownRemaining = 0;
+        window.clearInterval(resendCooldownTimer);
+      }
+      updateResendButtonLabel();
+    }, 1000);
+  }
 
-    const phone = document.getElementById("phone").value.trim();
-    if (!phone) {
-      submitError("missing_phone", "Indica un teléfono de contacto.", "phone");
-      return;
-    }
-
-    const postalCode = normalizePostalCode(document.getElementById("postal_code").value);
-    if (!postalCode) {
-      submitError("missing_postal_code", "Indica tu código postal.", "postal_code");
-      return;
-    }
-    if (!/^\d{5}$/.test(postalCode)) {
-      submitError("invalid_postal_code", "El código postal debe tener 5 dígitos.", "postal_code");
-      return;
-    }
-
-    const emailNode = document.getElementById("email");
-    const email = emailNode.value.trim();
-    if (!email) {
-      submitError("missing_email", "Indica un email de contacto.", "email");
-      return;
-    }
-    if (!emailNode.checkValidity()) {
-      submitError("invalid_email", "Revisa el email (formato no válido).", "email");
-      return;
-    }
-
-    const payload = {
-      name,
-      email,
-      phone,
-      city: document.getElementById("city").value.trim(),
-      postal_code: postalCode,
-      business_type: document.getElementById("business_type").value || "",
-      urgency: document.getElementById("urgency").value || "",
-      budget_range: document.getElementById("budget_range").value || "",
-      notes: document.getElementById("notes").value.trim(),
-      risk_level: riskLevel,
-      consent: true,
-      consent_timestamp: new Date().toISOString(),
-      evaluation_summary: evaluationSummary,
-      intent_plazo: intentPlazo,
-      iei_score: riskScore,
-      tier: evaluation.tier || null,
-      dominant_axis: evaluation.dominant_axis || null,
-      axis_mix: evaluation.axis_mix || null,
-      model_version: evaluation.model_version || null,
-    };
-
-    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
-      risk_level: payload.risk_level,
-      iei_level: payload.risk_level,
-      iei_score: riskScore,
-      model_version: evaluation.model_version || null,
-      tier: evaluation.tier || null,
-      dominant_axis: evaluation.dominant_axis || null,
-      intent_plazo: payload.intent_plazo,
+  async function requestOtpStart(phoneE164) {
+    const response = await fetch("/api/otp/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneE164 }),
     });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo enviar el código OTP");
+    }
+    return data;
+  }
 
+  async function requestOtpCheck(phoneE164, code) {
+    const response = await fetch("/api/otp/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneE164, code }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo validar el código OTP");
+    }
+    return data;
+  }
+
+  async function requestOtpToken(phoneE164) {
+    const response = await fetch("/api/otp/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneE164 }),
+    });
+    const data = await response.json();
+    if (!response.ok || !data.token) {
+      throw new Error(data.error || "No se pudo emitir el token de verificación");
+    }
+    return data.token;
+  }
+
+  async function submitLead(payload) {
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
@@ -319,8 +372,219 @@
       );
 
       window.location.href = `/confirmacion?lead=${encodeURIComponent(data.lead_id)}`;
+      return true;
     } catch (error) {
       submitError("request_failed", error.message || "No se pudo enviar la solicitud");
+      setSubmitDisabled(false);
+      return false;
+    }
+  }
+
+  function submitError(reason, message, focusId) {
+    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_error", {
+      reason,
+      risk_level: riskLevel,
+      iei_level: riskLevel,
+      iei_score: riskScore,
+      model_version: evaluation.model_version || null,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      intent_plazo: intentPlazo,
+    });
+
+    showAlert(message || "No se pudo enviar la solicitud.", true);
+    if (focusId) {
+      document.getElementById(focusId)?.focus();
+    }
+  }
+
+  function cancelOtpFlow() {
+    pendingLeadPayload = null;
+    pendingPhoneE164 = "";
+    closeOtpModal();
+    setSubmitDisabled(false);
+    setOtpBusy(false);
+  }
+
+  otpCodeInput?.addEventListener("input", () => {
+    otpCodeInput.value = String(otpCodeInput.value || "").replace(/\D/g, "").slice(0, 6);
+    setOtpError("");
+  });
+
+  otpCloseBtn?.addEventListener("click", () => {
+    cancelOtpFlow();
+  });
+
+  otpOverlay?.addEventListener("click", (event) => {
+    if (event.target === otpOverlay && !otpBusy) {
+      cancelOtpFlow();
+    }
+  });
+
+  otpResendBtn?.addEventListener("click", async () => {
+    if (otpBusy || resendCooldownRemaining > 0 || !pendingPhoneE164) return;
+    setOtpBusy(true);
+    setOtpError("");
+    setOtpStatus("Reenviando código...");
+    try {
+      await requestOtpStart(pendingPhoneE164);
+      setOtpStatus("Código reenviado.");
+      startResendCooldown(45);
+    } catch (error) {
+      setOtpError(error.message || "No se pudo reenviar el código.");
+      setOtpStatus("");
+    } finally {
+      setOtpBusy(false);
+      updateResendButtonLabel();
+    }
+  });
+
+  otpConfirmBtn?.addEventListener("click", async () => {
+    if (otpBusy || !pendingLeadPayload || !pendingPhoneE164) return;
+
+    const code = String(otpCodeInput?.value || "").replace(/\D/g, "");
+    if (code.length !== 6) {
+      setOtpError("Introduce un código válido de 6 dígitos.");
+      otpCodeInput?.focus();
+      return;
+    }
+
+    setOtpBusy(true);
+    setOtpError("");
+    setOtpStatus("Verificando código...");
+
+    try {
+      const check = await requestOtpCheck(pendingPhoneE164, code);
+      if (!check.verified) {
+        setOtpError("Código incorrecto. Revisa e inténtalo.");
+        setOtpStatus("");
+        return;
+      }
+
+      setOtpStatus("Generando validación segura...");
+      const verificationToken = await requestOtpToken(pendingPhoneE164);
+      const payloadToSend = {
+        ...pendingLeadPayload,
+        verificationToken,
+      };
+
+      pendingLeadPayload = null;
+      pendingPhoneE164 = "";
+      closeOtpModal();
+      await submitLead(payloadToSend);
+    } catch (error) {
+      setOtpError(error.message || "No se pudo validar el código.");
+      setOtpStatus("");
+    } finally {
+      setOtpBusy(false);
+      updateResendButtonLabel();
+    }
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    showAlert("");
+
+    trackStartedOnce();
+
+    const name = document.getElementById("name").value.trim();
+    if (!name) {
+      submitError("missing_name", "Indica tu nombre y apellidos.", "name");
+      return;
+    }
+
+    const consent = document.getElementById("consent").checked;
+    if (!consent) {
+      submitError("missing_consent", "Debes aceptar el consentimiento para continuar.", "consent");
+      return;
+    }
+
+    const phone = document.getElementById("phone").value.trim();
+    if (!phone) {
+      submitError("missing_phone", "Indica un teléfono de contacto.", "phone");
+      return;
+    }
+    const phoneE164 = normalizePhoneE164(phone);
+    if (!phoneE164) {
+      submitError("invalid_phone", "Indica un teléfono válido con prefijo internacional o móvil español.", "phone");
+      return;
+    }
+
+    const postalCode = normalizePostalCode(document.getElementById("postal_code").value);
+    if (!postalCode) {
+      submitError("missing_postal_code", "Indica tu código postal.", "postal_code");
+      return;
+    }
+    if (!/^\d{5}$/.test(postalCode)) {
+      submitError("invalid_postal_code", "El código postal debe tener 5 dígitos.", "postal_code");
+      return;
+    }
+
+    const emailNode = document.getElementById("email");
+    const email = emailNode.value.trim();
+    if (!email) {
+      submitError("missing_email", "Indica un email de contacto.", "email");
+      return;
+    }
+    if (!emailNode.checkValidity()) {
+      submitError("invalid_email", "Revisa el email (formato no válido).", "email");
+      return;
+    }
+
+    const payload = {
+      name,
+      email,
+      phone: phoneE164,
+      city: document.getElementById("city").value.trim(),
+      postal_code: postalCode,
+      business_type: document.getElementById("business_type").value || "",
+      urgency: document.getElementById("urgency").value || "",
+      budget_range: document.getElementById("budget_range").value || "",
+      notes: document.getElementById("notes").value.trim(),
+      risk_level: riskLevel,
+      consent: true,
+      consent_timestamp: new Date().toISOString(),
+      evaluation_summary: evaluationSummary,
+      intent_plazo: intentPlazo,
+      iei_score: riskScore,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      axis_mix: evaluation.axis_mix || null,
+      model_version: evaluation.model_version || null,
+    };
+
+    window.PuntoSeguroAnalytics?.trackEvent("lead_submit_clicked", {
+      risk_level: payload.risk_level,
+      iei_level: payload.risk_level,
+      iei_score: riskScore,
+      model_version: evaluation.model_version || null,
+      tier: evaluation.tier || null,
+      dominant_axis: evaluation.dominant_axis || null,
+      intent_plazo: payload.intent_plazo,
+    });
+
+    try {
+      setSubmitDisabled(true);
+      setOtpBusy(true);
+      setOtpStatus("Enviando código...");
+      setOtpError("");
+
+      await requestOtpStart(phoneE164);
+
+      pendingLeadPayload = payload;
+      pendingPhoneE164 = phoneE164;
+      openOtpModal();
+      setOtpStatus("Código enviado. Revísalo en tu SMS.");
+      startResendCooldown(45);
+    } catch (error) {
+      submitError("otp_start_failed", error.message || "No se pudo enviar el código OTP");
+      pendingLeadPayload = null;
+      pendingPhoneE164 = "";
+      closeOtpModal();
+      setSubmitDisabled(false);
+    } finally {
+      setOtpBusy(false);
+      updateResendButtonLabel();
     }
   });
 })();

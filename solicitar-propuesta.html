@@ -61,6 +61,141 @@
       outline: 2px solid rgba(43,92,255,0.22);
       outline-offset: 2px;
     }
+
+    #ps-otp-overlay[aria-hidden="true"]{
+      display: none;
+    }
+
+    #ps-otp-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(15,23,42,0.55);
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+    }
+
+    .ps-otp-modal{
+      width: min(460px, 100%);
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.12);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(15,23,42,0.22);
+      padding: 1rem 1rem 1.1rem;
+      display: grid;
+      gap: .8rem;
+    }
+
+    .ps-otp-head{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .7rem;
+    }
+
+    .ps-otp-head h3{
+      margin: 0;
+      color: var(--brand-secondary);
+      font-size: 1.1rem;
+      letter-spacing: -.01em;
+    }
+
+    #ps-otp-close{
+      border: 1px solid rgba(15,23,42,0.14);
+      background: #fff;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      line-height: 1;
+      color: rgba(15,23,42,.75);
+    }
+
+    .ps-otp-copy{
+      margin: 0;
+      color: rgba(15,23,42,.72);
+      font-size: .92rem;
+      line-height: 1.4;
+    }
+
+    #ps-otp-code{
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,.16);
+      padding: 0 .8rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-align: center;
+    }
+
+    #ps-otp-code:focus{
+      outline: none;
+      border-color: rgba(43,92,255,.45);
+      box-shadow: 0 0 0 4px rgba(43,92,255,.12);
+    }
+
+    .ps-otp-actions{
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+    }
+
+    #ps-otp-confirm,
+    #ps-otp-resend{
+      min-height: 42px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: .62rem .95rem;
+      font-weight: 800;
+      font-size: .92rem;
+      cursor: pointer;
+    }
+
+    #ps-otp-confirm{
+      background: var(--brand-primary);
+      color: #fff;
+    }
+
+    #ps-otp-resend{
+      background: #fff;
+      border-color: rgba(15,23,42,.16);
+      color: rgba(15,23,42,.84);
+    }
+
+    #ps-otp-confirm:disabled,
+    #ps-otp-resend:disabled{
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    #ps-otp-error{
+      display: none;
+      margin: 0;
+      color: #b91c1c;
+      font-weight: 600;
+      font-size: .9rem;
+    }
+
+    #ps-otp-status{
+      min-height: 1.2rem;
+      margin: 0;
+      color: rgba(15,23,42,.65);
+      font-size: .88rem;
+    }
+
+    @media (max-width: 520px){
+      .ps-otp-modal{
+        border-radius: 14px;
+        padding: .95rem;
+      }
+      #ps-otp-code{
+        font-size: 1.05rem;
+        letter-spacing: .12em;
+      }
+    }
   </style>
 </head>
 <body class="ps-mode-inflow">
@@ -191,6 +326,32 @@
       <div class="ps-model-desc" id="ps-iei-desc"></div>
     </div>
   </footer>
+
+  <div id="ps-otp-overlay" aria-hidden="true">
+    <div class="ps-otp-modal" role="dialog" aria-modal="true" aria-labelledby="ps-otp-title">
+      <div class="ps-otp-head">
+        <h3 id="ps-otp-title">Verificación por SMS</h3>
+        <button type="button" id="ps-otp-close" aria-label="Cerrar">×</button>
+      </div>
+      <p class="ps-otp-copy">Introduce el código de 6 dígitos que acabamos de enviar a tu teléfono.</p>
+      <input
+        id="ps-otp-code"
+        type="text"
+        maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="one-time-code"
+        placeholder="------"
+        aria-label="Código OTP de 6 dígitos"
+      />
+      <p id="ps-otp-error"></p>
+      <p id="ps-otp-status"></p>
+      <div class="ps-otp-actions">
+        <button type="button" id="ps-otp-confirm">Confirmar</button>
+        <button type="button" id="ps-otp-resend">Reenviar</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/js/analytics.js"></script>
   <script src="js/lead-form.js"></script>

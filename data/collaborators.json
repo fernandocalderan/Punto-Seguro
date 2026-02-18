@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "id": "col_0001_cast_adminfincas",
+    "name": "Gestión Fincas Castelldefels",
+    "company": "GF Castelldefels",
+    "email": "colab+gfcast@punto-seguro.local",
+    "phone": "+34600000001",
+    "type": "admin_fincas",
+    "tracking_code": "COL-ADM-CAST-01",
+    "commission_type": "percent",
+    "commission_value": 12,
+    "payout_model": "per_lead_otp_verified",
+    "status": "active",
+    "auth_mode": "magic_link",
+    "created_at": "2026-02-18T15:00:00.000Z",
+    "updated_at": "2026-02-18T15:00:00.000Z"
+  },
+  {
+    "id": "col_0002_gava_inmobiliaria",
+    "name": "Inmo Gavà Centro",
+    "company": "Inmo Gavà Centro",
+    "email": "colab+inmogava@punto-seguro.local",
+    "phone": "+34600000002",
+    "type": "inmobiliaria",
+    "tracking_code": "COL-INMO-GAVA-01",
+    "commission_type": "fixed",
+    "commission_value": 25,
+    "payout_model": "per_lead_otp_verified",
+    "status": "active",
+    "auth_mode": "magic_link",
+    "created_at": "2026-02-18T15:00:00.000Z",
+    "updated_at": "2026-02-18T15:00:00.000Z"
+  },
+  {
+    "id": "col_0003_afiliado_seo",
+    "name": "Afiliado SEO Barcelona",
+    "company": "Afiliado SEO Barcelona",
+    "email": "colab+seo@punto-seguro.local",
+    "phone": "+34600000003",
+    "type": "afiliado",
+    "tracking_code": "COL-AF-SEO-BCN-01",
+    "commission_type": "percent",
+    "commission_value": 8,
+    "payout_model": "per_lead_otp_verified",
+    "status": "active",
+    "auth_mode": "magic_link",
+    "created_at": "2026-02-18T15:00:00.000Z",
+    "updated_at": "2026-02-18T15:00:00.000Z"
+  }
+]

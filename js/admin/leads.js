@@ -28,7 +28,8 @@
   let providerMap = new Map();
   let activeStatusFilter = "all";
   let searchDebounceTimer = null;
-  const deepLinkLeadId = new URLSearchParams(window.location.search).get("id");
+  const deepLinkParams = new URLSearchParams(window.location.search);
+  const deepLinkLeadId = deepLinkParams.get("lead") || deepLinkParams.get("id");
   let deepLinkHandled = false;
 
   function showAlert(message, isError) {
@@ -201,9 +202,11 @@
       ? lead.provider_ids.map((id) => String(id || "").trim()).filter(Boolean)
       : [];
     const assignedProviderId = String(lead?.assigned_provider_id || "").trim();
+    const explicitPrimaryId = String(lead?.provider_primary_id || "").trim();
+    const explicitSecondaryId = String(lead?.provider_secondary_id || "").trim();
 
-    const primaryId = providerIds[0] || assignedProviderId || null;
-    const secondaryCandidate = providerIds[1] || null;
+    const primaryId = providerIds[0] || assignedProviderId || explicitPrimaryId || null;
+    const secondaryCandidate = providerIds[1] || explicitSecondaryId || null;
     const secondaryId = secondaryCandidate && secondaryCandidate !== primaryId ? secondaryCandidate : null;
 
     return { primaryId, secondaryId };

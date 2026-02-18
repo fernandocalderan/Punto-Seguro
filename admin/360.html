@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto Seguro Admin | Vista 360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/leads.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="/admin/providers">Panel admin</a>
+      <nav class="nav" aria-label="Navegación admin">
+        <a href="/admin/providers">Proveedores</a>
+        <a href="/admin/leads">Leads</a>
+        <a href="/admin/collaborators">Colaboradores</a>
+        <a href="/admin/360">Vista 360°</a>
+        <a href="/">Web</a>
+        <button type="button" id="logout-btn" class="btn btn-secondary btn-compact">Salir</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container stack">
+      <section class="card stack">
+        <h1>Vista 360° CRM</h1>
+        <p class="muted">Embudo, rankings y matriz colaborador × proveedor con drill-down de leads.</p>
+
+        <div class="grid" id="metrics360-filters">
+          <div class="field">
+            <label for="f-from">Desde</label>
+            <input type="date" id="f-from" />
+          </div>
+          <div class="field">
+            <label for="f-to">Hasta</label>
+            <input type="date" id="f-to" />
+          </div>
+          <div class="field">
+            <label for="f-status">Estado</label>
+            <select id="f-status">
+              <option value="">Todos</option>
+              <option value="new">new</option>
+              <option value="validated">validated</option>
+              <option value="assigned">assigned</option>
+              <option value="sent">sent</option>
+              <option value="accepted">accepted</option>
+              <option value="closed">closed</option>
+              <option value="sold">sold</option>
+              <option value="rejected">rejected</option>
+              <option value="deleted">deleted</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-collaborator">Colaborador</label>
+            <select id="f-collaborator">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-provider">Proveedor</label>
+            <select id="f-provider">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="actions" style="align-items:end;">
+            <button type="button" class="btn btn-primary" id="f-apply">Aplicar</button>
+            <button type="button" class="btn btn-secondary" id="f-clear">Limpiar</button>
+          </div>
+        </div>
+
+        <div id="metrics360-alert" class="notice" style="display:none;"></div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Funnel</h2>
+        <div class="grid-3 metrics-grid" id="funnel-cards"></div>
+        <div class="grid" id="funnel-ratios"></div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Ranking Colaboradores</h2>
+        <div class="table-wrap">
+          <table class="table" id="rank-collaborators-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Leads</th>
+                <th>OTP rate</th>
+                <th>Comisión €</th>
+                <th>Avg ticket €</th>
+                <th>Avg risk</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Ranking Proveedores</h2>
+        <div class="table-wrap">
+          <table class="table" id="rank-providers-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Leads assigned</th>
+                <th>Win rate</th>
+                <th>Won</th>
+                <th>Lost</th>
+                <th>Avg ticket €</th>
+                <th>Avg risk</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Matriz Colaborador × Proveedor</h2>
+        <div class="table-wrap" id="matrix-wrap">
+          <table class="table" id="matrix-table">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card stack">
+        <h2 class="ps-section-h2">Leads filtrados</h2>
+        <p class="muted" id="metrics360-leads-meta"></p>
+        <div class="table-wrap">
+          <table class="table" id="metrics360-leads-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Riesgo</th>
+                <th>OTP</th>
+                <th>Tracking</th>
+                <th>Provider P</th>
+                <th>Provider S</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin/360.js"></script>
+</body>
+</html>

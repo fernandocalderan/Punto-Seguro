@@ -84,7 +84,8 @@ app.use((req, res, next) => {
   const protectedAdminFile =
     pathName === "/admin/providers.html" ||
     pathName === "/admin/leads.html" ||
-    pathName === "/admin/collaborators.html";
+    pathName === "/admin/collaborators.html" ||
+    pathName === "/admin/360.html";
 
   if (protectedAdminFile && !isAdminAuthenticated(req)) {
     return res.redirect("/admin/login");
@@ -197,9 +198,11 @@ function providerSlotsForLead(lead) {
     ? lead.provider_ids.map((id) => String(id).trim()).filter(Boolean)
     : [];
   const assignedProviderId = String(lead?.assigned_provider_id || "").trim();
+  const explicitPrimaryId = String(lead?.provider_primary_id || "").trim();
+  const explicitSecondaryId = String(lead?.provider_secondary_id || "").trim();
 
-  const primaryId = providerIds[0] || assignedProviderId || null;
-  const secondaryCandidate = providerIds[1] || null;
+  const primaryId = providerIds[0] || assignedProviderId || explicitPrimaryId || null;
+  const secondaryCandidate = providerIds[1] || explicitSecondaryId || null;
   const secondaryId = secondaryCandidate && secondaryCandidate !== primaryId ? secondaryCandidate : null;
 
   return {
@@ -274,6 +277,162 @@ async function expandAdminLeads(leads, expandSet) {
 
     return nextLead;
   });
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const CONTACTED_STATUSES = new Set(["sent", "accepted", "closed", "sold", "rejected"]);
+const WON_STATUSES = new Set(["sold", "won"]);
+const LOST_STATUSES = new Set(["rejected", "lost"]);
+
+function toNumberOrNull(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function round2(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.round((parsed + Number.EPSILON) * 100) / 100;
+}
+
+function parseYmdToStartUtc(value) {
+  const token = String(value || "").trim();
+  if (!token) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(token)) return null;
+
+  const date = new Date(`${token}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function parse360Filters(query = {}) {
+  const fromToken = String(query.from || "").trim();
+  const toToken = String(query.to || "").trim();
+  const fromStart = parseYmdToStartUtc(fromToken);
+  const toStart = parseYmdToStartUtc(toToken);
+  const toExclusive = toStart ? new Date(toStart.getTime() + DAY_MS) : null;
+
+  return {
+    range: {
+      from: fromToken || null,
+      to: toToken || null,
+    },
+    fromStart,
+    toExclusive,
+    status: String(query.status || "").trim().toLowerCase() || null,
+    collaboratorId: String(query.collaborator_id || "").trim() || null,
+    providerId: String(query.provider_id || "").trim() || null,
+  };
+}
+
+function safeLeadCreatedAt(lead) {
+  const raw = lead?.created_at || lead?.createdAt || null;
+  if (!raw) return null;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function leadMatches360Filters(lead, filters) {
+  const createdAt = safeLeadCreatedAt(lead);
+  if (filters.fromStart || filters.toExclusive) {
+    if (!createdAt) return false;
+  }
+  if (filters.fromStart && createdAt < filters.fromStart) return false;
+  if (filters.toExclusive && createdAt >= filters.toExclusive) return false;
+
+  if (filters.status && String(lead?.status || "").trim().toLowerCase() !== filters.status) {
+    return false;
+  }
+
+  if (filters.collaboratorId) {
+    const collaboratorId = String(lead?.collaborator_id || "").trim();
+    if (collaboratorId !== filters.collaboratorId) return false;
+  }
+
+  if (filters.providerId) {
+    const slots = providerSlotsForLead(lead);
+    if (slots.primaryId !== filters.providerId && slots.secondaryId !== filters.providerId) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function leadTicketValue(lead) {
+  const price = toNumberOrNull(lead?.price_eur);
+  if (price !== null) return price;
+  const ticket = toNumberOrNull(lead?.ticket_estimated_eur);
+  if (ticket !== null) return ticket;
+  return 0;
+}
+
+function leadRiskScoreValue(lead) {
+  const direct = toNumberOrNull(lead?.risk_score);
+  if (direct !== null) return direct;
+
+  const summary = lead?.evaluation_summary;
+  if (summary && typeof summary === "object") {
+    const nested = toNumberOrNull(summary.risk_score);
+    if (nested !== null) return nested;
+  }
+
+  if (typeof summary === "string" && summary.trim()) {
+    try {
+      const parsed = JSON.parse(summary);
+      const nested = toNumberOrNull(parsed?.risk_score);
+      if (nested !== null) return nested;
+    } catch (_error) {
+      // Ignore parse errors.
+    }
+  }
+
+  return null;
+}
+
+function addAverages(target, ticketValue, riskScore) {
+  if (Number.isFinite(ticketValue)) {
+    target.ticket_sum += ticketValue;
+    target.ticket_count += 1;
+  }
+  if (Number.isFinite(riskScore)) {
+    target.risk_sum += riskScore;
+    target.risk_count += 1;
+  }
+}
+
+function average(sum, count) {
+  if (!count) return 0;
+  return round2(sum / count);
+}
+
+function mapLeadToFunnelFlags(lead) {
+  const status = String(lead?.status || "").trim().toLowerCase();
+  const slots = providerSlotsForLead(lead);
+  return {
+    isNew: status === "new",
+    isAssigned: Boolean(slots.primaryId || slots.secondaryId),
+    isContacted: CONTACTED_STATUSES.has(status),
+    isWon: WON_STATUSES.has(status),
+    isLost: LOST_STATUSES.has(status),
+    isOtpVerified: lead?.phone_verified === true,
+  };
+}
+
+function leadDrilldownView(lead) {
+  const slots = providerSlotsForLead(lead);
+  return {
+    id: lead.id,
+    created_at: lead.created_at || null,
+    tipo_inmueble: lead.business_type || null,
+    risk_level: lead.risk_level || null,
+    risk_score: toNumberOrNull(lead.risk_score) || 0,
+    phone_verified: lead.phone_verified === true,
+    collaborator_id: lead.collaborator_id || null,
+    collaborator_tracking_code: lead.collaborator_tracking_code || null,
+    provider_primary_id: slots.primaryId,
+    provider_secondary_id: slots.secondaryId,
+    status: lead.status || null,
+  };
 }
 
 function normalizePhoneE164(value) {
@@ -455,6 +614,10 @@ app.get("/admin/leads", requireAdminPage, (_req, res) => {
 
 app.get("/admin/collaborators", requireAdminPage, (_req, res) => {
   res.sendFile(file("admin/collaborators.html"));
+});
+
+app.get("/admin/360", requireAdminPage, (_req, res) => {
+  res.sendFile(file("admin/360.html"));
 });
 
 app.post("/api/events", asyncHandler(async (req, res) => {
@@ -1105,6 +1268,233 @@ app.get("/api/admin/events", requireAdminApi, asyncHandler(async (req, res) => {
   const limit = Number(req.query.limit || 100);
   return res.json({
     events: await repositories.events.list(limit),
+  });
+}));
+
+app.get("/api/admin/metrics/360", requireAdminApi, asyncHandler(async (req, res) => {
+  const filters = parse360Filters(req.query);
+
+  const [allLeads, collaborators, providers] = await Promise.all([
+    repositories.leads.list(),
+    repositories.collaborators.findAll(),
+    repositories.providers.list(),
+  ]);
+
+  const statusValues = Array.from(
+    new Set(
+      allLeads
+        .map((lead) => String(lead?.status || "").trim().toLowerCase())
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a.localeCompare(b, "es"));
+
+  const leads = allLeads.filter((lead) => leadMatches360Filters(lead, filters));
+  const collaboratorById = new Map(collaborators.map((item) => [item.id, item]));
+  const providerById = new Map(providers.map((item) => [item.id, item]));
+
+  const funnel = {
+    new: 0,
+    assigned: 0,
+    contacted: 0,
+    won: 0,
+    lost: 0,
+    otp_verified: 0,
+    conversion_new_to_assigned: 0,
+    conversion_assigned_to_won: 0,
+  };
+
+  const collaboratorGroups = new Map();
+  const providerGroups = new Map();
+  const matrixCellMap = new Map();
+  const matrixCollaboratorIdSet = new Set();
+  const matrixProviderIdSet = new Set();
+
+  for (const lead of leads) {
+    const flags = mapLeadToFunnelFlags(lead);
+    if (flags.isNew) funnel.new += 1;
+    if (flags.isAssigned) funnel.assigned += 1;
+    if (flags.isContacted) funnel.contacted += 1;
+    if (flags.isWon) funnel.won += 1;
+    if (flags.isLost) funnel.lost += 1;
+    if (flags.isOtpVerified) funnel.otp_verified += 1;
+
+    const collaboratorId = String(lead?.collaborator_id || "").trim() || null;
+    const commissionValue = Number(lead?.commission_estimated_eur) || 0;
+    const ticketValue = leadTicketValue(lead);
+    const riskScore = leadRiskScoreValue(lead);
+    const slots = providerSlotsForLead(lead);
+    const providerIds = Array.from(new Set([slots.primaryId, slots.secondaryId].filter(Boolean)));
+
+    if (collaboratorId) {
+      if (!collaboratorGroups.has(collaboratorId)) {
+        const collaborator = collaboratorById.get(collaboratorId) || null;
+        collaboratorGroups.set(collaboratorId, {
+          collaborator_id: collaboratorId,
+          name: collaborator?.name || collaboratorId,
+          tracking_code: collaborator?.tracking_code || null,
+          leads_total: 0,
+          otp_verified: 0,
+          commission_total_eur: 0,
+          ticket_sum: 0,
+          ticket_count: 0,
+          risk_sum: 0,
+          risk_count: 0,
+        });
+      }
+
+      const row = collaboratorGroups.get(collaboratorId);
+      row.leads_total += 1;
+      if (flags.isOtpVerified) row.otp_verified += 1;
+      row.commission_total_eur += commissionValue;
+      addAverages(row, ticketValue, riskScore);
+    }
+
+    for (const providerId of providerIds) {
+      if (!providerGroups.has(providerId)) {
+        const provider = providerById.get(providerId) || null;
+        providerGroups.set(providerId, {
+          provider_id: providerId,
+          name: provider?.name || providerId,
+          leads_assigned: 0,
+          otp_verified: 0,
+          won: 0,
+          lost: 0,
+          ticket_sum: 0,
+          ticket_count: 0,
+          risk_sum: 0,
+          risk_count: 0,
+        });
+      }
+
+      const row = providerGroups.get(providerId);
+      row.leads_assigned += 1;
+      if (flags.isOtpVerified) row.otp_verified += 1;
+      if (flags.isWon) row.won += 1;
+      if (flags.isLost) row.lost += 1;
+      addAverages(row, ticketValue, riskScore);
+
+      if (collaboratorId) {
+        const matrixKey = `${collaboratorId}|${providerId}`;
+        if (!matrixCellMap.has(matrixKey)) {
+          matrixCellMap.set(matrixKey, {
+            collaborator_id: collaboratorId,
+            provider_id: providerId,
+            leads: 0,
+            otp_verified: 0,
+            commission_eur: 0,
+          });
+        }
+
+        const cell = matrixCellMap.get(matrixKey);
+        cell.leads += 1;
+        if (flags.isOtpVerified) cell.otp_verified += 1;
+        cell.commission_eur += commissionValue;
+
+        matrixCollaboratorIdSet.add(collaboratorId);
+        matrixProviderIdSet.add(providerId);
+      }
+    }
+  }
+
+  funnel.conversion_new_to_assigned = funnel.new > 0
+    ? round2((funnel.assigned / funnel.new) * 100)
+    : 0;
+  funnel.conversion_assigned_to_won = funnel.assigned > 0
+    ? round2((funnel.won / funnel.assigned) * 100)
+    : 0;
+
+  const collaboratorRows = Array.from(collaboratorGroups.values())
+    .map((row) => ({
+      collaborator_id: row.collaborator_id,
+      name: row.name,
+      tracking_code: row.tracking_code,
+      leads_total: row.leads_total,
+      otp_verified: row.otp_verified,
+      otp_rate: row.leads_total > 0 ? round2((row.otp_verified / row.leads_total) * 100) : 0,
+      commission_total_eur: round2(row.commission_total_eur),
+      avg_ticket_eur: average(row.ticket_sum, row.ticket_count),
+      avg_risk_score: average(row.risk_sum, row.risk_count),
+    }))
+    .sort((a, b) => b.leads_total - a.leads_total || b.otp_rate - a.otp_rate);
+
+  const providerRows = Array.from(providerGroups.values())
+    .map((row) => {
+      const resolvedDenominator = row.won + row.lost > 0 ? row.won + row.lost : row.leads_assigned;
+      return {
+        provider_id: row.provider_id,
+        name: row.name,
+        leads_assigned: row.leads_assigned,
+        otp_verified: row.otp_verified,
+        avg_ticket_eur: average(row.ticket_sum, row.ticket_count),
+        avg_risk_score: average(row.risk_sum, row.risk_count),
+        won: row.won,
+        lost: row.lost,
+        win_rate: resolvedDenominator > 0 ? round2((row.won / resolvedDenominator) * 100) : 0,
+      };
+    })
+    .sort((a, b) => b.leads_assigned - a.leads_assigned || b.win_rate - a.win_rate);
+
+  const matrixCollaboratorIds = Array.from(matrixCollaboratorIdSet).sort((a, b) => {
+    const nameA = String(collaboratorById.get(a)?.name || a);
+    const nameB = String(collaboratorById.get(b)?.name || b);
+    return nameA.localeCompare(nameB, "es");
+  });
+  const matrixProviderIds = Array.from(matrixProviderIdSet).sort((a, b) => {
+    const nameA = String(providerById.get(a)?.name || a);
+    const nameB = String(providerById.get(b)?.name || b);
+    return nameA.localeCompare(nameB, "es");
+  });
+
+  const collaboratorOrder = new Map(matrixCollaboratorIds.map((id, index) => [id, index]));
+  const providerOrder = new Map(matrixProviderIds.map((id, index) => [id, index]));
+  const matrixCells = Array.from(matrixCellMap.values())
+    .map((row) => ({
+      ...row,
+      commission_eur: round2(row.commission_eur),
+    }))
+    .sort((a, b) => {
+      const collabDiff = (collaboratorOrder.get(a.collaborator_id) ?? 0) - (collaboratorOrder.get(b.collaborator_id) ?? 0);
+      if (collabDiff !== 0) return collabDiff;
+      return (providerOrder.get(a.provider_id) ?? 0) - (providerOrder.get(b.provider_id) ?? 0);
+    });
+
+  return res.json({
+    range: filters.range,
+    status_values: statusValues,
+    status_map: {
+      NEW: ["new"],
+      ASSIGNED: ["assigned_by_provider_slot"],
+      CONTACTED: Array.from(CONTACTED_STATUSES),
+      WON: Array.from(WON_STATUSES),
+      LOST: Array.from(LOST_STATUSES),
+    },
+    funnel,
+    collaborators: collaboratorRows,
+    providers: providerRows,
+    matrix: {
+      collaborator_ids: matrixCollaboratorIds,
+      provider_ids: matrixProviderIds,
+      cells: matrixCells,
+    },
+  });
+}));
+
+app.get("/api/admin/metrics/360/leads", requireAdminApi, asyncHandler(async (req, res) => {
+  const filters = parse360Filters(req.query);
+  const limitRaw = Number(req.query.limit);
+  const limit = Number.isFinite(limitRaw)
+    ? Math.max(1, Math.min(Math.floor(limitRaw), 200))
+    : 200;
+
+  const allLeads = await repositories.leads.list();
+  const filteredLeads = allLeads.filter((lead) => leadMatches360Filters(lead, filters));
+  const leads = filteredLeads.slice(0, limit).map(leadDrilldownView);
+
+  return res.json({
+    range: filters.range,
+    total: filteredLeads.length,
+    limit,
+    leads,
   });
 }));
 

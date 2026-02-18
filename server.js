@@ -45,11 +45,17 @@ const ADMIN_TOKEN = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
 const OTP_JWT_SECRET = String(process.env.OTP_JWT_SECRET || "");
 const OTP_TOKEN_TTL_SECONDS = Math.max(60, Number(process.env.OTP_TOKEN_TTL_SECONDS || 600));
 const OTP_VERIFIED_WINDOW_MS = Math.max(60 * 1000, Number(process.env.OTP_VERIFIED_WINDOW_MS || 10 * 60 * 1000));
+const OTP_RATE_WINDOW_MS = Math.max(60 * 1000, Number(process.env.OTP_RATE_WINDOW_MS || 60 * 60 * 1000));
+const OTP_RATE_LIMIT_IP = Math.max(1, Number(process.env.OTP_RATE_LIMIT_IP || 5));
+const OTP_RATE_LIMIT_PHONE = Math.max(1, Number(process.env.OTP_RATE_LIMIT_PHONE || 3));
+const OTP_SPAIN_ONLY = String(process.env.OTP_SPAIN_ONLY || "1") !== "0";
 const TWILIO_ACCOUNT_SID = String(process.env.TWILIO_ACCOUNT_SID || "");
 const TWILIO_AUTH_TOKEN = String(process.env.TWILIO_AUTH_TOKEN || "");
 const TWILIO_VERIFY_SERVICE_SID = String(process.env.TWILIO_VERIFY_SERVICE_SID || "");
 
 const otpVerifiedMap = new Map();
+const otpStartByIpMap = new Map();
+const otpStartByPhoneMap = new Map();
 let twilioClient = null;
 
 if (process.env.VERCEL && !process.env.DATABASE_URL) {
@@ -178,6 +184,35 @@ function consumeOtpVerified(phone, req) {
   return true;
 }
 
+function pruneOtpAttempts(map, now) {
+  for (const [key, attempts] of map.entries()) {
+    const recent = Array.isArray(attempts)
+      ? attempts.filter((timestamp) => now - Number(timestamp) <= OTP_RATE_WINDOW_MS)
+      : [];
+    if (recent.length === 0) {
+      map.delete(key);
+      continue;
+    }
+    map.set(key, recent);
+  }
+}
+
+function isOtpRateLimited(map, key, limit, now) {
+  const attempts = Array.isArray(map.get(key)) ? map.get(key) : [];
+  const recent = attempts.filter((timestamp) => now - Number(timestamp) <= OTP_RATE_WINDOW_MS);
+  if (recent.length >= limit) {
+    map.set(key, recent);
+    return true;
+  }
+  return false;
+}
+
+function registerOtpAttempt(map, key, now) {
+  const attempts = Array.isArray(map.get(key)) ? map.get(key) : [];
+  attempts.push(now);
+  map.set(key, attempts);
+}
+
 function getTwilioClient() {
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_VERIFY_SERVICE_SID) {
     return null;
@@ -253,6 +288,21 @@ app.post("/api/otp/start", asyncHandler(async (req, res) => {
   if (!phone) {
     return res.status(400).json({ ok: false, error: "invalid_phone" });
   }
+  if (OTP_SPAIN_ONLY && !phone.startsWith("+34")) {
+    return res.status(400).json({ ok: false, error: "unsupported_country" });
+  }
+
+  const now = Date.now();
+  pruneOtpAttempts(otpStartByIpMap, now);
+  pruneOtpAttempts(otpStartByPhoneMap, now);
+
+  const ipKey = requesterIp(req) || "unknown";
+  if (isOtpRateLimited(otpStartByIpMap, ipKey, OTP_RATE_LIMIT_IP, now)) {
+    return res.status(429).json({ ok: false, error: "otp_rate_limited_ip" });
+  }
+  if (isOtpRateLimited(otpStartByPhoneMap, phone, OTP_RATE_LIMIT_PHONE, now)) {
+    return res.status(429).json({ ok: false, error: "otp_rate_limited_phone" });
+  }
 
   const client = getTwilioClient();
   if (!client) {
@@ -263,6 +313,9 @@ app.post("/api/otp/start", asyncHandler(async (req, res) => {
     to: phone,
     channel: "sms",
   });
+
+  registerOtpAttempt(otpStartByIpMap, ipKey, now);
+  registerOtpAttempt(otpStartByPhoneMap, phone, now);
 
   return res.json({ ok: true });
 }));

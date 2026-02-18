@@ -4,7 +4,7 @@
   const summaryNode = document.getElementById("lead-summary");
   const submitButton = form?.querySelector('button[type="submit"]');
   const otpOverlay = document.getElementById("ps-otp-overlay");
-  const otpCodeInput = document.getElementById("ps-otp-code");
+  const otpDigits = Array.from(document.querySelectorAll(".otp-digit"));
   const otpConfirmBtn = document.getElementById("ps-otp-confirm");
   const otpResendBtn = document.getElementById("ps-otp-resend");
   const otpCloseBtn = document.getElementById("ps-otp-close");
@@ -200,25 +200,17 @@
     return String(value || "").replace(/\D/g, "").trim();
   }
 
-  function normalizePhoneE164(value) {
+  function normalizePhone(value) {
     let phone = String(value || "").trim();
     if (!phone) return "";
-
-    phone = phone.replace(/[\s()-]/g, "");
-    if (phone.startsWith("00")) {
-      phone = `+${phone.slice(2)}`;
-    }
-
+    phone = phone.replace(/[^\d+]/g, "");
     if (phone.startsWith("+")) {
       const normalized = `+${phone.slice(1).replace(/\D/g, "")}`;
       return /^\+\d{8,15}$/.test(normalized) ? normalized : "";
     }
-
-    const digits = phone.replace(/\D/g, "");
-    if (/^\d{9}$/.test(digits)) {
-      return `+34${digits}`;
-    }
-    return /^\d{8,15}$/.test(digits) ? `+${digits}` : "";
+    if (/^\d{9}$/.test(phone)) return `+34${phone}`;
+    if (/^\d{8,15}$/.test(phone)) return `+${phone}`;
+    return "";
   }
 
   function setSubmitDisabled(disabled) {
@@ -228,60 +220,76 @@
 
   function setOtpStatus(message) {
     if (!otpStatusNode) return;
-    otpStatusNode.textContent = String(message || "");
+    const text = String(message || "").trim();
+    otpStatusNode.textContent = text;
+    otpStatusNode.style.display = text ? "block" : "none";
   }
 
   function setOtpError(message) {
     if (!otpErrorNode) return;
-    if (!message) {
+    const text = String(message || "").trim();
+    if (!text) {
       otpErrorNode.style.display = "none";
       otpErrorNode.textContent = "";
       return;
     }
     otpErrorNode.style.display = "block";
-    otpErrorNode.textContent = String(message);
+    otpErrorNode.textContent = text;
+  }
+
+  function clearOtpDigits() {
+    otpDigits.forEach((digit) => {
+      digit.value = "";
+    });
+    updateOtpConfirmState();
+  }
+
+  function updateOtpConfirmState() {
+    if (!otpConfirmBtn) return;
+    const allFilled = otpDigits.length > 0 && otpDigits.every((digit) => String(digit.value || "").trim().length === 1);
+    otpConfirmBtn.disabled = otpBusy || !allFilled;
   }
 
   function openOtpModal() {
     if (!otpOverlay) return;
-    otpOverlay.setAttribute("aria-hidden", "false");
+    otpOverlay.style.display = "flex";
     setOtpError("");
     setOtpStatus("");
-    if (otpCodeInput) {
-      otpCodeInput.value = "";
-      window.setTimeout(() => otpCodeInput.focus(), 0);
-    }
+    clearOtpDigits();
+    window.setTimeout(() => otpDigits[0]?.focus(), 0);
   }
 
   function closeOtpModal() {
     if (!otpOverlay) return;
-    otpOverlay.setAttribute("aria-hidden", "true");
+    otpOverlay.style.display = "none";
     setOtpError("");
     setOtpStatus("");
-    if (otpCodeInput) otpCodeInput.value = "";
+    clearOtpDigits();
   }
 
   function setOtpBusy(isBusy) {
     otpBusy = Boolean(isBusy);
-    if (otpConfirmBtn) otpConfirmBtn.disabled = otpBusy;
+    updateOtpConfirmState();
     if (otpResendBtn) otpResendBtn.disabled = otpBusy || resendCooldownRemaining > 0;
     if (otpCloseBtn) otpCloseBtn.disabled = otpBusy;
-    if (otpCodeInput) otpCodeInput.disabled = otpBusy;
+    otpDigits.forEach((digit) => {
+      digit.disabled = otpBusy;
+    });
   }
 
   function updateResendButtonLabel() {
     if (!otpResendBtn) return;
     if (resendCooldownRemaining > 0) {
-      otpResendBtn.textContent = `Reenviar (${resendCooldownRemaining}s)`;
+      otpResendBtn.innerHTML = `Reenviar en <span id="ps-otp-countdown">${resendCooldownRemaining}</span>s`;
       otpResendBtn.disabled = true;
       return;
     }
-    otpResendBtn.textContent = "Reenviar";
+    otpResendBtn.textContent = "Reenviar código";
     otpResendBtn.disabled = otpBusy;
   }
 
   function startResendCooldown(seconds) {
-    resendCooldownRemaining = Math.max(0, Number(seconds) || 45);
+    resendCooldownRemaining = Math.max(0, Number(seconds) || 30);
     window.clearInterval(resendCooldownTimer);
     updateResendButtonLabel();
     resendCooldownTimer = window.setInterval(() => {
@@ -406,9 +414,21 @@
     setOtpBusy(false);
   }
 
-  otpCodeInput?.addEventListener("input", () => {
-    otpCodeInput.value = String(otpCodeInput.value || "").replace(/\D/g, "").slice(0, 6);
-    setOtpError("");
+  otpDigits.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      input.value = String(input.value || "").replace(/\D/g, "").slice(0, 1);
+      if (input.value && index < otpDigits.length - 1) {
+        otpDigits[index + 1].focus();
+      }
+      setOtpError("");
+      updateOtpConfirmState();
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Backspace" && !input.value && index > 0) {
+        otpDigits[index - 1].focus();
+      }
+    });
   });
 
   otpCloseBtn?.addEventListener("click", () => {
@@ -429,7 +449,9 @@
     try {
       await requestOtpStart(pendingPhoneE164);
       setOtpStatus("Código reenviado.");
-      startResendCooldown(45);
+      clearOtpDigits();
+      otpDigits[0]?.focus();
+      startResendCooldown(30);
     } catch (error) {
       setOtpError(error.message || "No se pudo reenviar el código.");
       setOtpStatus("");
@@ -442,10 +464,10 @@
   otpConfirmBtn?.addEventListener("click", async () => {
     if (otpBusy || !pendingLeadPayload || !pendingPhoneE164) return;
 
-    const code = String(otpCodeInput?.value || "").replace(/\D/g, "");
+    const code = otpDigits.map((digit) => String(digit.value || "").trim()).join("");
     if (code.length !== 6) {
       setOtpError("Introduce un código válido de 6 dígitos.");
-      otpCodeInput?.focus();
+      otpDigits[0]?.focus();
       return;
     }
 
@@ -458,6 +480,8 @@
       if (!check.verified) {
         setOtpError("Código incorrecto. Revisa e inténtalo.");
         setOtpStatus("");
+        clearOtpDigits();
+        otpDigits[0]?.focus();
         return;
       }
 
@@ -504,7 +528,7 @@
       submitError("missing_phone", "Indica un teléfono de contacto.", "phone");
       return;
     }
-    const phoneE164 = normalizePhoneE164(phone);
+    const phoneE164 = normalizePhone(phone);
     if (!phoneE164) {
       submitError("invalid_phone", "Indica un teléfono válido con prefijo internacional o móvil español.", "phone");
       return;
@@ -575,7 +599,7 @@
       pendingPhoneE164 = phoneE164;
       openOtpModal();
       setOtpStatus("Código enviado. Revísalo en tu SMS.");
-      startResendCooldown(45);
+      startResendCooldown(30);
     } catch (error) {
       submitError("otp_start_failed", error.message || "No se pudo enviar el código OTP");
       pendingLeadPayload = null;

@@ -134,13 +134,89 @@ function asyncHandler(handler) {
 }
 
 function normalizeProviderIds(value) {
-  if (!Array.isArray(value)) return [];
-  const cleaned = value.map((id) => String(id).trim()).filter(Boolean);
+  const raw = Array.isArray(value) ? value : String(value || "").split(",");
+  const cleaned = raw.map((id) => String(id).trim()).filter(Boolean);
   return Array.from(new Set(cleaned)).slice(0, MAX_PROVIDERS_PER_LEAD);
 }
 
 function normalizeCollaboratorTrackingCode(value) {
   return String(value || "").trim().toUpperCase();
+}
+
+function normalizeStringArray(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  }
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function toBooleanInput(value, fallback) {
+  if (typeof value === "boolean") return value;
+  const token = String(value || "").trim().toLowerCase();
+  if (token === "1" || token === "true" || token === "on" || token === "yes") return true;
+  if (token === "0" || token === "false" || token === "off" || token === "no") return false;
+  return fallback;
+}
+
+function normalizeProviderPatch(body, { partial = false } = {}) {
+  const patch = {};
+
+  if (!partial || body.name !== undefined) {
+    patch.name = String(body.name || "").trim();
+  }
+  if (!partial || body.email !== undefined) {
+    patch.email = String(body.email || "").trim().toLowerCase();
+  }
+  if (!partial || body.phone !== undefined) {
+    patch.phone = String(body.phone || "").trim();
+  }
+  if (!partial || body.zones !== undefined) {
+    patch.zones = normalizeStringArray(body.zones);
+  }
+  if (!partial || body.business_types !== undefined) {
+    patch.business_types = normalizeStringArray(body.business_types);
+  }
+  if (!partial || body.active !== undefined) {
+    patch.active = body.active === undefined ? true : toBooleanInput(body.active, true);
+  }
+  if (!partial || body.priority !== undefined) {
+    if (body.priority === undefined || body.priority === null || body.priority === "") {
+      if (!partial) patch.priority = 50;
+    } else {
+      const priority = Number(body.priority);
+      if (!Number.isFinite(priority)) {
+        throw new Error("priority must be numeric");
+      }
+      patch.priority = Math.max(0, Math.round(priority));
+    }
+  }
+  if (!partial || body.daily_cap !== undefined) {
+    if (body.daily_cap === undefined || body.daily_cap === null || body.daily_cap === "") {
+      if (!partial) patch.daily_cap = 999;
+    } else {
+      const dailyCap = Number(body.daily_cap);
+      if (!Number.isFinite(dailyCap) || dailyCap < 1) {
+        throw new Error("daily_cap must be >= 1");
+      }
+      patch.daily_cap = Math.round(dailyCap);
+    }
+  }
+
+  if (!partial) {
+    if (!patch.name) throw new Error("name is required");
+    if (patch.active === undefined) patch.active = true;
+    if (patch.priority === undefined) patch.priority = 50;
+    if (patch.daily_cap === undefined) patch.daily_cap = 999;
+    if (!Array.isArray(patch.zones)) patch.zones = [];
+    if (!Array.isArray(patch.business_types)) patch.business_types = [];
+  }
+
+  return patch;
 }
 
 function normalizeCollaboratorPatch(body, { partial = false } = {}) {
@@ -162,17 +238,27 @@ function normalizeCollaboratorPatch(body, { partial = false } = {}) {
     }
   }
   if (!partial || body.commission_value !== undefined) {
-    const value = Number(body.commission_value);
-    if (!Number.isFinite(value) || value < 0) {
-      throw new Error("commission_value must be >= 0");
+    if (body.commission_value === undefined || body.commission_value === null || body.commission_value === "") {
+      if (!partial) patch.commission_value = 0;
+    } else {
+      const value = Number(body.commission_value);
+      if (!Number.isFinite(value) || value < 0) {
+        throw new Error("commission_value must be >= 0");
+      }
+      patch.commission_value = value;
     }
-    patch.commission_value = value;
   }
   if (!partial || body.status !== undefined) {
     patch.status = String(body.status || "").trim().toLowerCase();
     if (patch.status && !COLLABORATOR_STATUS_VALUES.has(patch.status)) {
       throw new Error("Invalid status");
     }
+  }
+  if (!partial || body.email !== undefined) {
+    patch.email = String(body.email || "").trim().toLowerCase();
+  }
+  if (!partial || body.phone !== undefined) {
+    patch.phone = String(body.phone || "").trim();
   }
 
   if (!partial) {
@@ -869,17 +955,8 @@ app.get("/api/admin/providers/:id/leads", requireAdminApi, asyncHandler(async (r
 
 app.post("/api/admin/providers", requireAdminApi, asyncHandler(async (req, res) => {
   try {
-    const provider = await repositories.providers.create({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      zones: req.body.zones,
-      business_types: req.body.business_types,
-      active: req.body.active,
-      priority: req.body.priority,
-      daily_cap: req.body.daily_cap,
-      last_assigned_at: req.body.last_assigned_at,
-    });
+    const payload = normalizeProviderPatch(req.body, { partial: false });
+    const provider = await repositories.providers.create(payload);
 
     return res.status(201).json({ provider });
   } catch (error) {
@@ -887,24 +964,38 @@ app.post("/api/admin/providers", requireAdminApi, asyncHandler(async (req, res) 
   }
 }));
 
-app.put("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, res) => {
+app.patch("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const providerId = String(req.params.id || "").trim();
+  const existing = await repositories.providers.getById(providerId);
+  if (!existing) {
+    return res.status(404).json({ error: "Provider not found" });
+  }
+
   try {
-    const provider = await repositories.providers.update(req.params.id, {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      zones: req.body.zones,
-      business_types: req.body.business_types,
-      active: req.body.active,
-      priority: req.body.priority,
-      daily_cap: req.body.daily_cap,
-      last_assigned_at: req.body.last_assigned_at,
-    });
-
-    if (!provider) {
-      return res.status(404).json({ error: "Provider not found" });
+    const patch = normalizeProviderPatch(req.body, { partial: true });
+    if (Object.keys(patch).length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
     }
+    const provider = await repositories.providers.update(providerId, patch);
+    return res.json({ provider });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}));
 
+app.put("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const providerId = String(req.params.id || "").trim();
+  const existing = await repositories.providers.getById(providerId);
+  if (!existing) {
+    return res.status(404).json({ error: "Provider not found" });
+  }
+
+  try {
+    const patch = normalizeProviderPatch(req.body, { partial: true });
+    if (Object.keys(patch).length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
+    }
+    const provider = await repositories.providers.update(providerId, patch);
     return res.json({ provider });
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -925,17 +1016,19 @@ app.delete("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req,
   });
 
   if (hasAssignments) {
-    return res.status(409).json({
-      error: "Provider has assigned leads and cannot be deleted",
+    const updatedProvider = await repositories.providers.update(providerId, {
+      ...provider,
+      active: false,
     });
+    return res.json({ ok: true, provider: updatedProvider, soft_deleted: true });
   }
 
-  const deleted = await repositories.providers.deleteProvider(providerId);
-  if (!deleted) {
-    return res.status(404).json({ error: "Provider not found" });
-  }
+  const updatedProvider = await repositories.providers.update(providerId, {
+    ...provider,
+    active: false,
+  });
 
-  await trackEvent(repositories.events, "provider_deleted", {
+  await trackEvent(repositories.events, "provider_deactivated", {
     provider_id: providerId,
     provider_name: provider.name,
   }, {
@@ -945,7 +1038,7 @@ app.delete("/api/admin/providers/:id", requireAdminApi, asyncHandler(async (req,
     actor: "admin",
   });
 
-  return res.json({ ok: true });
+  return res.json({ ok: true, provider: updatedProvider, soft_deleted: true });
 }));
 
 app.get("/api/admin/collaborators", requireAdminApi, asyncHandler(async (_req, res) => {
@@ -1045,25 +1138,123 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
     return res.status(404).json({ error: "Lead not found" });
   }
 
-  const patch = {
-    ...lead,
-    notes: req.body.notes !== undefined ? String(req.body.notes) : lead.notes,
-  };
+  const patch = {};
+  const hasOwn = (key) => Object.prototype.hasOwnProperty.call(req.body || {}, key);
 
-  if (req.body.status) {
-    const nextStatus = String(req.body.status);
+  if (hasOwn("status")) {
+    const nextStatus = String(req.body.status || "").trim();
     if (!LEAD_STATUSES.includes(nextStatus)) {
       return res.status(400).json({ error: "Invalid status" });
     }
     patch.status = nextStatus;
   }
+  if (hasOwn("notes")) {
+    patch.notes = String(req.body.notes || "");
+  }
+  if (hasOwn("assigned_provider_id")) {
+    patch.assigned_provider_id = String(req.body.assigned_provider_id || "").trim() || null;
+  }
+  if (hasOwn("provider_ids")) {
+    patch.provider_ids = normalizeProviderIds(req.body.provider_ids);
+  }
+  if (hasOwn("price_eur")) {
+    const value = Number(req.body.price_eur);
+    if (!Number.isFinite(value) || value < 0) {
+      return res.status(400).json({ error: "price_eur must be >= 0" });
+    }
+    patch.price_eur = value;
+  }
+  if (hasOwn("ticket_estimated_eur")) {
+    const value = Number(req.body.ticket_estimated_eur);
+    if (!Number.isFinite(value) || value < 0) {
+      return res.status(400).json({ error: "ticket_estimated_eur must be >= 0" });
+    }
+    patch.ticket_estimated_eur = value;
+  }
+  if (hasOwn("urgency")) {
+    patch.urgency = String(req.body.urgency || "").trim().toLowerCase() || lead.urgency;
+  }
+  if (hasOwn("budget_range")) {
+    patch.budget_range = String(req.body.budget_range || "").trim().toLowerCase() || lead.budget_range;
+  }
+  if (hasOwn("intent_plazo")) {
+    patch.intent_plazo = String(req.body.intent_plazo || "").trim().toLowerCase() || null;
+  }
+  if (hasOwn("collaborator_id")) {
+    patch.collaborator_id = String(req.body.collaborator_id || "").trim() || null;
+  }
+  if (hasOwn("collaborator_tracking_code")) {
+    patch.collaborator_tracking_code = normalizeCollaboratorTrackingCode(req.body.collaborator_tracking_code) || null;
+  }
+
+  const nextStatusForValidation = patch.status || lead.status;
+  const lockedStatuses = new Set(["sent", "accepted", "sold"]);
+  const currentCollaboratorId = String(lead.collaborator_id || "").trim() || null;
+  const currentTrackingCode = normalizeCollaboratorTrackingCode(lead.collaborator_tracking_code) || null;
+  const touchesCollaborator =
+    (hasOwn("collaborator_id") && patch.collaborator_id !== currentCollaboratorId) ||
+    (hasOwn("collaborator_tracking_code") && patch.collaborator_tracking_code !== currentTrackingCode);
+  if (touchesCollaborator && lockedStatuses.has(nextStatusForValidation)) {
+    return res.status(400).json({
+      error: "Cannot edit collaborator fields when lead status is sent/accepted/sold",
+    });
+  }
+
+  if (hasOwn("provider_ids") && !hasOwn("assigned_provider_id")) {
+    patch.assigned_provider_id = patch.provider_ids[0] || null;
+  }
+
+  if (hasOwn("assigned_provider_id") && !hasOwn("provider_ids")) {
+    const providerIds = Array.isArray(lead.provider_ids) ? lead.provider_ids.slice(0, MAX_PROVIDERS_PER_LEAD) : [];
+    const assignedId = patch.assigned_provider_id;
+    if (assignedId && !providerIds.includes(assignedId)) {
+      providerIds.unshift(assignedId);
+    }
+    patch.provider_ids = Array.from(new Set(providerIds.filter(Boolean))).slice(0, MAX_PROVIDERS_PER_LEAD);
+  }
+
+  if (Object.keys(patch).length === 0) {
+    return res.status(400).json({ error: "No fields to update" });
+  }
 
   try {
-    const updatedLead = await repositories.leads.update(req.params.id, patch);
+    const updatedLead = await repositories.leads.update(req.params.id, {
+      ...lead,
+      ...patch,
+      updated_at: new Date().toISOString(),
+    });
     return res.json({ lead: updatedLead });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
+}));
+
+app.delete("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res) => {
+  const leadId = String(req.params.id || "").trim();
+  const lead = await repositories.leads.getById(leadId);
+  if (!lead) {
+    return res.status(404).json({ error: "Lead not found" });
+  }
+
+  const nowIso = new Date().toISOString();
+  const updatedLead = await repositories.leads.update(leadId, {
+    ...lead,
+    status: "deleted",
+    deleted_at: nowIso,
+    updated_at: nowIso,
+  });
+
+  await trackEvent(repositories.events, "lead_soft_deleted", {
+    lead_id: leadId,
+    previous_status: lead.status,
+  }, {
+    path: req.path,
+    user_agent: req.headers["user-agent"],
+    ip: requesterIp(req),
+    actor: "admin",
+  });
+
+  return res.json({ ok: true, lead: updatedLead });
 }));
 
 app.post("/api/admin/leads/:id/assign-manual", requireAdminApi, asyncHandler(async (req, res) => {

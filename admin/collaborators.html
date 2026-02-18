@@ -13,7 +13,7 @@
   <header class="header">
     <div class="container header-inner">
       <a class="brand" href="/admin/providers">Panel admin</a>
-      <nav class="nav" aria-label="Navegación admin">
+      <nav class="nav" aria-label="Navegacion admin">
         <a href="/admin/providers">Proveedores</a>
         <a href="/admin/leads">Leads</a>
         <a href="/admin/collaborators">Colaboradores</a>
@@ -27,57 +27,19 @@
   <main class="main">
     <div class="container stack">
       <section class="card stack">
-        <h1>Colaboradores</h1>
-        <p class="muted">Gestiona tracking codes y comisión estimada atribuida solo con teléfono verificado por OTP.</p>
-
-        <form id="collaborator-form" class="stack">
-          <input id="collaborator-id" type="hidden" />
-          <div class="grid">
-            <div class="field">
-              <label for="collaborator-name">Nombre</label>
-              <input id="collaborator-name" required />
-            </div>
-            <div class="field">
-              <label for="collaborator-type">Tipo</label>
-              <input id="collaborator-type" placeholder="affiliate, partner, agencia..." required />
-            </div>
-            <div class="field">
-              <label for="collaborator-tracking-code">Tracking code</label>
-              <input id="collaborator-tracking-code" placeholder="COL-TEST-01" required />
-            </div>
-            <div class="field">
-              <label for="collaborator-commission-type">Tipo comisión</label>
-              <select id="collaborator-commission-type" required>
-                <option value="percent">percent</option>
-                <option value="fixed">fixed</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="collaborator-commission-value">Valor comisión</label>
-              <input id="collaborator-commission-value" type="number" min="0" step="0.01" value="10" required />
-            </div>
-            <div class="field">
-              <label for="collaborator-status">Estado</label>
-              <select id="collaborator-status" required>
-                <option value="active">active</option>
-                <option value="paused">paused</option>
-                <option value="banned">banned</option>
-              </select>
-            </div>
+        <div class="ps-toolbar">
+          <div>
+            <h1>Colaboradores</h1>
+            <p class="muted">Gestiona tracking codes, comision y estado de colaboradores.</p>
           </div>
-
-          <div id="collaborator-alert" class="notice" style="display:none;"></div>
-
-          <div class="actions">
-            <button type="submit" class="btn btn-primary">Guardar colaborador</button>
-            <button type="button" id="collaborator-reset" class="btn btn-secondary">Limpiar</button>
-          </div>
-        </form>
+          <button type="button" id="collaborator-new-btn" class="btn btn-primary">Nuevo colaborador</button>
+        </div>
+        <div id="collaborator-alert" class="notice" style="display:none;"></div>
       </section>
 
       <section class="card stack">
-        <h2 class="ps-section-h2">Métricas</h2>
-        <p class="muted">Visión rápida del estado de la red de colaboradores.</p>
+        <h2 class="ps-section-h2">Metricas</h2>
+        <p class="muted">Vision rapida del estado de la red de colaboradores.</p>
         <div class="grid-3 metrics-grid" id="collaborators-metrics"></div>
       </section>
 
@@ -90,11 +52,12 @@
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Tracking</th>
-                <th>Comisión</th>
+                <th>Comision</th>
                 <th>Estado</th>
+                <th>Contacto</th>
                 <th>Creado</th>
                 <th>Leads</th>
-                <th>Acción</th>
+                <th>Accion</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -108,6 +71,64 @@
       </section>
     </div>
   </main>
+
+  <div id="collaborator-modal" class="ps-modal" hidden>
+    <div class="ps-modal-backdrop" data-close-collaborator-modal></div>
+    <section class="ps-modal-panel" aria-labelledby="collaborator-modal-title" aria-modal="true" role="dialog">
+      <div class="ps-modal-head">
+        <h2 id="collaborator-modal-title">Nuevo colaborador</h2>
+        <button type="button" class="btn btn-secondary btn-compact" id="collaborator-modal-close">Cerrar</button>
+      </div>
+      <form id="collaborator-form" class="stack">
+        <input id="collaborator-id" type="hidden" />
+        <div class="grid">
+          <div class="field">
+            <label for="collaborator-name">Nombre</label>
+            <input id="collaborator-name" required />
+          </div>
+          <div class="field">
+            <label for="collaborator-type">Tipo</label>
+            <input id="collaborator-type" placeholder="affiliate, partner, agencia..." required />
+          </div>
+          <div class="field">
+            <label for="collaborator-tracking-code">Tracking code</label>
+            <input id="collaborator-tracking-code" placeholder="COL-TEST-01" required />
+          </div>
+          <div class="field">
+            <label for="collaborator-commission-type">Tipo comision</label>
+            <select id="collaborator-commission-type" required>
+              <option value="percent">percent</option>
+              <option value="fixed">fixed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="collaborator-commission-value">Valor comision</label>
+            <input id="collaborator-commission-value" type="number" min="0" step="0.01" value="10" required />
+          </div>
+          <div class="field">
+            <label for="collaborator-status">Estado</label>
+            <select id="collaborator-status" required>
+              <option value="active">active</option>
+              <option value="paused">paused</option>
+              <option value="banned">banned</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="collaborator-email">Email</label>
+            <input id="collaborator-email" type="email" />
+          </div>
+          <div class="field">
+            <label for="collaborator-phone">Telefono</label>
+            <input id="collaborator-phone" />
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Guardar colaborador</button>
+          <button type="button" id="collaborator-reset" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
 
   <script src="/js/admin/collaborators.js"></script>
 </body>

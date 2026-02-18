@@ -14,20 +14,32 @@
   const leadIdInput = document.getElementById("lead-id");
   const statusInput = document.getElementById("lead-status");
   const notesInput = document.getElementById("lead-notes");
+  const assignedProviderInput = document.getElementById("lead-assigned-provider-id");
+  const providerIdsInput = document.getElementById("lead-provider-ids");
+  const priceInput = document.getElementById("lead-price-eur");
+  const ticketInput = document.getElementById("lead-ticket-estimated-eur");
+  const urgencyInput = document.getElementById("lead-urgency");
+  const budgetRangeInput = document.getElementById("lead-budget-range");
+  const intentPlazoInput = document.getElementById("lead-intent-plazo");
+  const collaboratorIdInput = document.getElementById("lead-collaborator-id");
+  const collaboratorTrackingInput = document.getElementById("lead-collaborator-tracking-code");
+  const editToggleBtn = document.getElementById("lead-edit-toggle-btn");
+  const saveBtn = document.getElementById("lead-save-btn");
+  const leadDeleteBtn = document.getElementById("lead-delete-btn");
 
   const primaryProviderSelect = document.getElementById("manual-provider-primary");
   const secondaryProviderSelect = document.getElementById("manual-provider-secondary");
   const manualNoteInput = document.getElementById("manual-note");
   const assignManualBtn = document.getElementById("assign-manual-btn");
   const reassignAutoBtn = document.getElementById("reassign-auto-btn");
-  const anonymizeReasonInput = document.getElementById("anonymize-reason");
-  const anonymizeBtn = document.getElementById("anonymize-btn");
 
   let leadsCache = [];
   let providersCache = [];
   let providerMap = new Map();
   let activeStatusFilter = "all";
   let searchDebounceTimer = null;
+  let selectedLead = null;
+  let editMode = false;
   const deepLinkParams = new URLSearchParams(window.location.search);
   const deepLinkLeadId = deepLinkParams.get("lead") || deepLinkParams.get("id");
   let deepLinkHandled = false;
@@ -151,6 +163,7 @@
 
   function getVisibleLeads() {
     let filtered = Array.isArray(leadsCache) ? leadsCache.slice() : [];
+    filtered = filtered.filter((lead) => !lead.deleted_at);
 
     if (activeStatusFilter && activeStatusFilter !== "all") {
       filtered = filtered.filter((lead) => lead.status === activeStatusFilter);
@@ -357,6 +370,73 @@
     secondaryProviderSelect.value = secondary;
   }
 
+  function renderAssignedProviderSelect(selectedId) {
+    if (!assignedProviderInput) return;
+
+    const providers = Array.isArray(providersCache) ? providersCache.slice() : [];
+    providers.sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "es"));
+    const options = providers
+      .map((provider) => `<option value="${escapeHtml(provider.id)}">${escapeHtml(provider.name)}</option>`)
+      .join("");
+
+    assignedProviderInput.innerHTML = `<option value="">Sin proveedor</option>${options}`;
+    assignedProviderInput.value = selectedId || "";
+  }
+
+  function parseProviderIdsField(value) {
+    return Array.from(new Set(
+      String(value || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )).slice(0, 2);
+  }
+
+  function setEditMode(enabled) {
+    editMode = Boolean(enabled);
+    if (editToggleBtn) {
+      editToggleBtn.textContent = editMode ? "Cancelar edicion" : "Editar";
+    }
+    if (saveBtn) {
+      saveBtn.disabled = !editMode;
+    }
+
+    [
+      statusInput,
+      notesInput,
+      assignedProviderInput,
+      providerIdsInput,
+      priceInput,
+      ticketInput,
+      urgencyInput,
+      budgetRangeInput,
+      intentPlazoInput,
+      collaboratorIdInput,
+      collaboratorTrackingInput,
+    ].forEach((node) => {
+      if (!node) return;
+      node.disabled = !editMode;
+    });
+  }
+
+  function hydrateLeadEditFields(lead) {
+    if (!lead) return;
+
+    statusInput.value = lead.status || "new";
+    notesInput.value = lead.notes || "";
+    renderAssignedProviderSelect(lead.assigned_provider_id || "");
+    if (providerIdsInput) {
+      providerIdsInput.value = Array.isArray(lead.provider_ids) ? lead.provider_ids.join(", ") : "";
+    }
+    if (priceInput) priceInput.value = Number.isFinite(Number(lead.price_eur)) ? String(lead.price_eur) : "";
+    if (ticketInput) ticketInput.value = Number.isFinite(Number(lead.ticket_estimated_eur)) ? String(lead.ticket_estimated_eur) : "";
+    if (urgencyInput) urgencyInput.value = lead.urgency || "media";
+    if (budgetRangeInput) budgetRangeInput.value = lead.budget_range || "";
+    if (intentPlazoInput) intentPlazoInput.value = lead.intent_plazo || "";
+    if (collaboratorIdInput) collaboratorIdInput.value = lead.collaborator_id || "";
+    if (collaboratorTrackingInput) collaboratorTrackingInput.value = lead.collaborator_tracking_code || "";
+  }
+
   function renderMetrics(metrics) {
     const totals = metrics.totals || {};
     const status = metrics.leads_by_status || {};
@@ -419,12 +499,12 @@
   }
 
   function openLeadDetail(lead) {
+    selectedLead = lead;
     detailSection.style.display = "grid";
     leadIdInput.value = lead.id;
-    statusInput.value = lead.status;
-    notesInput.value = lead.notes || "";
+    hydrateLeadEditFields(lead);
     if (manualNoteInput) manualNoteInput.value = "";
-    if (anonymizeReasonInput) anonymizeReasonInput.value = "";
+    setEditMode(false);
 
     renderProviderSelects(Array.isArray(lead.provider_ids) ? lead.provider_ids : []);
 
@@ -434,7 +514,8 @@
     if (primaryProviderSelect) primaryProviderSelect.disabled = isDeleted;
     if (secondaryProviderSelect) secondaryProviderSelect.disabled = isDeleted;
     if (manualNoteInput) manualNoteInput.disabled = isDeleted;
-    if (anonymizeBtn) anonymizeBtn.disabled = isDeleted;
+    if (leadDeleteBtn) leadDeleteBtn.disabled = isDeleted;
+    if (editToggleBtn) editToggleBtn.disabled = isDeleted;
 
     const piiName = isDeleted ? "Anonimizado" : escapeHtml(lead.name);
     const piiPhone = isDeleted ? "-" : escapeHtml(lead.phone || "-");
@@ -504,6 +585,7 @@
     applySmartFilters();
     renderMetrics(metricsData);
     renderProviderSelects([]);
+    renderAssignedProviderSelect("");
 
     if (deepLinkLeadId && !deepLinkHandled) {
       deepLinkHandled = true;
@@ -537,6 +619,33 @@
 
     const id = leadIdInput.value;
     if (!id) return;
+    if (!editMode) {
+      showAlert("Pulsa Editar para modificar el lead.", true);
+      return;
+    }
+
+    const providerIds = parseProviderIdsField(providerIdsInput?.value || "");
+    const priceValue = parseAmount(priceInput?.value);
+    const ticketValue = parseAmount(ticketInput?.value);
+
+    const payload = {
+      status: statusInput.value,
+      notes: notesInput.value,
+      assigned_provider_id: String(assignedProviderInput?.value || "").trim() || null,
+      provider_ids: providerIds,
+      urgency: urgencyInput?.value || "media",
+      budget_range: budgetRangeInput?.value || "",
+      intent_plazo: intentPlazoInput?.value || "",
+      collaborator_id: collaboratorIdInput?.value || "",
+      collaborator_tracking_code: collaboratorTrackingInput?.value || "",
+    };
+
+    if (Number.isFinite(priceValue)) {
+      payload.price_eur = priceValue;
+    }
+    if (Number.isFinite(ticketValue)) {
+      payload.ticket_estimated_eur = ticketValue;
+    }
 
     try {
       await api(`/api/admin/leads/${id}`, {
@@ -544,10 +653,7 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          status: statusInput.value,
-          notes: notesInput.value,
-        }),
+        body: JSON.stringify(payload),
       });
 
       showAlert("Lead actualizado.");
@@ -620,26 +726,35 @@
     }
   });
 
-  anonymizeBtn?.addEventListener("click", async () => {
-    showAlert("");
+  editToggleBtn?.addEventListener("click", () => {
+    if (!selectedLead) return;
 
+    if (editMode) {
+      hydrateLeadEditFields(selectedLead);
+      setEditMode(false);
+      return;
+    }
+
+    setEditMode(true);
+  });
+
+  leadDeleteBtn?.addEventListener("click", async () => {
+    showAlert("");
     const id = leadIdInput.value;
     if (!id) return;
 
-    const ok = window.confirm("¿Anonimizar este lead? Esto eliminará datos personales y marcará el lead como deleted.");
+    const ok = window.confirm("¿Eliminar este lead? Se aplicara soft delete y dejara de aparecer en el listado.");
     if (!ok) return;
 
-    const reason = String(anonymizeReasonInput?.value || "").trim();
-
     try {
-      await api(`/api/admin/leads/${id}/anonymize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason }),
+      await api(`/api/admin/leads/${id}`, {
+        method: "DELETE",
       });
-
-      showAlert("Lead anonimizado.");
-      await reloadAndOpenLead(id);
+      showAlert("Lead eliminado (soft).");
+      detailSection.style.display = "none";
+      selectedLead = null;
+      setEditMode(false);
+      await loadAll();
     } catch (error) {
       showAlert(error.message, true);
     }

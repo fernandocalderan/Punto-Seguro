@@ -5,6 +5,11 @@
   const detailSection = document.getElementById("collaborator-detail");
   const detailContent = document.getElementById("collaborator-detail-content");
   const alertNode = document.getElementById("collaborator-alert");
+  const newButton = document.getElementById("collaborator-new-btn");
+  const modal = document.getElementById("collaborator-modal");
+  const modalTitle = document.getElementById("collaborator-modal-title");
+  const modalCloseButton = document.getElementById("collaborator-modal-close");
+  const modalBackdrop = modal?.querySelector("[data-close-collaborator-modal]");
 
   const fields = {
     id: document.getElementById("collaborator-id"),
@@ -14,6 +19,8 @@
     commissionType: document.getElementById("collaborator-commission-type"),
     commissionValue: document.getElementById("collaborator-commission-value"),
     status: document.getElementById("collaborator-status"),
+    email: document.getElementById("collaborator-email"),
+    phone: document.getElementById("collaborator-phone"),
   };
 
   let collaboratorsCache = [];
@@ -45,7 +52,6 @@
     if (!response.ok) {
       throw new Error(data.error || "Request failed");
     }
-
     return data;
   }
 
@@ -66,15 +72,9 @@
 
   function statusBadge(status) {
     const normalized = String(status || "").toLowerCase();
-    if (normalized === "active") {
-      return '<span class="ps-badge ps-badge--ok">active</span>';
-    }
-    if (normalized === "paused") {
-      return '<span class="ps-badge ps-badge--warn">paused</span>';
-    }
-    if (normalized === "banned") {
-      return '<span class="ps-badge ps-badge--danger">banned</span>';
-    }
+    if (normalized === "active") return '<span class="ps-badge ps-badge--ok">active</span>';
+    if (normalized === "paused") return '<span class="ps-badge ps-badge--warn">paused</span>';
+    if (normalized === "banned") return '<span class="ps-badge ps-badge--danger">banned</span>';
     return `<span class="ps-badge">${escapeHtml(normalized || "-")}</span>`;
   }
 
@@ -86,6 +86,15 @@
     fields.status.value = "active";
   }
 
+  function openModal(title) {
+    if (modalTitle) modalTitle.textContent = title;
+    if (modal) modal.hidden = false;
+  }
+
+  function closeModal() {
+    if (modal) modal.hidden = true;
+  }
+
   function fillForm(collaborator) {
     fields.id.value = collaborator.id;
     fields.name.value = collaborator.name || "";
@@ -94,7 +103,8 @@
     fields.commissionType.value = collaborator.commission_type || "percent";
     fields.commissionValue.value = String(collaborator.commission_value ?? 0);
     fields.status.value = collaborator.status || "active";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    fields.email.value = collaborator.email || "";
+    fields.phone.value = collaborator.phone || "";
   }
 
   function renderMetrics() {
@@ -119,8 +129,8 @@
   }
 
   function renderTable() {
-    if (collaboratorsCache.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="8">No hay colaboradores cargados.</td></tr>';
+    if (!Array.isArray(collaboratorsCache) || collaboratorsCache.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="9">No hay colaboradores cargados.</td></tr>';
       return;
     }
 
@@ -131,6 +141,10 @@
           : toCurrency(collaborator.commission_value);
         const leadsCount = leadsCountByCollaborator.get(collaborator.id);
         const nextStatus = collaborator.status === "active" ? "paused" : "active";
+        const contact = [
+          collaborator.email || "",
+          collaborator.phone || "",
+        ].filter(Boolean).join(" · ") || "-";
 
         return `
           <tr>
@@ -139,6 +153,7 @@
             <td><code>${escapeHtml(collaborator.tracking_code || "-")}</code></td>
             <td>${escapeHtml(commission)}</td>
             <td>${statusBadge(collaborator.status)}</td>
+            <td>${escapeHtml(contact)}</td>
             <td>${collaborator.created_at ? new Date(collaborator.created_at).toLocaleString("es-ES") : "-"}</td>
             <td>
               <button type="button" class="btn btn-secondary btn-compact" data-leads="${escapeHtml(collaborator.id)}">
@@ -150,6 +165,7 @@
               <button type="button" class="btn btn-secondary btn-compact" data-toggle="${escapeHtml(collaborator.id)}" data-next-status="${escapeHtml(nextStatus)}">
                 ${nextStatus === "paused" ? "Pausar" : "Activar"}
               </button>
+              <button type="button" class="btn btn-secondary btn-compact" data-ban="${escapeHtml(collaborator.id)}">Banear</button>
             </td>
           </tr>
         `;
@@ -188,8 +204,8 @@
                 <th>Lead</th>
                 <th>Estado</th>
                 <th>IEI</th>
-                <th>Comisión est.</th>
-                <th>Acción</th>
+                <th>Comision est.</th>
+                <th>Accion</th>
               </tr>
             </thead>
             <tbody>
@@ -200,7 +216,7 @@
                   <td>${escapeHtml(lead.status || "-")}</td>
                   <td>${escapeHtml(lead.risk_level || "-")}</td>
                   <td>${toCurrency(lead.commission_estimated_eur)}</td>
-                  <td><a href="/admin/leads?id=${encodeURIComponent(lead.id)}">Ver lead</a></td>
+                  <td><a href="/admin/leads?lead=${encodeURIComponent(lead.id)}">Ver lead</a></td>
                 </tr>
               `).join("")}
             </tbody>
@@ -211,7 +227,8 @@
     detailSection.style.display = "grid";
     detailContent.innerHTML = `
       <p><strong>${escapeHtml(collaborator.name || "-")}</strong> · <code>${escapeHtml(collaborator.tracking_code || "-")}</code></p>
-      <p class="muted">Tipo: ${escapeHtml(collaborator.type || "-")} · Estado: ${escapeHtml(collaborator.status || "-")} · Comisión: ${escapeHtml(collaborator.commission_type || "-")} (${escapeHtml(String(collaborator.commission_value ?? 0))})</p>
+      <p class="muted">Tipo: ${escapeHtml(collaborator.type || "-")} · Estado: ${escapeHtml(collaborator.status || "-")} · Comision: ${escapeHtml(collaborator.commission_type || "-")} (${escapeHtml(String(collaborator.commission_value ?? 0))})</p>
+      <p class="muted">Contacto: ${escapeHtml(collaborator.email || "-")} · ${escapeHtml(collaborator.phone || "-")}</p>
       <p><strong>Leads asociados:</strong> ${leads.length}</p>
       ${leadsHtml}
     `;
@@ -225,42 +242,45 @@
     }
 
     fillForm(collaborator);
+    openModal("Editar colaborador");
     await loadLeadsForCollaborator(collaboratorId);
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    showAlert("");
-
-    const payload = {
+  function buildPayload() {
+    return {
       name: fields.name.value.trim(),
       type: fields.type.value.trim(),
       tracking_code: fields.trackingCode.value.trim().toUpperCase(),
       commission_type: fields.commissionType.value,
       commission_value: Number(fields.commissionValue.value),
       status: fields.status.value,
+      email: fields.email.value.trim(),
+      phone: fields.phone.value.trim(),
     };
+  }
 
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    showAlert("");
+
+    const payload = buildPayload();
     try {
       if (fields.id.value) {
         await api(`/api/admin/collaborators/${encodeURIComponent(fields.id.value)}`, {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       } else {
         await api("/api/admin/collaborators", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       }
 
       showAlert("Colaborador guardado.");
+      closeModal();
       clearForm();
       await loadCollaborators();
     } catch (error) {
@@ -283,19 +303,34 @@
 
     const toggleButton = event.target.closest("[data-toggle]");
     if (toggleButton) {
-      const collaboratorId = toggleButton.dataset.toggle;
+      const collaboratorId = String(toggleButton.dataset.toggle || "").trim();
       const nextStatus = String(toggleButton.dataset.nextStatus || "").trim();
       if (!collaboratorId || !nextStatus) return;
 
       try {
         await api(`/api/admin/collaborators/${encodeURIComponent(collaboratorId)}`, {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: nextStatus }),
         });
+        await loadCollaborators();
+      } catch (error) {
+        showAlert(error.message, true);
+      }
+      return;
+    }
 
+    const banButton = event.target.closest("[data-ban]");
+    if (banButton) {
+      const collaboratorId = String(banButton.dataset.ban || "").trim();
+      if (!collaboratorId) return;
+
+      try {
+        await api(`/api/admin/collaborators/${encodeURIComponent(collaboratorId)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "banned" }),
+        });
         await loadCollaborators();
       } catch (error) {
         showAlert(error.message, true);
@@ -305,7 +340,7 @@
 
     const leadsButton = event.target.closest("[data-leads]");
     if (leadsButton) {
-      const collaboratorId = leadsButton.dataset.leads;
+      const collaboratorId = String(leadsButton.dataset.leads || "").trim();
       if (!collaboratorId) return;
 
       try {
@@ -316,7 +351,25 @@
     }
   });
 
-  document.getElementById("collaborator-reset").addEventListener("click", clearForm);
+  newButton?.addEventListener("click", () => {
+    clearForm();
+    openModal("Nuevo colaborador");
+  });
+
+  document.getElementById("collaborator-reset")?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
+
+  modalCloseButton?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
+
+  modalBackdrop?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -326,4 +379,4 @@
   loadCollaborators().catch((error) => {
     showAlert(error.message, true);
   });
-})();
+}());

@@ -6,6 +6,11 @@
   const relatedTitle = document.getElementById("provider-related-title");
   const relatedMeta = document.getElementById("provider-related-meta");
   const relatedTableBody = document.querySelector("#provider-related-table tbody");
+  const newButton = document.getElementById("provider-new-btn");
+  const modal = document.getElementById("provider-modal");
+  const modalTitle = document.getElementById("provider-modal-title");
+  const modalCloseButton = document.getElementById("provider-modal-close");
+  const modalBackdrop = modal?.querySelector("[data-close-provider-modal]");
 
   const fields = {
     id: document.getElementById("provider-id"),
@@ -47,7 +52,6 @@
     if (!response.ok) {
       throw new Error(data.error || "Request failed");
     }
-
     return data;
   }
 
@@ -63,23 +67,30 @@
   function clearForm() {
     form.reset();
     fields.id.value = "";
-    fields.priority.value = "100";
-    fields.dailyCap.value = "10";
+    fields.priority.value = "50";
+    fields.dailyCap.value = "999";
     fields.active.checked = true;
-    if (relatedSection) relatedSection.style.display = "none";
+  }
+
+  function openModal(title) {
+    if (modalTitle) modalTitle.textContent = title;
+    if (modal) modal.hidden = false;
+  }
+
+  function closeModal() {
+    if (modal) modal.hidden = true;
   }
 
   function fillForm(provider) {
     fields.id.value = provider.id;
-    fields.name.value = provider.name;
-    fields.email.value = provider.email;
+    fields.name.value = provider.name || "";
+    fields.email.value = provider.email || "";
     fields.phone.value = provider.phone || "";
     fields.zones.value = (provider.zones || []).join(", ");
     fields.types.value = (provider.business_types || []).join(", ");
-    fields.priority.value = provider.priority;
-    fields.dailyCap.value = provider.daily_cap;
+    fields.priority.value = String(provider.priority ?? 50);
+    fields.dailyCap.value = String(provider.daily_cap ?? 999);
     fields.active.checked = Boolean(provider.active);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function providerRoleInLead(providerId, lead) {
@@ -87,16 +98,18 @@
       ? lead.provider_ids.map((id) => String(id || "").trim()).filter(Boolean)
       : [];
     const assigned = String(lead?.assigned_provider_id || "").trim();
-    const primary = providerIds[0] || assigned || null;
-    const secondary = providerIds[1] || null;
+    const explicitPrimary = String(lead?.provider_primary_id || "").trim();
+    const explicitSecondary = String(lead?.provider_secondary_id || "").trim();
+    const primary = providerIds[0] || assigned || explicitPrimary || null;
+    const secondary = providerIds[1] || explicitSecondary || null;
     if (providerId === primary) return "Principal";
     if (providerId === secondary) return "Secundario";
     return "Relacionado";
   }
 
   function renderTable() {
-    if (providersCache.length === 0) {
-      tableBody.innerHTML = "<tr><td colspan=\"7\">No hay proveedores cargados.</td></tr>";
+    if (!Array.isArray(providersCache) || providersCache.length === 0) {
+      tableBody.innerHTML = "<tr><td colspan=\"8\">No hay proveedores cargados.</td></tr>";
       return;
     }
 
@@ -106,16 +119,24 @@
         const lastAssigned = provider.last_assigned_at
           ? new Date(provider.last_assigned_at).toLocaleString("es-ES")
           : "Nunca";
+        const nextActive = provider.active ? "false" : "true";
 
         return `
           <tr>
-            <td>${provider.name}<br><span class="muted">${provider.email}</span></td>
-            <td>${(provider.zones || []).join(", ") || "Todas"}</td>
-            <td>${(provider.business_types || []).join(", ") || "Todos"}</td>
-            <td>${provider.daily_cap}</td>
-            <td>${lastAssigned}</td>
-            <td>${status}</td>
-            <td><button type="button" class="btn btn-secondary" data-edit="${provider.id}" style="min-height:34px;padding:0.3rem 0.7rem;">Editar</button></td>
+            <td>${escapeHtml(provider.name)}<br><span class="muted">${escapeHtml(provider.email || "-")}</span></td>
+            <td>${escapeHtml((provider.zones || []).join(", ") || "Todas")}</td>
+            <td>${escapeHtml((provider.business_types || []).join(", ") || "Todos")}</td>
+            <td>${escapeHtml(String(provider.priority ?? "-"))}</td>
+            <td>${escapeHtml(String(provider.daily_cap ?? "-"))}</td>
+            <td>${escapeHtml(lastAssigned)}</td>
+            <td>${escapeHtml(status)}</td>
+            <td>
+              <button type="button" class="btn btn-secondary btn-compact" data-edit="${escapeHtml(provider.id)}">Editar</button>
+              <button type="button" class="btn btn-secondary btn-compact" data-toggle="${escapeHtml(provider.id)}" data-next-active="${nextActive}">
+                ${provider.active ? "Desactivar" : "Activar"}
+              </button>
+              <button type="button" class="btn btn-secondary btn-compact" data-leads="${escapeHtml(provider.id)}">Leads</button>
+            </td>
           </tr>
         `;
       })
@@ -124,7 +145,7 @@
 
   async function loadProviders() {
     const data = await api("/api/admin/providers");
-    providersCache = data.providers || [];
+    providersCache = Array.isArray(data.providers) ? data.providers : [];
     renderTable();
 
     if (deepLinkProviderId && !deepLinkHandled) {
@@ -155,7 +176,7 @@
         <td>${escapeHtml(lead.risk_level || "-")}</td>
         <td>${escapeHtml(String(lead.ticket_estimated_eur ?? "-"))}</td>
         <td>${providerRoleInLead(providerId, lead)}</td>
-        <td><a href="/admin/leads?id=${encodeURIComponent(lead.id)}">Ver lead</a></td>
+        <td><a href="/admin/leads?lead=${encodeURIComponent(lead.id)}">Ver lead</a></td>
       </tr>
     `).join("");
   }
@@ -168,14 +189,12 @@
     }
 
     fillForm(provider);
+    openModal("Editar proveedor");
     await loadLeadsForProvider(providerId);
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    showAlert("");
-
-    const payload = {
+  function buildPayload() {
+    return {
       name: fields.name.value.trim(),
       email: fields.email.value.trim(),
       phone: fields.phone.value.trim(),
@@ -185,27 +204,30 @@
       priority: Number(fields.priority.value),
       daily_cap: Number(fields.dailyCap.value),
     };
+  }
 
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    showAlert("");
+
+    const payload = buildPayload();
     try {
       if (fields.id.value) {
-        await api(`/api/admin/providers/${fields.id.value}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        await api(`/api/admin/providers/${encodeURIComponent(fields.id.value)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       } else {
         await api("/api/admin/providers", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       }
 
       showAlert("Proveedor guardado.");
+      closeModal();
       clearForm();
       await loadProviders();
     } catch (error) {
@@ -214,19 +236,69 @@
   });
 
   tableBody.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-edit]");
-    if (!button) return;
+    const editButton = event.target.closest("[data-edit]");
+    if (editButton) {
+      const providerId = String(editButton.dataset.edit || "").trim();
+      if (!providerId) return;
+      try {
+        await openProviderDetail(providerId);
+      } catch (error) {
+        showAlert(error.message, true);
+      }
+      return;
+    }
 
-    const providerId = String(button.dataset.edit || "").trim();
-    if (!providerId) return;
-    try {
-      await openProviderDetail(providerId);
-    } catch (error) {
-      showAlert(error.message, true);
+    const toggleButton = event.target.closest("[data-toggle]");
+    if (toggleButton) {
+      const providerId = String(toggleButton.dataset.toggle || "").trim();
+      const nextActive = String(toggleButton.dataset.nextActive || "").trim() === "true";
+      if (!providerId) return;
+
+      try {
+        await api(`/api/admin/providers/${encodeURIComponent(providerId)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ active: nextActive }),
+        });
+        await loadProviders();
+      } catch (error) {
+        showAlert(error.message, true);
+      }
+      return;
+    }
+
+    const leadsButton = event.target.closest("[data-leads]");
+    if (leadsButton) {
+      const providerId = String(leadsButton.dataset.leads || "").trim();
+      if (!providerId) return;
+
+      try {
+        await loadLeadsForProvider(providerId);
+      } catch (error) {
+        showAlert(error.message, true);
+      }
     }
   });
 
-  document.getElementById("provider-reset").addEventListener("click", clearForm);
+  newButton?.addEventListener("click", () => {
+    clearForm();
+    openModal("Nuevo proveedor");
+  });
+
+  document.getElementById("provider-reset")?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
+
+  modalCloseButton?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
+
+  modalBackdrop?.addEventListener("click", () => {
+    clearForm();
+    closeModal();
+  });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -236,4 +308,4 @@
   loadProviders().catch((error) => {
     showAlert(error.message, true);
   });
-})();
+}());

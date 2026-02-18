@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS collaborators (
   commission_type TEXT NOT NULL,
   commission_value NUMERIC(12, 2) NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'active',
+  email TEXT,
+  phone TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

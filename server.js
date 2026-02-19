@@ -11,7 +11,6 @@ const twilio = require("twilio");
 const { createRepositories } = require("./lib/repositories");
 const { createEmailService } = require("./lib/email");
 const { createLeadAndDispatch } = require("./lib/leadService");
-const { LEAD_STATUSES } = require("./lib/models");
 const { assignProviders } = require("./lib/assignment");
 const { trackEvent } = require("./lib/events");
 
@@ -59,6 +58,16 @@ const OTP_SPAIN_ONLY = String(process.env.OTP_SPAIN_ONLY || "1") !== "0";
 const TWILIO_ACCOUNT_SID = String(process.env.TWILIO_ACCOUNT_SID || "");
 const TWILIO_AUTH_TOKEN = String(process.env.TWILIO_AUTH_TOKEN || "");
 const TWILIO_VERIFY_SERVICE_SID = String(process.env.TWILIO_VERIFY_SERVICE_SID || "");
+const ALLOWED_LEAD_STATUS = new Set([
+  "validated",
+  "assigned",
+  "sent",
+  "accepted",
+  "sold",
+  "lost",
+  "deleted",
+]);
+const ALLOWED_LEAD_STATUS_VALUES = Array.from(ALLOWED_LEAD_STATUS);
 const COLLABORATOR_STATUS_VALUES = new Set(["active", "paused", "banned"]);
 const COLLABORATOR_COMMISSION_VALUES = new Set(["percent", "fixed"]);
 
@@ -666,7 +675,7 @@ function getTwilioClient() {
 }
 
 function statusAfterAssignment(currentStatus) {
-  const keep = new Set(["sent", "accepted", "closed", "sold", "rejected", "deleted"]);
+  const keep = new Set(["sent", "accepted", "sold", "lost", "deleted"]);
   if (keep.has(currentStatus)) return currentStatus;
   return "assigned";
 }
@@ -1156,9 +1165,10 @@ app.patch("/api/admin/leads/:id", requireAdminApi, asyncHandler(async (req, res)
   const hasOwn = (key) => Object.prototype.hasOwnProperty.call(req.body || {}, key);
 
   if (hasOwn("status")) {
-    const nextStatus = String(req.body.status || "").trim();
-    if (!LEAD_STATUSES.includes(nextStatus)) {
-      return invalid(400, "invalid_status", "status", { allowed: LEAD_STATUSES });
+    const nextStatusRaw = req.body.status;
+    const nextStatus = typeof nextStatusRaw === "string" ? nextStatusRaw.trim().toLowerCase() : "";
+    if (!ALLOWED_LEAD_STATUS.has(nextStatus)) {
+      return invalid(400, "invalid_status", "status", { allowed: ALLOWED_LEAD_STATUS_VALUES });
     }
     patch.status = nextStatus;
   }

@@ -1,13 +1,7 @@
 #!/usr/bin/env node
 require("dotenv").config();
 
-const fs = require("node:fs");
-const path = require("node:path");
 const { URL } = require("node:url");
-
-function isSqlFile(fileName) {
-  return fileName.toLowerCase().endsWith(".sql");
-}
 
 function resolveDatabaseUrl() {
   const direct = String(process.env.DATABASE_URL || "").trim();
@@ -68,43 +62,30 @@ async function main() {
     process.env.DATABASE_URL = resolved;
   }
 
-  const { pool } = require("./client");
+  const { query, pool } = require("./client");
   if (!pool) {
-    throw new Error(
+    console.error(
       "No se encontro DATABASE_URL ni alternativas. Anade en .env una de estas: DATABASE_URL, POSTGRES_URL, DATABASE_URL_UNPOOLED, POSTGRES_URL_NON_POOLING, POSTGRES_PRISMA_URL"
     );
+    process.exit(1);
   }
 
-  console.log(`Applying migrations on ${describeDatabaseTarget(process.env.DATABASE_URL)}...`);
-
-  const migrationsDir = path.join(process.cwd(), "migrations");
-  if (!fs.existsSync(migrationsDir)) {
-    throw new Error(`Migrations directory not found: ${migrationsDir}`);
-  }
-
-  const entries = fs.readdirSync(migrationsDir, { withFileTypes: true });
-  const files = entries
-    .filter((entry) => entry.isFile() && isSqlFile(entry.name))
-    .map((entry) => entry.name)
-    .sort();
-
-  if (files.length === 0) {
-    console.log("No migrations to apply.");
+  try {
+    await query("SELECT 1 AS ok");
+    console.log(`DB OK: ${describeDatabaseTarget(process.env.DATABASE_URL)}`);
     await pool.end();
-    return;
+  } catch (error) {
+    const msg = error && error.message ? error.message : "connection_error";
+    console.error(`DB ERROR: ${msg}`);
+    try {
+      await pool.end();
+    } catch (_ignored) {}
+    process.exit(1);
   }
-
-  for (const fileName of files) {
-    const migrationPath = path.join(migrationsDir, fileName);
-    const sql = fs.readFileSync(migrationPath, "utf8");
-    await pool.query(sql);
-    console.log(`Migration applied successfully: migrations/${fileName}`);
-  }
-
-  await pool.end();
 }
 
 main().catch((error) => {
-  console.error(error.message || error);
+  const msg = error && error.message ? error.message : String(error);
+  console.error(`DB ERROR: ${msg}`);
   process.exit(1);
 });

@@ -8,7 +8,9 @@
     "start": "node server.js",
     "seed": "node scripts/seed-demo.js",
     "db:schema": "node db/apply-schema.js",
-    "db:migrate": "node db/apply-migrations.js"
+    "db:check": "node db/check-db.js",
+    "db:migrate": "node db/apply-migrations.js",
+    "audit:ps": "node audit/run-audit.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

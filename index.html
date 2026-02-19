@@ -448,6 +448,36 @@
       margin-top: 1.1rem;
     }
 
+    .ps-restore {
+      padding: 0;
+      margin: 16px 0 24px;
+    }
+    .ps-restore__inner{
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      background: rgba(2, 132, 199, 0.06);
+    }
+    .ps-restore__title{ font-weight: 700; }
+    .ps-restore__sub{ opacity: 0.85; margin-top: 2px; font-size: 0.95rem; }
+    .ps-restore__cta{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      background: #0b1c2e;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .ps-restore__cta:hover{ filter: brightness(1.05); }
+
     /* Cards / grid */
     .grid {
       display: grid;
@@ -934,6 +964,11 @@
         margin-top: 32px;
       }
 
+      .ps-restore__inner{
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       section { padding: 3.9rem 0; }
       .section-title {
         text-align: left;
@@ -1130,7 +1165,20 @@
 
         </div>
 	      </div>
-	    </section>
+		    </section>
+
+    <!-- Restore banner: aparece solo si hay snapshot (/api/eval-snapshot/me) -->
+    <section id="eval-restore-banner" class="ps-restore" hidden>
+      <div class="container">
+        <div class="ps-restore__inner">
+          <div class="ps-restore__text">
+            <div class="ps-restore__title">🔒 Hemos encontrado una evaluación guardada</div>
+            <div class="ps-restore__sub">Tu diagnóstico IEI™ sigue disponible en este dispositivo.</div>
+          </div>
+          <a href="/resultado" class="ps-restore__cta">Ver mi evaluación</a>
+        </div>
+      </div>
+    </section>
 
     <section class="section-compact">
       <div class="container">
@@ -1380,6 +1428,28 @@
   </div>
 
   <script src="/js/analytics.js"></script>
+  <script>
+    (async function psCheckEvalSnapshot() {
+      try {
+        const r = await fetch("/api/eval-snapshot/me", { credentials: "same-origin" });
+        if (!r.ok) return;
+
+        const data = await r.json();
+        if (!data || !data.ok || !data.evaluation) return;
+
+        const banner = document.getElementById("eval-restore-banner");
+        if (!banner) return;
+
+        banner.hidden = false;
+
+        try {
+          sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(data.evaluation));
+        } catch (_) {}
+      } catch (_) {
+        // silencioso: no romper UX
+      }
+    })();
+  </script>
   <script>
     (function () {
       const heroCta = document.getElementById("hero-primary-cta");

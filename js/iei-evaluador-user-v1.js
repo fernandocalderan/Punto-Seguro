@@ -541,6 +541,15 @@ window.calcularRiesgo = () => {
 
     window.sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(evaluation));
 
+    // Best-effort snapshot before redirect to improve restore reliability.
+    fetch("/api/eval-snapshot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      keepalive: true,
+      body: JSON.stringify({ evaluation }),
+    }).catch(() => {});
+
     window.PuntoSeguroAnalytics?.trackEvent("quiz_completed", {
       risk_level: riskLevel,
       risk_score: riskScore,

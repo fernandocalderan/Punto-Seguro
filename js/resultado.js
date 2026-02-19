@@ -488,7 +488,6 @@
   if (!evaluation) {
     const attempted = window.sessionStorage.getItem("ps_eval_restore_attempted");
     if (!attempted) {
-      window.sessionStorage.setItem("ps_eval_restore_attempted", "1");
       try {
         const response = await fetch("/api/eval-snapshot/me", { credentials: "same-origin" });
         if (response.ok) {
@@ -499,6 +498,7 @@
             return;
           }
         }
+        window.sessionStorage.setItem("ps_eval_restore_attempted", "1");
       } catch (_error) {
         // Silent fallback: keep legacy empty-state behavior.
       }
@@ -510,13 +510,21 @@
 
   const saved = window.sessionStorage.getItem("ps_eval_snapshot_saved");
   if (!saved) {
-    window.sessionStorage.setItem("ps_eval_snapshot_saved", "1");
     fetch("/api/eval-snapshot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "same-origin",
+      keepalive: true,
       body: JSON.stringify({ evaluation }),
-    }).catch(() => {});
+    })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const data = await response.json().catch(() => null);
+        if (data && data.ok) {
+          window.sessionStorage.setItem("ps_eval_snapshot_saved", "1");
+        }
+      })
+      .catch(() => {});
   }
 
   const score = Number(evaluation.risk_score || 0);

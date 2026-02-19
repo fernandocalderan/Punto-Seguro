@@ -68,6 +68,14 @@ CREATE TABLE IF NOT EXISTS events (
   payload JSONB
 );
 
+CREATE TABLE IF NOT EXISTS evaluation_snapshots (
+  token TEXT PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  payload JSONB NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_providers_active ON providers (active);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads (status);
@@ -75,3 +83,4 @@ CREATE INDEX IF NOT EXISTS idx_leads_assigned_provider_id ON leads (assigned_pro
 CREATE INDEX IF NOT EXISTS idx_leads_collaborator_id ON leads (collaborator_id);
 CREATE INDEX IF NOT EXISTS idx_collaborators_tracking_code ON collaborators (tracking_code);
 CREATE INDEX IF NOT EXISTS idx_events_ts ON events (ts DESC);
+CREATE INDEX IF NOT EXISTS evaluation_snapshots_expires_at_idx ON evaluation_snapshots (expires_at);

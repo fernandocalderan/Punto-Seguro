@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { createHash } = require("node:crypto");
+const { createHash, randomBytes } = require("node:crypto");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -47,6 +47,9 @@ if (!IS_PRODUCTION && !process.env.ADMIN_PASSWORD) {
 }
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "dev-admin-password";
 const ADMIN_COOKIE = "ps_admin_session";
+const EVAL_COOKIE = "ps_eval";
+const EVAL_TTL_DAYS = Math.max(7, Number(process.env.EVAL_TTL_DAYS || 90));
+const EVAL_TTL_MS = EVAL_TTL_DAYS * 24 * 60 * 60 * 1000;
 const ADMIN_TOKEN = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
 const OTP_JWT_SECRET = String(process.env.OTP_JWT_SECRET || "");
 const OTP_TOKEN_TTL_SECONDS = Math.max(60, Number(process.env.OTP_TOKEN_TTL_SECONDS || 600));
@@ -128,9 +131,30 @@ function isAdminAuthenticated(req) {
 }
 
 function isSecureRequest(req) {
-  if (process.env.VERCEL === "1") return true;
-  if (req.secure) return true;
-  return req.headers["x-forwarded-proto"] === "https";
+  const xfProto = String(req.headers["x-forwarded-proto"] || "").toLowerCase();
+  return req.secure || xfProto === "https" || process.env.NODE_ENV === "production";
+}
+
+function newEvalToken() {
+  return randomBytes(24).toString("hex");
+}
+
+function setEvalCookie(res, req, token) {
+  res.cookie(EVAL_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+    maxAge: EVAL_TTL_MS,
+    path: "/",
+  });
+}
+
+function clearEvalCookie(res, req) {
+  res.clearCookie(EVAL_COOKIE, {
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+    path: "/",
+  });
 }
 
 function requireAdminPage(req, res, next) {
@@ -740,6 +764,60 @@ app.post("/api/events", asyncHandler(async (req, res) => {
   );
 
   return res.status(201).json({ ok: true, event_id: event.id });
+}));
+
+app.post("/api/eval-snapshot", asyncHandler(async (req, res) => {
+  try {
+    const evaluation = req.body && req.body.evaluation;
+    if (!evaluation || typeof evaluation !== "object" || Array.isArray(evaluation)) {
+      return res.status(400).json({ ok: false, error: "invalid_payload" });
+    }
+
+    if (!repositories.evalSnapshots || typeof repositories.evalSnapshots.upsert !== "function") {
+      return res.status(200).json({ ok: false });
+    }
+
+    const existing = req.cookies && req.cookies[EVAL_COOKIE];
+    const token =
+      existing && typeof existing === "string" && existing.length >= 16
+        ? existing
+        : newEvalToken();
+    const expiresAt = new Date(Date.now() + EVAL_TTL_MS).toISOString();
+
+    await repositories.evalSnapshots.upsert(token, evaluation, expiresAt);
+    setEvalCookie(res, req, token);
+
+    return res.status(201).json({ ok: true, expires_at: expiresAt });
+  } catch (_error) {
+    return res.status(200).json({ ok: false });
+  }
+}));
+
+app.get("/api/eval-snapshot/me", asyncHandler(async (req, res) => {
+  try {
+    const token = req.cookies && req.cookies[EVAL_COOKIE];
+    if (!token || typeof token !== "string") {
+      return res.status(404).json({ ok: false, error: "not_found" });
+    }
+
+    if (!repositories.evalSnapshots || typeof repositories.evalSnapshots.findValidByToken !== "function") {
+      return res.status(404).json({ ok: false, error: "not_found" });
+    }
+
+    const row = await repositories.evalSnapshots.findValidByToken(token, new Date().toISOString());
+    if (!row) {
+      clearEvalCookie(res, req);
+      return res.status(404).json({ ok: false, error: "not_found" });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      evaluation: row.payload,
+      expires_at: row.expires_at,
+    });
+  } catch (_error) {
+    return res.status(500).json({ ok: false, error: "server_error" });
+  }
 }));
 
 app.post("/api/otp/start", asyncHandler(async (req, res) => {

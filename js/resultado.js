@@ -1,4 +1,4 @@
-(function resultadoPage() {
+(async function resultadoPage() {
   function readEvaluation() {
     const raw = window.sessionStorage.getItem("puntoSeguro.latestEvaluation");
     if (!raw) return null;
@@ -483,11 +483,40 @@
     return `${summary}${axisLine}${tierLine}`;
   }
 
-  const evaluation = readEvaluation();
+  let evaluation = readEvaluation();
+
   if (!evaluation) {
-    // Keep default empty state copy rendered by the HTML.
+    const attempted = window.sessionStorage.getItem("ps_eval_restore_attempted");
+    if (!attempted) {
+      window.sessionStorage.setItem("ps_eval_restore_attempted", "1");
+      try {
+        const response = await fetch("/api/eval-snapshot/me", { credentials: "same-origin" });
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.ok && data.evaluation) {
+            window.sessionStorage.setItem("puntoSeguro.latestEvaluation", JSON.stringify(data.evaluation));
+            window.location.reload();
+            return;
+          }
+        }
+      } catch (_error) {
+        // Silent fallback: keep legacy empty-state behavior.
+      }
+    }
+
     window.PuntoSeguroAnalytics?.trackEvent("result_viewed", { has_result: false });
     return;
+  }
+
+  const saved = window.sessionStorage.getItem("ps_eval_snapshot_saved");
+  if (!saved) {
+    window.sessionStorage.setItem("ps_eval_snapshot_saved", "1");
+    fetch("/api/eval-snapshot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ evaluation }),
+    }).catch(() => {});
   }
 
   const score = Number(evaluation.risk_score || 0);

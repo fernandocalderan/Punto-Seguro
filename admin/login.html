@@ -8,37 +8,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/leads.css" />
-  <link rel="stylesheet" href="/css/admin-v2.css" />
 </head>
 <body>
-  <div style="min-height:100vh; display:grid; place-items:center; padding:24px;">
-    <div class="card" style="max-width:420px; width:100%;">
-      <div class="brand" style="margin-bottom:14px;">
-        <div class="brand-badge"></div>
-        <div>
-          <div class="brand-title">Punto Seguro</div>
-          <div class="brand-sub">Admin Access</div>
-        </div>
-      </div>
+  <main class="main">
+    <div class="container" style="max-width:520px;">
+      <section class="card stack">
+        <h1>Acceso admin</h1>
+        <p class="muted">Introduce la contraseña configurada en la variable `ADMIN_PASSWORD`.</p>
 
-      <h1 style="margin-top:0;">Acceso admin</h1>
-      <p class="muted">Introduce la contraseña configurada en la variable <code>ADMIN_PASSWORD</code>.</p>
+        <form id="admin-login-form" class="stack">
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" required autocomplete="current-password" />
+          </div>
 
-      <form id="admin-login-form" class="stack">
-        <div class="field">
-          <label for="password">Contraseña</label>
-          <input id="password" type="password" required autocomplete="current-password" />
-        </div>
+          <div id="login-alert" class="notice" style="display:none;"></div>
 
-        <div id="login-alert" class="notice" style="display:none;"></div>
-
-        <div class="actions">
-          <button type="submit" class="btn btn-primary">Entrar</button>
-          <a class="btn btn-secondary" href="/">Volver</a>
-        </div>
-      </form>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a class="btn btn-secondary" href="/">Volver</a>
+          </div>
+        </form>
+      </section>
     </div>
-  </div>
+  </main>
 
   <script src="/js/admin/login.js"></script>
 </body>

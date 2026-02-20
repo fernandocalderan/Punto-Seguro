@@ -12,8 +12,8 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Punto Seguro | Programa para proveedores</title>
-  <meta name="description" content="Programa piloto pay-per-lead de Punto Seguro para proveedores de alarmas." />
+  <title>Punto Seguro | Canal IEI™ para proveedores de seguridad</title>
+  <meta name="description" content="Canal cualificado basado en IEI™ para proveedores de seguridad. Demanda evaluada antes de derivación, asignación limitada y control por zona." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -41,49 +41,133 @@
 
   <main class="main">
     <div class="container stack">
+
+      <!-- HERO: posicionamiento sectorial -->
       <section class="card stack">
-        <h1>Programa proveedores Punto Seguro</h1>
-        <p class="lead">Modelo piloto pay-per-lead para instaladores y centrales con cobertura local verificada.</p>
+        <h1>Canal cualificado IEI™ para proveedores de seguridad</h1>
+        <p class="lead">
+          Punto Seguro opera un sistema de cualificación técnica de demanda en seguridad residencial.
+          No vendemos volumen: derivamos solicitudes evaluadas con IEI™ y consentimiento explícito, con asignación limitada por zona.
+        </p>
+
         <div class="actions">
-          <a class="btn btn-primary" href="mailto:partners@puntoseguro.local?subject=Solicitud%20acceso%20piloto">Solicitar acceso al piloto</a>
-          <a class="ps-cta-secondary" href="/diagnostico" data-ps-placement="inline">Ver la evaluación IEI™ que recibe el usuario</a>
+          <!-- Mantener mailto como canal simple. Si el dominio .local no es real en producción, dejar TODO para reemplazo. -->
+          <a class="btn btn-primary" href="mailto:partners@puntoseguro.local?subject=Solicitud%20de%20incorporaci%C3%B3n%20al%20Canal%20IEI%E2%84%A2&body=Hola%20Punto%20Seguro%2C%0A%0ASolicito%20evaluaci%C3%B3n%20de%20incorporaci%C3%B3n%20al%20Canal%20IEI%E2%84%A2.%0A%0ACobertura%20(zonas)%3A%0ACupo%20diario%20estimado%3A%0ATipolog%C3%ADa%20(residencial%2Fcomercial)%3A%0AEquipo%20instalaci%C3%B3n%20y%20tiempos%3A%0A%0AGracias.">
+            Solicitar evaluación de incorporación
+          </a>
+
+          <a class="ps-cta-secondary" href="/diagnostico" data-ps-placement="inline">
+            Ver un ejemplo de evaluación IEI™ (lo que ve el usuario)
+          </a>
         </div>
-        <p class="cta-primary-note">Así se cualifica el lead antes de llegar al proveedor.</p>
+
+        <div class="notice">
+          Acceso limitado por cobertura y cupo: incorporamos operadores con capacidad real de instalación y atención local.
+        </div>
       </section>
 
+      <!-- DIFERENCIACIÓN -->
       <section class="card stack">
-        <h2>Cómo funciona el modelo</h2>
-        <p class="lead">El usuario recibe primero una evaluación IEI™ neutral y, solo si decide avanzar, se envía su solicitud a proveedores de zona.</p>
+        <h2>No somos un comparador</h2>
+        <p class="lead">
+          Punto Seguro no subasta contactos ni distribuye datos masivamente. El usuario recibe primero una evaluación IEI™ neutral
+          y solo si decide avanzar, autoriza la cesión de datos a un máximo de 2 proveedores.
+        </p>
 
         <div class="grid-3">
           <div class="card" style="padding:1rem;">
-            <h2 style="font-size:1rem;">Asignación</h2>
-            <p class="muted">Cada lead se deriva a un máximo de 2 proveedores por zona, tipo y cupo diario.</p>
+            <h2 style="font-size:1rem;">Neutralidad</h2>
+            <p class="muted">Primero diagnóstico IEI™. Sin presión comercial, sin llamadas automáticas.</p>
+          </div>
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Control</h2>
+            <p class="muted">Derivación limitada (máx. 2 proveedores) y cupos por zona para evitar saturación.</p>
+          </div>
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Calidad</h2>
+            <p class="muted">Solicitud activa + consentimiento explícito + contacto verificable antes de entrar al flujo.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUÉ RECIBE EL PROVEEDOR -->
+      <section class="card stack">
+        <h2>Qué recibe el proveedor</h2>
+        <p class="lead">
+          No es un “lead genérico”. Es una solicitud informada: el usuario entiende su exposición y decide pedir propuesta.
+        </p>
+
+        <div class="card" style="padding:1rem;">
+          <ul class="list">
+            <li>Evaluación IEI™ previa (contexto de riesgo y exposición).</li>
+            <li>Datos de contacto verificables (nombre, email y teléfono).</li>
+            <li>Zona y tipología para compatibilidad de cobertura.</li>
+            <li>Consentimiento explícito para cesión de datos (hasta 2 proveedores).</li>
+            <li>Solicitud activa para recibir propuesta.</li>
+          </ul>
+        </div>
+
+        <p class="muted" style="margin-top:.5rem;">
+          Nota: el nivel exacto de detalle entregado puede variar según el consentimiento del usuario y el piloto.
+        </p>
+      </section>
+
+      <!-- SISTEMA OPERATIVO -->
+      <section class="card stack">
+        <h2>Sistema de asignación controlada</h2>
+        <p class="lead">
+          La derivación se realiza por zona, tipología y cupo. La rotación evita concentración y mantiene un reparto operativo.
+        </p>
+
+        <div class="grid-3">
+          <div class="card" style="padding:1rem;">
+            <h2 style="font-size:1rem;">Asignación limitada</h2>
+            <p class="muted">Cada solicitud se deriva como máximo a 2 proveedores compatibles por zona y cupo.</p>
           </div>
           <div class="card" style="padding:1rem;">
             <h2 style="font-size:1rem;">Rotación</h2>
-            <p class="muted">Rotación automática por fecha de última asignación para evitar concentración.</p>
+            <p class="muted">Rotación por fecha de última asignación para evitar acumulación en un solo operador.</p>
           </div>
           <div class="card" style="padding:1rem;">
-            <h2 style="font-size:1rem;">Transparencia</h2>
-            <p class="muted">El usuario acepta expresamente la cesión de datos a hasta 2 proveedores.</p>
+            <h2 style="font-size:1rem;">Cupo</h2>
+            <p class="muted">Cupo diario configurable para asegurar capacidad de respuesta y calidad de servicio.</p>
           </div>
         </div>
+      </section>
 
+      <!-- QUÉ CONSIDERAMOS VÁLIDO (mantener, pero con framing más alto) -->
+      <section class="card stack">
+        <h2>Qué consideramos una solicitud válida</h2>
         <div class="card" style="padding:1rem;">
-          <h2 style="font-size:1.05rem;">Qué consideramos lead válido</h2>
           <ul class="list">
             <li>Datos de contacto verificables (nombre, email y teléfono).</li>
             <li>Zona geográfica cubierta por el proveedor.</li>
-            <li>Consentimiento explícito de cesión de datos.</li>
+            <li>Consentimiento explícito de cesión de datos (hasta 2 proveedores).</li>
             <li>Solicitud activa para recibir propuesta.</li>
           </ul>
         </div>
 
         <div class="notice">
-          Si quieres entrar en el piloto, escribe a <a href="mailto:partners@puntoseguro.local">partners@puntoseguro.local</a> con cobertura, cupo diario y tipología de clientes.
+          Para solicitar incorporación: escribe a <a href="mailto:partners@puntoseguro.local">partners@puntoseguro.local</a>
+          indicando cobertura (zonas), cupo diario y tipología (residencial/comercial).
         </div>
       </section>
+
+      <!-- CTA FINAL -->
+      <section class="card stack">
+        <h2>Acceso limitado</h2>
+        <p class="lead">
+          Incorporamos proveedores por zona con criterios de capacidad y servicio. Si encajas, te activamos cupo y rotación.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="mailto:partners@puntoseguro.local?subject=Solicitud%20de%20incorporaci%C3%B3n%20al%20Canal%20IEI%E2%84%A2">
+            Solicitar evaluación de incorporación
+          </a>
+          <a class="ps-cta-secondary" href="/diagnostico" data-ps-placement="inline">Ver la evaluación IEI™</a>
+        </div>
+        <p class="cta-primary-note">Primero autoridad y transparencia. Después negocio.</p>
+      </section>
+
     </div>
   </main>
 

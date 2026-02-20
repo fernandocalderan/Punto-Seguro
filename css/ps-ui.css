@@ -1369,3 +1369,17 @@ body.ps-modal-open{ overflow: hidden; }
 .ps-cta-premium{
   border:2px solid #2563eb;
 }
+
+.ps-b2b-hero .ps-b2b-bullets span{
+  display:inline-block;
+  margin-right:1rem;
+  font-size:.92rem;
+}
+
+.ps-b2b-hero{
+  background:#fff;
+}
+
+.ps-b2b-cta{
+  border:2px solid #2563eb;
+}

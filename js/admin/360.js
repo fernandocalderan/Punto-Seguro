@@ -381,8 +381,6 @@
       const collaboratorTracking = lead.collaborator_tracking_code || "-";
       const providerPrimary = lead.provider_primary_id || "-";
       const providerSecondary = lead.provider_secondary_id || "-";
-      const openHref = `/admin/leads?lead=${encodeURIComponent(lead.id)}`;
-
       return `
         <tr>
           <td>${escapeHtml(formatDateTime(lead.created_at))}</td>
@@ -393,7 +391,15 @@
           <td>${escapeHtml(providerPrimary)}</td>
           <td>${escapeHtml(providerSecondary)}</td>
           <td>${escapeHtml(lead.status || "-")}</td>
-          <td><a href="${openHref}">Abrir lead</a></td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-secondary btn-compact"
+              data-open-lead="${escapeHtml(lead.id)}"
+            >
+              Abrir lead
+            </button>
+          </td>
         </tr>
       `;
     }).join("");
@@ -551,6 +557,14 @@
     } catch (error) {
       showAlert(error.message, true);
     }
+  });
+
+  leadsTableBody?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-open-lead]");
+    if (!button) return;
+    const leadId = String(button.dataset.openLead || "").trim();
+    if (!leadId) return;
+    window.location.href = `/admin/leads?lead=${encodeURIComponent(leadId)}`;
   });
 
   logoutButton?.addEventListener("click", async () => {

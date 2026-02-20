@@ -35,6 +35,7 @@
   const leadModal = document.getElementById("lead-modal");
   const leadModalClose = document.getElementById("lead-modal-close");
   const leadModalBackdrop = leadModal?.querySelector("[data-close-lead-modal]");
+  const leadModalTitle = document.getElementById("lead-modal-title");
 
   let leadsCache = [];
   let providersCache = [];
@@ -396,15 +397,16 @@
   }
 
   function openLeadModal(title) {
+    if (leadModalTitle) leadModalTitle.textContent = title || "Lead";
     if (leadModal) leadModal.hidden = false;
     if (detailSection) detailSection.style.display = "grid";
-    const titleNode = document.getElementById("lead-modal-title");
-    if (titleNode) titleNode.textContent = title || "Lead";
+    document.body.style.overflow = "hidden";
   }
 
   function closeLeadModal() {
     if (leadModal) leadModal.hidden = true;
     if (detailSection) detailSection.style.display = "none";
+    document.body.style.overflow = "";
   }
 
   function setEditMode(enabled) {

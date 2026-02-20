@@ -1,21 +1,7 @@
 {
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "*.html",
-        "*.png",
-        "*.jpg",
-        "*.jpeg",
-        "*.webp",
-        "Motor-IEI/**",
-        "assets/**",
-        "js/**",
-        "css/**",
-        "styles/**",
-        "admin/**",
-        "blog/**",
-        "Imagenes/**"
-      ]
+      "includeFiles": "{*.html,*.png,*.jpg,*.jpeg,*.webp,Motor-IEI/**,assets/**,js/**,css/**,styles/**,admin/**,blog/**,Imagenes/**}"
     }
   },
   "rewrites": [

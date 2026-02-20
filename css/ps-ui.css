@@ -1351,36 +1351,19 @@ body.ps-modal-open{ overflow: hidden; }
   vertical-align:middle;
 }
 
-.ps-hero-premium{
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:#fff;
+.ps-hero-clean {
+  background: #ffffff;
 }
 
-.ps-hero-premium .muted,
-.ps-hero-premium .lead{
-  color:rgba(255,255,255,.88);
-}
-
-.ps-hero-sub{
-  font-size:1.05rem;
-  opacity:.9;
+.ps-hero-clean .lead {
+  font-size: 1.15rem;
 }
 
 .ps-hero-badges span{
   display:inline-block;
   margin-right:1rem;
   font-size:.9rem;
-  opacity:.92;
-}
-
-.ps-dark-block{
-  background:#111827;
-  color:#fff;
-}
-
-.ps-dark-block .muted,
-.ps-dark-block .lead{
-  color:rgba(255,255,255,.88);
+  color:#1f2937;
 }
 
 .ps-cta-premium{

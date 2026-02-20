@@ -8,78 +8,96 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/leads.css" />
+  <link rel="stylesheet" href="/css/admin-v2.css" />
 </head>
 <body>
-  <header class="header">
-    <div class="container header-inner">
-      <a class="brand" href="/admin/providers">Panel admin</a>
-      <nav class="nav" aria-label="Navegacion admin">
-        <a href="/admin/providers">Proveedores</a>
-        <a href="/admin/leads">Leads</a>
-        <a href="/admin/collaborators">Colaboradores</a>
-        <a href="/admin/360">Vista 360°</a>
-        <a href="/">Web</a>
-        <button type="button" id="logout-btn" class="btn btn-secondary" style="min-height:36px;padding:0.35rem 0.8rem;">Salir</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="main">
-    <div class="container stack">
-      <section class="card stack">
-        <div class="ps-toolbar">
-          <div>
-            <h1>Proveedores</h1>
-            <p class="muted">Gestiona alta, edicion y desactivacion (soft) de proveedores.</p>
-          </div>
-          <button type="button" id="provider-new-btn" class="btn btn-primary">Nuevo proveedor</button>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="brand">
+        <div class="brand-badge"></div>
+        <div>
+          <div class="brand-title">Punto Seguro</div>
+          <div class="brand-sub">Intelligence Console</div>
         </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegación admin">
+        <a class="active" href="/admin/providers"><span class="dot"></span>Proveedores</a>
+        <a href="/admin/leads"><span class="dot"></span>Leads</a>
+        <a href="/admin/collaborators"><span class="dot"></span>Colaboradores</a>
+        <a href="/admin/360"><span class="dot"></span>Vista 360°</a>
+        <a href="/"><span class="dot"></span>Web</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="logout-btn" class="btn btn-secondary" style="min-height:36px;padding:0.35rem 0.8rem;">Salir</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="topbar">
+        <div>
+          <h1>Proveedores</h1>
+          <div class="muted">Gestiona alta, edición y desactivación (soft)</div>
+        </div>
+        <button type="button" id="provider-new-btn" class="btn btn-primary">Nuevo proveedor</button>
+      </div>
+
+      <section class="card stack" style="margin-top:12px;">
         <div id="provider-alert" class="notice" style="display:none;"></div>
       </section>
 
-      <section class="card stack">
-        <h2 style="font-size:1.2rem;">Listado</h2>
-        <div class="table-wrap">
-          <table class="table" id="providers-table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Zonas</th>
-                <th>Tipos</th>
-                <th>Prioridad</th>
-                <th>Cupo</th>
-                <th>Ultima asignacion</th>
-                <th>Estado</th>
-                <th>Accion</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
+      <section class="content-grid">
+        <section class="card stack">
+          <div class="card-title">
+            <h2>Listado</h2>
+            <div class="chip">Operativo</div>
+          </div>
+          <div class="table-wrap">
+            <table id="providers-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Zonas</th>
+                  <th>Tipos</th>
+                  <th>Prioridad</th>
+                  <th>Cupo</th>
+                  <th>Ultima asignacion</th>
+                  <th>Estado</th>
+                  <th>Accion</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
 
-      <section class="card stack" id="provider-related-section" style="display:none;">
-        <h2 id="provider-related-title" style="font-size:1.2rem;">Leads asociados</h2>
-        <div id="provider-related-meta" class="muted"></div>
-        <div class="table-wrap">
-          <table class="table" id="provider-related-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Lead</th>
-                <th>Estado</th>
-                <th>IEI</th>
-                <th>Ticket</th>
-                <th>Asignacion</th>
-                <th>Accion</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <section class="card stack" id="provider-related-section" style="display:none;">
+          <div class="card-title">
+            <h2 id="provider-related-title">Leads asociados</h2>
+            <div class="chip">Detalle</div>
+          </div>
+          <div id="provider-related-meta" class="muted"></div>
+          <div class="table-wrap">
+            <table id="provider-related-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Lead</th>
+                  <th>Estado</th>
+                  <th>IEI</th>
+                  <th>Ticket</th>
+                  <th>Asignacion</th>
+                  <th>Accion</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
       </section>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <div id="provider-modal" class="ps-modal" hidden>
     <div class="ps-modal-backdrop" data-close-provider-modal></div>

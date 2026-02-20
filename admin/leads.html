@@ -8,241 +8,256 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/leads.css" />
+  <link rel="stylesheet" href="/css/admin-v2.css" />
 </head>
 <body>
-  <header class="header">
-    <div class="container header-inner">
-      <a class="brand" href="/admin/providers">Panel admin</a>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="brand">
+        <div class="brand-badge"></div>
+        <div>
+          <div class="brand-title">Punto Seguro</div>
+          <div class="brand-sub">Intelligence Console</div>
+        </div>
+      </div>
+
       <nav class="nav" aria-label="Navegación admin">
-        <a href="/admin/providers">Proveedores</a>
-        <a href="/admin/leads">Leads</a>
-        <a href="/admin/collaborators">Colaboradores</a>
-        <a href="/admin/360">Vista 360°</a>
-        <a href="/">Web</a>
-        <button type="button" id="logout-btn" class="btn btn-secondary btn-compact">Salir</button>
+        <a class="active" href="/admin/leads"><span class="dot"></span>Leads</a>
+        <a href="/admin/providers"><span class="dot"></span>Proveedores</a>
+        <a href="/admin/collaborators"><span class="dot"></span>Colaboradores</a>
+        <a href="/admin/360"><span class="dot"></span>Vista 360°</a>
+        <a href="/"><span class="dot"></span>Web</a>
       </nav>
-    </div>
-  </header>
 
-  <main class="main">
-    <div class="container stack">
-      <section class="ps-admin-hero" aria-label="Centro de Control IEI">
-        <div class="ps-admin-hero-left">
-          <h1 class="ps-admin-title">Centro de Control IEI™</h1>
-          <p class="ps-admin-subtitle">Pipeline operativo y financiero de demanda (leads) en tiempo real.</p>
-        </div>
-        <div class="ps-admin-hero-right">
-          <div class="ps-admin-view">
-            <span class="ps-admin-view-label">Vista</span>
-            <div class="ps-admin-toggle" role="group" aria-label="Selector de vista">
-              <button type="button" class="ps-admin-toggle-btn is-active" data-view="operativa">Operativa</button>
-              <button type="button" class="ps-admin-toggle-btn" data-view="financiera">Financiera</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div class="sidebar-footer">
+        <button type="button" id="logout-btn" class="btn btn-secondary btn-compact">Salir</button>
+      </div>
+    </aside>
 
-      <section class="card">
-        <h2 class="ps-section-h2">Resumen</h2>
-        <p class="muted">KPIs clave para priorizar y monetizar el flujo.</p>
+    <main class="admin-main">
+      <div class="topbar">
+        <div>
+          <h1>Leads</h1>
+          <div class="muted">Gestión, asignación y trazabilidad</div>
+        </div>
+        <label for="status-filter" class="filter-row">
+          <span class="muted">Filtrar por estado</span>
+          <select id="status-filter" class="filter-select">
+            <option value="all">Todos</option>
+            <option value="new">new</option>
+            <option value="validated">validated</option>
+            <option value="assigned">assigned</option>
+            <option value="sent">sent</option>
+            <option value="accepted">accepted</option>
+            <option value="closed">closed</option>
+            <option value="sold">sold</option>
+            <option value="rejected">rejected</option>
+            <option value="deleted">deleted</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="kpi-row" aria-hidden="true">
+        <div class="kpi"><div class="label">Métricas</div><div class="value">—</div><div class="hint">Auto</div></div>
+        <div class="kpi"><div class="label">Validados</div><div class="value">—</div><div class="hint">Auto</div></div>
+        <div class="kpi"><div class="label">CIS medio</div><div class="value">—</div><div class="hint">Auto</div></div>
+        <div class="kpi"><div class="label">OTP medio</div><div class="value">—</div><div class="hint">Auto</div></div>
+      </div>
+
+      <section class="card" style="margin-top:12px;">
+        <div class="card-title">
+          <h2>Resumen</h2>
+          <div class="chip">Auto</div>
+        </div>
         <div class="grid-3 metrics-grid" id="metrics"></div>
       </section>
 
-      <section class="card stack">
-        <div class="ps-list-head">
-          <div>
-            <h2 class="ps-section-h2">Leads</h2>
-            <p class="muted ps-subline">Filtra, revisa y actúa. Prioriza por exposición IEI™ y valor.</p>
-          </div>
-        </div>
-        <div class="actions actions-left">
-          <label for="status-filter" class="filter-row">
-            <span class="muted">Filtrar por estado</span>
-            <select id="status-filter" class="filter-select">
-              <option value="all">Todos</option>
-              <option value="new">new</option>
-              <option value="validated">validated</option>
-              <option value="assigned">assigned</option>
-              <option value="sent">sent</option>
-              <option value="accepted">accepted</option>
-              <option value="closed">closed</option>
-              <option value="sold">sold</option>
-              <option value="rejected">rejected</option>
-              <option value="deleted">deleted</option>
-            </select>
-          </label>
-        </div>
-        <div class="ps-smart-filters">
-          <div class="ps-filter">
-            <label class="muted" for="q-search">Buscar</label>
-            <input id="q-search" type="search" placeholder="Nombre, email, CP, proveedor…" />
-          </div>
-
-          <div class="ps-filter">
-            <label class="muted" for="iei-filter">Exposición IEI™</label>
-            <select id="iei-filter">
-              <option value="all">Todas</option>
-              <option value="MODERADA">MODERADA</option>
-              <option value="ELEVADA">ELEVADA</option>
-              <option value="CRÍTICA">CRÍTICA</option>
-            </select>
-          </div>
-
-          <div class="ps-filter">
-            <label class="muted" for="ticket-min">Ticket mín. (€)</label>
-            <input id="ticket-min" type="number" min="0" step="50" placeholder="Ej: 800" />
-          </div>
-
-          <div class="ps-filter ps-filter-inline">
-            <label class="ps-check">
-              <input id="no-provider" type="checkbox" />
-              <span>Sin proveedor</span>
-            </label>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="table" id="leads-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Contacto</th>
-                <th>Ubicación</th>
-                <th>Exposición IEI™</th>
-                <th>Lead score</th>
-                <th>Ticket est.</th>
-                <th>Plazo</th>
-                <th>Estado</th>
-                <th>Proveedor principal</th>
-                <th>Precio</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="stack" id="lead-detail" style="display:none;">
+      <section class="content-grid">
         <section class="card stack">
-          <h2 class="section-title">Detalle de lead</h2>
-          <div id="lead-detail-content" class="stack"></div>
+          <div class="card-title">
+            <h2>Listado</h2>
+            <div class="chip">Filtra y abre un lead</div>
+          </div>
+
+          <div class="ps-smart-filters">
+            <div class="ps-filter">
+              <label class="muted" for="q-search">Buscar</label>
+              <input id="q-search" type="search" placeholder="Nombre, email, CP, proveedor…" />
+            </div>
+
+            <div class="ps-filter">
+              <label class="muted" for="iei-filter">Exposición IEI™</label>
+              <select id="iei-filter">
+                <option value="all">Todas</option>
+                <option value="MODERADA">MODERADA</option>
+                <option value="ELEVADA">ELEVADA</option>
+                <option value="CRÍTICA">CRÍTICA</option>
+              </select>
+            </div>
+
+            <div class="ps-filter">
+              <label class="muted" for="ticket-min">Ticket mín. (€)</label>
+              <input id="ticket-min" type="number" min="0" step="50" placeholder="Ej: 800" />
+            </div>
+
+            <div class="ps-filter ps-filter-inline">
+              <label class="ps-check">
+                <input id="no-provider" type="checkbox" />
+                <span>Sin proveedor</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table" id="leads-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Contacto</th>
+                  <th>Ubicación</th>
+                  <th>Exposición IEI™</th>
+                  <th>Lead score</th>
+                  <th>Ticket est.</th>
+                  <th>Plazo</th>
+                  <th>Estado</th>
+                  <th>Proveedor principal</th>
+                  <th>Precio</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </section>
 
-        <div class="grid">
-          <section class="card stack" aria-label="Asignación">
-            <h3 class="subsection-title">Asignación</h3>
-            <p class="muted">Administra proveedores y elimina en modo soft delete.</p>
+        <aside class="card">
+          <div class="card-title">
+            <h2>Detalle</h2>
+            <div class="chip">Acciones</div>
+          </div>
 
-            <div class="field">
-              <label for="manual-provider-primary">Proveedor principal</label>
-              <select id="manual-provider-primary"></select>
-            </div>
+          <section class="stack" id="lead-detail" style="display:none;">
+            <section class="card stack">
+              <h3 class="subsection-title">Detalle de lead</h3>
+              <div id="lead-detail-content" class="stack"></div>
+            </section>
 
-            <div class="field">
-              <label for="manual-provider-secondary">Segundo proveedor (opcional)</label>
-              <select id="manual-provider-secondary"></select>
-              <small class="muted">Se enviará a máximo 2 proveedores.</small>
-            </div>
+            <section class="card stack" aria-label="Asignación">
+              <h3 class="subsection-title">Asignación</h3>
+              <p class="muted">Administra proveedores y elimina en modo soft delete.</p>
 
-            <div class="field">
-              <label for="manual-note">Nota (opcional)</label>
-              <input id="manual-note" type="text" placeholder="Ej: solicitud prioritaria" />
-            </div>
+              <div class="field">
+                <label for="manual-provider-primary">Proveedor principal</label>
+                <select id="manual-provider-primary"></select>
+              </div>
 
-            <div class="actions">
-              <button type="button" class="btn btn-primary" id="assign-manual-btn">Asignar manual</button>
-              <button type="button" class="btn btn-secondary" id="reassign-auto-btn">Reasignar automático</button>
-            </div>
+              <div class="field">
+                <label for="manual-provider-secondary">Segundo proveedor (opcional)</label>
+                <select id="manual-provider-secondary"></select>
+                <small class="muted">Se enviará a máximo 2 proveedores.</small>
+              </div>
 
-            <div class="actions">
-              <button type="button" class="btn btn-danger" id="lead-delete-btn">Eliminar (soft)</button>
-            </div>
-            <input id="anonymize-reason" type="text" style="display:none;" />
-            <button type="button" id="anonymize-btn" style="display:none;"></button>
-          </section>
+              <div class="field">
+                <label for="manual-note">Nota (opcional)</label>
+                <input id="manual-note" type="text" placeholder="Ej: solicitud prioritaria" />
+              </div>
 
-          <section class="card stack" aria-label="Estado y notas">
-            <h3 class="subsection-title">Editar lead</h3>
-
-            <form id="lead-update-form" class="stack">
-              <input type="hidden" id="lead-id" />
-              <div class="actions actions-left">
-                <button type="button" class="btn btn-secondary btn-compact" id="lead-edit-toggle-btn">Editar</button>
-              </div>
-              <div class="field">
-                <label for="lead-status">Estado</label>
-                <select id="lead-status">
-                  <option value="new">new</option>
-                  <option value="validated">validated</option>
-                  <option value="assigned">assigned</option>
-                  <option value="sent">sent</option>
-                  <option value="accepted">accepted</option>
-                  <option value="closed">closed</option>
-                  <option value="sold">sold</option>
-                  <option value="rejected">rejected</option>
-                  <option value="deleted">deleted</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="lead-notes">Notas</label>
-                <textarea id="lead-notes"></textarea>
-              </div>
-              <div class="field">
-                <label for="lead-assigned-provider-id">Proveedor principal</label>
-                <select id="lead-assigned-provider-id"></select>
-              </div>
-              <div class="field">
-                <label for="lead-provider-ids">Provider IDs (coma separada)</label>
-                <input id="lead-provider-ids" placeholder="prov_1, prov_2" />
-              </div>
-              <div class="field">
-                <label for="lead-price-eur">Precio EUR</label>
-                <input id="lead-price-eur" type="number" min="0" step="0.01" />
-              </div>
-              <div class="field">
-                <label for="lead-ticket-estimated-eur">Ticket estimado EUR</label>
-                <input id="lead-ticket-estimated-eur" type="number" min="0" step="0.01" />
-              </div>
-              <div class="field">
-                <label for="lead-urgency">Urgencia</label>
-                <select id="lead-urgency">
-                  <option value="baja">baja</option>
-                  <option value="media">media</option>
-                  <option value="alta">alta</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="lead-budget-range">Presupuesto</label>
-                <input id="lead-budget-range" placeholder="sin_definir, medio, alto..." />
-              </div>
-              <div class="field">
-                <label for="lead-intent-plazo">Intent plazo</label>
-                <select id="lead-intent-plazo">
-                  <option value="">(vacío)</option>
-                  <option value="esta_semana">esta_semana</option>
-                  <option value="1_3_meses">1_3_meses</option>
-                  <option value="informativo">informativo</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="lead-collaborator-id">Collaborator ID</label>
-                <input id="lead-collaborator-id" placeholder="col_..." />
-              </div>
-              <div class="field">
-                <label for="lead-collaborator-tracking-code">Collaborator tracking code</label>
-                <input id="lead-collaborator-tracking-code" placeholder="COL-..." />
-              </div>
               <div class="actions">
-                <button type="submit" class="btn btn-primary" id="lead-save-btn">Guardar cambios</button>
+                <button type="button" class="btn btn-primary" id="assign-manual-btn">Asignar manual</button>
+                <button type="button" class="btn btn-secondary" id="reassign-auto-btn">Reasignar automático</button>
               </div>
-            </form>
 
-            <div id="lead-alert" class="notice" style="display:none;"></div>
+              <div class="actions">
+                <button type="button" class="btn btn-danger" id="lead-delete-btn">Eliminar (soft)</button>
+              </div>
+
+              <input id="anonymize-reason" type="text" style="display:none;" />
+              <button type="button" id="anonymize-btn" style="display:none;"></button>
+            </section>
+
+            <section class="card stack" aria-label="Estado y notas">
+              <h3 class="subsection-title">Editar lead</h3>
+
+              <form id="lead-update-form" class="stack">
+                <input type="hidden" id="lead-id" />
+                <div class="actions actions-left">
+                  <button type="button" class="btn btn-secondary btn-compact" id="lead-edit-toggle-btn">Editar</button>
+                </div>
+                <div class="field">
+                  <label for="lead-status">Estado</label>
+                  <select id="lead-status">
+                    <option value="new">new</option>
+                    <option value="validated">validated</option>
+                    <option value="assigned">assigned</option>
+                    <option value="sent">sent</option>
+                    <option value="accepted">accepted</option>
+                    <option value="closed">closed</option>
+                    <option value="sold">sold</option>
+                    <option value="rejected">rejected</option>
+                    <option value="deleted">deleted</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="lead-notes">Notas</label>
+                  <textarea id="lead-notes"></textarea>
+                </div>
+                <div class="field">
+                  <label for="lead-assigned-provider-id">Proveedor principal</label>
+                  <select id="lead-assigned-provider-id"></select>
+                </div>
+                <div class="field">
+                  <label for="lead-provider-ids">Provider IDs (coma separada)</label>
+                  <input id="lead-provider-ids" placeholder="prov_1, prov_2" />
+                </div>
+                <div class="field">
+                  <label for="lead-price-eur">Precio EUR</label>
+                  <input id="lead-price-eur" type="number" min="0" step="0.01" />
+                </div>
+                <div class="field">
+                  <label for="lead-ticket-estimated-eur">Ticket estimado EUR</label>
+                  <input id="lead-ticket-estimated-eur" type="number" min="0" step="0.01" />
+                </div>
+                <div class="field">
+                  <label for="lead-urgency">Urgencia</label>
+                  <select id="lead-urgency">
+                    <option value="baja">baja</option>
+                    <option value="media">media</option>
+                    <option value="alta">alta</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="lead-budget-range">Presupuesto</label>
+                  <input id="lead-budget-range" placeholder="sin_definir, medio, alto..." />
+                </div>
+                <div class="field">
+                  <label for="lead-intent-plazo">Intent plazo</label>
+                  <select id="lead-intent-plazo">
+                    <option value="">(vacío)</option>
+                    <option value="esta_semana">esta_semana</option>
+                    <option value="1_3_meses">1_3_meses</option>
+                    <option value="informativo">informativo</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="lead-collaborator-id">Collaborator ID</label>
+                  <input id="lead-collaborator-id" placeholder="col_..." />
+                </div>
+                <div class="field">
+                  <label for="lead-collaborator-tracking-code">Collaborator tracking code</label>
+                  <input id="lead-collaborator-tracking-code" placeholder="COL-..." />
+                </div>
+                <div class="actions">
+                  <button type="submit" class="btn btn-primary" id="lead-save-btn">Guardar cambios</button>
+                </div>
+              </form>
+
+              <div id="lead-alert" class="notice" style="display:none;"></div>
+            </section>
           </section>
-        </div>
+        </aside>
       </section>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <script src="/js/admin/leads.js"></script>
 </body>

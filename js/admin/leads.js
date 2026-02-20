@@ -32,6 +32,9 @@
   const manualNoteInput = document.getElementById("manual-note");
   const assignManualBtn = document.getElementById("assign-manual-btn");
   const reassignAutoBtn = document.getElementById("reassign-auto-btn");
+  const leadModal = document.getElementById("lead-modal");
+  const leadModalClose = document.getElementById("lead-modal-close");
+  const leadModalBackdrop = leadModal?.querySelector("[data-close-lead-modal]");
 
   let leadsCache = [];
   let providersCache = [];
@@ -392,6 +395,18 @@
     )).slice(0, 2);
   }
 
+  function openLeadModal(title) {
+    if (leadModal) leadModal.hidden = false;
+    if (detailSection) detailSection.style.display = "grid";
+    const titleNode = document.getElementById("lead-modal-title");
+    if (titleNode) titleNode.textContent = title || "Lead";
+  }
+
+  function closeLeadModal() {
+    if (leadModal) leadModal.hidden = true;
+    if (detailSection) detailSection.style.display = "none";
+  }
+
   function setEditMode(enabled) {
     editMode = Boolean(enabled);
     if (editToggleBtn) {
@@ -500,7 +515,7 @@
 
   function openLeadDetail(lead) {
     selectedLead = lead;
-    detailSection.style.display = "grid";
+    openLeadModal(`Lead · ${lead.id}`);
     leadIdInput.value = lead.id;
     hydrateLeadEditFields(lead);
     if (manualNoteInput) manualNoteInput.value = "";
@@ -751,7 +766,7 @@
         method: "DELETE",
       });
       showAlert("Lead eliminado (soft).");
-      detailSection.style.display = "none";
+      closeLeadModal();
       selectedLead = null;
       setEditMode(false);
       await loadAll();
@@ -782,6 +797,14 @@
 
   noProviderInput?.addEventListener("change", () => {
     applySmartFilters();
+  });
+
+  leadModalClose?.addEventListener("click", closeLeadModal);
+  leadModalBackdrop?.addEventListener("click", closeLeadModal);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && leadModal && leadModal.hidden === false) {
+      closeLeadModal();
+    }
   });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {

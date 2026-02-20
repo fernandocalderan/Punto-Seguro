@@ -35,7 +35,7 @@
         throw new Error("Credenciales incorrectas");
       }
 
-      window.location.href = "/admin/providers";
+      window.location.href = "/admin/360";
     } catch (error) {
       showAlert(error.message, true);
     }

@@ -1,0 +1,33 @@
+name: retheme-guardrails
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches:
+      - "feat/retheme-*"
+      - "diagnostic/*"
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run retheme guardrails
+        env:
+          BASE_REF: main
+          BASE_URL: http://localhost:3000
+        run: bash scripts/guardrail_retheme_gate.sh

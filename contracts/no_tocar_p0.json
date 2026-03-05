@@ -1,0 +1,278 @@
+{
+  "version": "2026-03-05",
+  "description": "Contratos congelados P0 para retheme visual-only",
+  "routes": [
+    {
+      "path": "/",
+      "requiredIds": [
+        "hero-primary-cta",
+        "eval-restore-banner",
+        "ps-iei-title",
+        "ps-iei-desc"
+      ],
+      "requiredClassTokens": [
+        "home-page",
+        "ps-sticky-bar",
+        "ps-sticky-cta",
+        "ps-cta-primary"
+      ],
+      "requiredDataAttrs": [
+        "data-ps-placement",
+        "data-ps-segment"
+      ],
+      "requiredCssRefsOrdered": [
+        "/css/ps-ui.css"
+      ],
+      "requiredScriptRefsOrdered": [
+        "/js/analytics.js",
+        "/js/ps-cta.js",
+        "/js/iei-meta.js",
+        "/js/iei-ui.js"
+      ],
+      "requiredInlineSnippets": [
+        "window.PuntoSeguroAnalytics?.trackEvent(\"quiz_started\"",
+        "document.getElementById(\"eval-restore-banner\")"
+      ]
+    },
+    {
+      "path": "/diagnostico",
+      "requiredIds": [
+        "evaluador-form",
+        "tipo-inmueble",
+        "formulario-vivienda",
+        "formulario-comercio",
+        "iei-vivienda-root",
+        "iei-comercio-root",
+        "ps-stepbar-pct",
+        "ps-stepbar-fill",
+        "ps-progress",
+        "ps-eval-body",
+        "form-alerta"
+      ],
+      "requiredClassTokens": [
+        "ps-type-btn",
+        "ps-stepbar-bar"
+      ],
+      "requiredDataAttrs": [
+        "data-type"
+      ],
+      "requiredCssRefsOrdered": [
+        "/css/ps-ui.css"
+      ],
+      "requiredScriptRefsOrdered": [
+        "/js/analytics.js",
+        "/js/iei-evaluador-user-v1.js",
+        "/js/ps-cta.js",
+        "/js/iei-meta.js",
+        "/js/iei-ui.js"
+      ],
+      "requiredInlineSnippets": [
+        "onsubmit=\"event.preventDefault(); calcularRiesgo();\"",
+        "onchange=\"cambiarFormulario(this.value)\""
+      ]
+    },
+    {
+      "path": "/resultado",
+      "requiredIds": [
+        "risk-score",
+        "risk-level-badge",
+        "recommendations-list",
+        "top-factors-list",
+        "risk-human-text",
+        "cta-request",
+        "cta-keep",
+        "iei-bar-fill",
+        "ps-iei-title",
+        "ps-iei-desc"
+      ],
+      "requiredCssRefsOrdered": [
+        "styles/leads.css",
+        "/css/ps-ui.css"
+      ],
+      "requiredScriptRefsOrdered": [
+        "/js/analytics.js",
+        "js/resultado.js",
+        "/js/ps-cta.js",
+        "/js/iei-meta.js",
+        "/js/iei-ui.js"
+      ]
+    },
+    {
+      "path": "/solicitar-propuesta",
+      "requiredIds": [
+        "lead-form",
+        "form-alert",
+        "lead-summary",
+        "name",
+        "phone",
+        "email",
+        "postal_code",
+        "city",
+        "business_type",
+        "urgency",
+        "budget_range",
+        "notes",
+        "consent",
+        "ps-otp-overlay",
+        "ps-otp-confirm",
+        "ps-otp-resend",
+        "ps-otp-close",
+        "ps-otp-error",
+        "ps-otp-status",
+        "ps-otp-countdown"
+      ],
+      "requiredClassTokens": [
+        "otp-digit",
+        "ps-cta-primary"
+      ],
+      "requiredDataAttrs": [
+        "data-ps-placement"
+      ],
+      "requiredCssRefsOrdered": [
+        "styles/leads.css",
+        "/css/ps-ui.css"
+      ],
+      "requiredScriptRefsOrdered": [
+        "/js/analytics.js",
+        "js/lead-form.js",
+        "/js/ps-cta.js",
+        "/js/iei-meta.js",
+        "/js/iei-ui.js"
+      ]
+    },
+    {
+      "path": "/confirmacion",
+      "requiredIds": [
+        "confirmation-message",
+        "ps-iei-title",
+        "ps-iei-desc"
+      ],
+      "requiredCssRefsOrdered": [
+        "styles/leads.css",
+        "/css/ps-ui.css"
+      ],
+      "requiredScriptRefsOrdered": [
+        "/js/analytics.js",
+        "/js/ps-cta.js",
+        "/js/iei-meta.js",
+        "/js/iei-ui.js"
+      ],
+      "requiredInlineSnippets": [
+        "window.sessionStorage.getItem(\"puntoSeguro.lastLead\")"
+      ]
+    }
+  ],
+  "storageKeys": [
+    "puntoSeguro.latestEvaluation",
+    "puntoSeguro.evaluationSummary",
+    "puntoSeguro.intent",
+    "puntoSeguro.lastLead",
+    "puntoSeguro.collaborator",
+    "ps_eval_restore_attempted",
+    "ps_eval_snapshot_saved",
+    "ps_urgency_variant"
+  ],
+  "apiContracts": [
+    { "method": "POST", "path": "/api/events" },
+    { "method": "POST", "path": "/api/eval-snapshot" },
+    { "method": "GET", "path": "/api/eval-snapshot/me" },
+    { "method": "POST", "path": "/api/otp/start" },
+    { "method": "POST", "path": "/api/otp/check" },
+    { "method": "POST", "path": "/api/otp/token" },
+    { "method": "POST", "path": "/api/leads" }
+  ],
+  "apiProbes": [
+    {
+      "method": "POST",
+      "path": "/api/events",
+      "body": {},
+      "expectedStatuses": [400]
+    },
+    {
+      "method": "GET",
+      "path": "/api/eval-snapshot/me",
+      "expectedStatuses": [200, 404]
+    },
+    {
+      "method": "POST",
+      "path": "/api/otp/start",
+      "body": { "phone": "123" },
+      "expectedStatuses": [400]
+    },
+    {
+      "method": "POST",
+      "path": "/api/otp/check",
+      "body": { "phone": "123", "code": "00" },
+      "expectedStatuses": [400]
+    },
+    {
+      "method": "POST",
+      "path": "/api/otp/token",
+      "body": { "phone": "123" },
+      "expectedStatuses": [400]
+    },
+    {
+      "method": "POST",
+      "path": "/api/leads",
+      "body": {},
+      "expectedStatuses": [400, 403, 500]
+    }
+  ],
+  "trackingEvents": [
+    "quiz_started",
+    "quiz_completed",
+    "result_viewed",
+    "cta_proposals_click",
+    "lead_declined",
+    "cta_diagnostico_clicked",
+    "lead_form_started",
+    "lead_form_viewed",
+    "lead_submit_clicked",
+    "lead_submit_success",
+    "lead_submit_error"
+  ],
+  "trackingAttrs": [
+    "data-ps-placement",
+    "data-ps-segment"
+  ],
+  "sourceSnippets": [
+    "select[data-qid]",
+    "document.getElementById(\"risk-explanation\")",
+    "document.getElementById(\"decision-feedback\")",
+    "onsubmit=\"event.preventDefault(); calcularRiesgo();\"",
+    "onchange=\"cambiarFormulario(this.value)\""
+  ],
+  "criticalAssets": [
+    "/css/ps-ui.css",
+    "/styles/leads.css",
+    "/js/analytics.js",
+    "/js/ps-cta.js",
+    "/js/iei-meta.js",
+    "/js/iei-ui.js",
+    "/js/iei-evaluador-user-v1.js",
+    "/js/resultado.js",
+    "/js/lead-form.js",
+    "/Motor-IEI/iei_questions_premium.json",
+    "/Motor-IEI/calculateIEI.js",
+    "/logo-punto-seguro.png",
+    "/favicon.ico",
+    "/favicon-32x32.png",
+    "/favicon-16x16.png",
+    "/apple-touch-icon.png"
+  ],
+  "adminIsolation": {
+    "files": [
+      "admin/login.html",
+      "admin/providers.html",
+      "admin/leads.html",
+      "admin/collaborators.html",
+      "admin/360.html"
+    ],
+    "forbiddenRefs": [
+      "/css/ps-ui.css",
+      "/css/ps-tokens.css",
+      "/css/ps-components.css",
+      "/css/compat.css"
+    ]
+  }
+}

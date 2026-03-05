@@ -10,7 +10,12 @@
     "db:schema": "node db/apply-schema.js",
     "db:check": "node db/check-db.js",
     "db:migrate": "node db/apply-migrations.js",
-    "audit:ps": "node audit/run-audit.js"
+    "audit:ps": "node audit/run-audit.js",
+    "guardrail:visual": "bash scripts/guardrail_visual_only.sh",
+    "guardrail:contracts": "node scripts/guardrail_validate_contracts.js",
+    "guardrail:gate": "bash scripts/guardrail_retheme_gate.sh",
+    "guardrail:risk": "bash scripts/retheme_risk_scan.sh",
+    "guardrail:css": "bash scripts/retheme_css_collision_scan.sh"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

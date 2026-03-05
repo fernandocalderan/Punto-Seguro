@@ -47,6 +47,17 @@ function pathnameOf(url) {
   }
 }
 
+function extractEventNameFromRequest(req) {
+  try {
+    const raw = req.postData();
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed.event_name === 'string' ? parsed.event_name : null;
+  } catch (_e) {
+    return null;
+  }
+}
+
 async function readBodySafe(response) {
   try {
     return await response.text();
@@ -64,6 +75,16 @@ function attachObservers(page, label, eventSet) {
 
   page.on('pageerror', (err) => {
     artifacts.pageErrors.push({ label, pageUrl: page.url(), message: err.message || String(err) });
+  });
+
+  page.on('request', (req) => {
+    const method = req.method();
+    const urlPath = pathnameOf(req.url());
+    if (method !== 'POST' || urlPath !== '/api/events') return;
+    const eventName = extractEventNameFromRequest(req);
+    if (eventName) {
+      eventSet.add(eventName);
+    }
   });
 
   page.on('response', async (res) => {
@@ -93,19 +114,25 @@ function attachObservers(page, label, eventSet) {
     }
 
     if (urlPath === '/api/events') {
-      const payload = req.postData();
-      if (payload) {
-        try {
-          const parsed = JSON.parse(payload);
-          if (parsed && parsed.event_name) {
-            eventSet.add(String(parsed.event_name));
-          }
-        } catch (_e) {
-          // ignore parse errors
-        }
+      const eventName = extractEventNameFromRequest(req);
+      if (eventName) {
+        eventSet.add(eventName);
       }
     }
   });
+}
+
+async function waitForTrackingRequest(page, eventName, timeoutMs = 3000) {
+  try {
+    await page.waitForRequest((req) => {
+      if (req.method() !== 'POST') return false;
+      if (pathnameOf(req.url()) !== '/api/events') return false;
+      return extractEventNameFromRequest(req) === eventName;
+    }, { timeout: timeoutMs });
+    return true;
+  } catch (_e) {
+    return false;
+  }
 }
 
 async function runDesktopFlow() {
@@ -157,12 +184,25 @@ async function runDesktopFlow() {
       submit.click(),
     ]);
 
-    // Click CTA request for cta_proposals_click.
-    if (await page.locator('#cta-request').count()) {
-      await Promise.all([
-        page.waitForURL(/\/solicitar-propuesta/, { timeout: 20000 }),
-        page.locator('#cta-request').click(),
-      ]);
+    // Click exact CTA and explicitly wait tracking request for cta_proposals_click.
+    const ctaRequest = page.locator('#cta-request').first();
+    if (await ctaRequest.count()) {
+      await ctaRequest.waitFor({ state: 'visible', timeout: 10000 });
+      await ctaRequest.scrollIntoViewIfNeeded();
+      const trackedPromise = waitForTrackingRequest(page, 'cta_proposals_click', 3000);
+      const navigatedPromise = page.waitForURL(/\/solicitar-propuesta/, { timeout: 20000 })
+        .then(() => true)
+        .catch(() => false);
+      await ctaRequest.click();
+      const [tracked, navigated] = await Promise.all([trackedPromise, navigatedPromise]);
+      artifacts.ctaTrackingCheck = {
+        selector: '#cta-request',
+        requestDetected: tracked,
+        navigated,
+      };
+      if (!tracked) {
+        artifacts.notes.push('No se detectó request /api/events con event_name=cta_proposals_click tras click en #cta-request');
+      }
     }
 
     // Lead submit click for lead_submit_clicked.

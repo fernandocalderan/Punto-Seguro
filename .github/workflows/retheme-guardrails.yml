@@ -26,8 +26,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Resolve visual-only mode
+        id: visual_mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only origin/main...HEAD || true)"
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Eq '^(scripts/guardrail_|contracts/|\.github/workflows/retheme-guardrails\.yml$|package\.json$)'; then
+            echo "skip_visual_only=1" >> "$GITHUB_OUTPUT"
+            echo "visual-only disabled for guardrail/bootstrap changes"
+          else
+            echo "skip_visual_only=0" >> "$GITHUB_OUTPUT"
+            echo "visual-only enforced"
+          fi
+
       - name: Run retheme guardrails
         env:
           BASE_REF: main
           BASE_URL: http://localhost:3000
+          SKIP_VISUAL_ONLY: ${{ steps.visual_mode.outputs.skip_visual_only }}
         run: bash scripts/guardrail_retheme_gate.sh

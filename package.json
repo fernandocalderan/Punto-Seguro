@@ -15,7 +15,9 @@
     "guardrail:contracts": "node scripts/guardrail_validate_contracts.js",
     "guardrail:gate": "bash scripts/guardrail_retheme_gate.sh",
     "guardrail:risk": "bash scripts/retheme_risk_scan.sh",
-    "guardrail:css": "bash scripts/retheme_css_collision_scan.sh"
+    "guardrail:css": "bash scripts/retheme_css_collision_scan.sh",
+    "smoke:runtime": "node scripts/runtime_smoke_playwright.js",
+    "smoke:flaky": "bash scripts/smoke_flakiness.sh"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

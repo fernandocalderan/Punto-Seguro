@@ -6,12 +6,17 @@ BASE_URL="${BASE_URL:-http://localhost:3000}"
 START_SERVER="${START_SERVER:-1}"
 BASE_REF="${BASE_REF:-main}"
 SKIP_VISUAL_ONLY="${SKIP_VISUAL_ONLY:-0}"
+RUNTIME_DATA_DIR="${DATA_DIR:-}"
+TMP_DATA_DIR=""
 
 SERVER_PID=""
 cleanup() {
   if [[ -n "$SERVER_PID" ]]; then
     kill "$SERVER_PID" >/dev/null 2>&1 || true
     wait "$SERVER_PID" 2>/dev/null || true
+  fi
+  if [[ -n "$TMP_DATA_DIR" && -d "$TMP_DATA_DIR" ]]; then
+    rm -rf "$TMP_DATA_DIR"
   fi
 }
 trap cleanup EXIT
@@ -31,7 +36,11 @@ fi
 if [[ "$START_SERVER" == "1" ]]; then
   echo
   echo "[2/6] Starting local server"
-  node "$ROOT_DIR/server.js" >/tmp/ps_guardrail_server.log 2>&1 &
+  if [[ -z "$RUNTIME_DATA_DIR" ]]; then
+    TMP_DATA_DIR="$(mktemp -d "/tmp/ps-guardrail-data.XXXXXX")"
+    RUNTIME_DATA_DIR="$TMP_DATA_DIR"
+  fi
+  DATA_DIR="$RUNTIME_DATA_DIR" node "$ROOT_DIR/server.js" >/tmp/ps_guardrail_server.log 2>&1 &
   SERVER_PID=$!
   sleep 2
 else

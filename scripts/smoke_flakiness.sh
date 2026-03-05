@@ -95,7 +95,17 @@ const missing = Array.isArray(s.trackingMissing) ? s.trackingMissing.join(', ') 
 const consoleErrors = Array.isArray(s.consoleErrors) ? s.consoleErrors.length : 0;
 const pageErrors = Array.isArray(s.pageErrors) ? s.pageErrors.length : 0;
 const failures = Array.isArray(s.networkFailures)
-  ? s.networkFailures.filter((f) => !((f.url === '/api/eval-snapshot/me') && f.status === 404)).length
+  ? s.networkFailures.filter((f) => {
+      if (f.url === '/api/eval-snapshot/me' && f.status === 404) return false;
+      if (
+        f.url === '/api/otp/start' &&
+        f.status === 503 &&
+        String(f.errorBody || '').includes('otp_not_configured')
+      ) {
+        return false;
+      }
+      return true;
+    }).length
   : 0;
 console.log([exitCode, otp, missing || '-', failures, consoleErrors + pageErrors].join('|'));
 NODE
@@ -111,7 +121,7 @@ done
 
 {
   echo
-  echo "\\* Network failures exclude expected \`GET /api/eval-snapshot/me -> 404\`."
+  echo "\\* Network failures exclude expected \`GET /api/eval-snapshot/me -> 404\` and OTP 503 \`otp_not_configured\`."
   echo
   echo "Pass ratio: $PASS_COUNT/$RUNS"
 } >>"$REPORT"

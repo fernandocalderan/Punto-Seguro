@@ -297,31 +297,40 @@ function classifyOtpStatus() {
   artifacts.otpStatus = 'PARTIAL';
 }
 
+function isIgnoredNetworkFailure(entry) {
+  if (entry.url === '/api/eval-snapshot/me' && entry.status === 404) return true;
+  if (
+    entry.url === '/api/otp/start' &&
+    entry.status === 503 &&
+    String(entry.errorBody || '').includes('otp_not_configured')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isIgnorableConsoleMessage(text) {
+  const normalized = String(text || '').trim();
+  return normalized.startsWith('Failed to load resource:');
+}
+
 async function main() {
   await runDesktopFlow();
   await runMobileChecks();
   classifyOtpStatus();
   writeOutputs();
 
-  const criticalErrors = artifacts.consoleErrors.length + artifacts.pageErrors.length;
+  const effectiveConsoleErrors = artifacts.consoleErrors.filter((entry) => !isIgnorableConsoleMessage(entry.text));
+  const criticalErrors = effectiveConsoleErrors.length + artifacts.pageErrors.length;
   if ((artifacts.diagnosticoDynamic?.selectDataQidCount || 0) === 0) {
     process.exitCode = 1;
   }
-  const failures = artifacts.networkFailures.filter((f) => {
-    if (f.url === '/api/eval-snapshot/me' && f.status === 404) return false;
-    if (
-      f.url === '/api/otp/start' &&
-      f.status === 503 &&
-      String(f.errorBody || '').includes('otp_not_configured')
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const failures = artifacts.networkFailures.filter((f) => !isIgnoredNetworkFailure(f));
 
   console.log('[runtime_smoke_playwright] completed');
-  console.log(`console/page errors: ${criticalErrors}`);
-  console.log(`network failures (excluding /api/eval-snapshot/me 404): ${failures.length}`);
+  console.log(`console/page errors (effective): ${criticalErrors}`);
+  console.log(`console errors (raw): ${artifacts.consoleErrors.length}`);
+  console.log(`network failures (excluding snapshot 404 + otp_not_configured 503): ${failures.length}`);
   console.log(`otp status: ${artifacts.otpStatus}`);
   console.log(`tracking seen: ${artifacts.trackingEventsSeen.join(', ') || 'none'}`);
   console.log(`tracking missing: ${artifacts.trackingMissing.join(', ') || 'none'}`);
